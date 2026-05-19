@@ -1,0 +1,108 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #ffffff;
+  --color-fg: #0f1218;
+
+  /* Layout rhythm (8px grid) */
+  --layout-header-h: 4.5rem; /* 72px — 로고·GNB 한 줄 */
+  --layout-gap-header-main: 2rem; /* 32px — 헤더 구분선 ↓ 메인 */
+  --layout-gap-main-footer: 3rem; /* 48px — 메인 ↓ 푸터 */
+  --layout-header-offset: calc(
+    var(--layout-header-h) + var(--layout-gap-header-main)
+  );
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-white text-neutral-800 font-pretendard;
+    font-feature-settings: "ss06" on, "ss07" on;
+    letter-spacing: -0.01em;
+  }
+
+  ::selection {
+    @apply bg-primary text-white;
+  }
+}
+
+@layer components {
+  .site-container {
+    @apply px-5 sm:px-8 lg:px-10;
+  }
+
+  .site-main {
+    padding-top: var(--layout-header-offset);
+    padding-bottom: var(--layout-gap-main-footer);
+  }
+
+  .site-main--flush {
+    padding-top: 0;
+    padding-bottom: var(--layout-gap-main-footer);
+  }
+
+  @screen lg {
+    .site-main,
+    .site-main--flush {
+      padding-bottom: 4rem;
+    }
+  }
+
+  .page-hero-inner {
+    padding-top: calc(var(--layout-header-offset) + 1.5rem);
+    padding-bottom: 3rem;
+  }
+
+  @screen sm {
+    .page-hero-inner {
+      padding-bottom: 3.5rem;
+    }
+  }
+
+  @screen lg {
+    .page-hero-inner {
+      padding-bottom: 4rem;
+    }
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .page-reveal,
+  .timetable-reveal {
+    animation: page-fade-up 0.7s ease-out both;
+  }
+}
+
+@keyframes page-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-reveal,
+  .timetable-reveal {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
