@@ -9,7 +9,7 @@ import {
   siteFloatingWidgetSafeClass,
 } from "@/lib/layout/spacing";
 import { getPost, incrementPostViewCount } from "@/lib/supabase/queries";
-import { sanitizePostHtml } from "@/lib/admin/sanitize";
+import { sanitizePostHtmlAsync } from "@/lib/html-sanitize";
 
 type NoticeDetailPageProps = {
   params: { id: string };
@@ -41,7 +41,7 @@ export default async function NoticeDetailPage({
   void incrementPostViewCount(result.post.id);
 
   const { post, prev, next } = result;
-  const safeHtml = sanitizePostHtml(post.content_html);
+  const safeHtml = await sanitizePostHtmlAsync(post.content_html);
 
   return (
     <StaggeredPageShell

@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    serverComponentsExternalPackages: ["isomorphic-dompurify", "jsdom"],
+  },
   images: {
     // Supabase Storage 의 public URL 도메인 패턴.
     // 형식: https://<project-ref>.supabase.co/storage/v1/object/public/<bucket>/<path>
