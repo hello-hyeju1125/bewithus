@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, MapPin } from "lucide-react";
 
+import ConsultationCtaLink from "@/components/consultation/ConsultationCtaLink";
 import StaggeredPageShell from "@/components/layout/StaggeredPageShell";
 import InfoSessionPageHero from "@/components/info-session/InfoSessionPageHero";
 import InfoSessionDescription from "@/components/info-session/InfoSessionDescription";
@@ -44,7 +44,7 @@ function formatSessionSchedule(iso: string) {
 }
 
 const sessionCtaClass = cn(
-  "flex w-full items-center justify-center gap-3 rounded-button px-8 py-4 text-[18px] font-black outline-none transition-colors focus-visible:ring-2 sm:py-5 sm:text-[20px]",
+  "group flex w-full items-center justify-center gap-3 rounded-button px-8 py-4 text-[18px] font-black outline-none transition-colors duration-200 focus-visible:ring-2 sm:py-5 sm:text-[20px]",
   sectionBodyClass["info-session"].cta,
 );
 
@@ -59,32 +59,35 @@ function UpcomingCard({ session }: { session: InfoSession }) {
       className={sessionCtaClass}
     >
       설명회 신청
-      <ArrowRight className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.5} aria-hidden="true" />
+      <ArrowRight
+        className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5 sm:h-6 sm:w-6"
+        strokeWidth={2.5}
+        aria-hidden="true"
+      />
     </a>
   ) : (
-    <Link href="/contact" className={sessionCtaClass}>
-      설명회 신청
-      <ArrowRight className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.5} aria-hidden="true" />
-    </Link>
+    <ConsultationCtaLink className={sessionCtaClass} label="설명회 신청" />
   );
 
   return (
     <article className="flex flex-col gap-6 rounded-card border border-neutral-200 bg-white p-6 sm:p-8">
       <div className="space-y-5">
-        <time
-          dateTime={session.session_date}
-          className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-neutral-100 pb-5"
-        >
-          <span className="text-[28px] font-black leading-tight tracking-tight text-primary sm:text-[36px]">
-            {dateLine}
-          </span>
-          <span className="text-[28px] font-black leading-tight tracking-tight text-primary sm:text-[36px]">
-            {timeLine}
-          </span>
-        </time>
-        <h3 className="whitespace-pre-line text-[22px] font-black tracking-tight text-primary sm:text-[24px]">
-          {session.title}
-        </h3>
+        <div className="flex flex-col gap-3 border-b border-neutral-100 pb-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+          <h3 className="min-w-0 flex-1 whitespace-pre-line text-left text-[22px] font-black leading-snug tracking-tight text-primary sm:text-[26px]">
+            {session.title}
+          </h3>
+          <time
+            dateTime={session.session_date}
+            className="shrink-0 text-left sm:text-right"
+          >
+            <span className="block text-[14px] font-semibold leading-snug text-neutral-600 sm:text-[15px]">
+              {dateLine}
+            </span>
+            <span className="mt-0.5 block text-[18px] font-bold leading-tight text-primary sm:text-[20px]">
+              {timeLine}
+            </span>
+          </time>
+        </div>
         <InfoSessionDescription session={session} />
         {session.location ? (
           <p className="whitespace-pre-line text-[14px] leading-relaxed text-neutral-600 sm:text-[15px] sm:leading-[1.65]">

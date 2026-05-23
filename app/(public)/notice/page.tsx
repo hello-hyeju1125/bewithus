@@ -6,6 +6,7 @@ import NoticePageHero from "@/components/notice/NoticePageHero";
 import Pagination from "@/components/notice/Pagination";
 import {
   siteContainerClass,
+  siteFloatingWidgetCenterOffsetClass,
   siteFloatingWidgetSafeClass,
 } from "@/lib/layout/spacing";
 import { listPosts } from "@/lib/supabase/queries";
@@ -50,9 +51,13 @@ export default async function NoticeListPage({
           className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} py-10 sm:py-12 lg:py-14`}
         >
           {posts.length === 0 ? (
-            <p className="rounded-card border border-neutral-200 bg-neutral-50 px-6 py-12 text-center text-[15px] text-neutral-500">
-              등록된 공지가 없습니다.
-            </p>
+            <div
+              className={`mx-auto w-full max-w-[960px] ${siteFloatingWidgetCenterOffsetClass}`}
+            >
+              <p className="rounded-card border border-neutral-200 bg-neutral-50 px-6 py-12 text-center text-[15px] text-neutral-500">
+                등록된 공지가 없습니다.
+              </p>
+            </div>
           ) : (
             <div className="mx-auto w-full max-w-[960px]">
               {/* PC: 테이블 */}

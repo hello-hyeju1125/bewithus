@@ -65,14 +65,14 @@ export default async function TimetablePage({
         view === "detail" ? (
           <section
             aria-label="상세 시간표"
-            className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} py-10 sm:py-12 lg:py-14`}
+            className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} pb-10 pt-8 sm:pb-12 sm:pt-10 lg:pb-14 lg:pt-12`}
           >
             <TimetableDetailTable courses={courses} />
           </section>
         ) : (
           <section
             aria-label="요약 시간표 이미지"
-            className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} py-10 sm:py-12 lg:py-14`}
+            className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} pb-10 pt-8 sm:pb-12 sm:pt-10 lg:pb-14 lg:pt-12`}
           >
             <div
               className={`mx-auto w-full max-w-[960px] ${siteFloatingWidgetCenterOffsetClass}`}

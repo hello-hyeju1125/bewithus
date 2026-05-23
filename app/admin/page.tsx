@@ -4,6 +4,7 @@ import {
   CalendarRange,
   GraduationCap,
   Megaphone,
+  MessageSquare,
   Newspaper,
 } from "lucide-react";
 
@@ -31,6 +32,12 @@ const SECTIONS = [
     label: "공지사항 관리",
     description: "공지 게시물 작성, 수정, 고정, 게시 여부를 관리합니다.",
     icon: Newspaper,
+  },
+  {
+    href: "/admin/consultations",
+    label: "입학 상담 신청",
+    description: "사이트에서 접수된 입학 상담 문의를 확인하고 처리합니다.",
+    icon: MessageSquare,
   },
 ] as const;
 
