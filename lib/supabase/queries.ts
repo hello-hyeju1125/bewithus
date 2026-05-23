@@ -34,6 +34,29 @@ function hasSupabaseEnv(): boolean {
  * RSC 요청 단위로 결과를 메모이즈하여, 같은 페이지에서 여러 컴포넌트가
  * 같은 쿼리를 호출해도 한 번만 DB 에 가도록 합니다.
  */
+async function fetchActiveTimetable(
+  school: School,
+  grade: string,
+  view: ViewType,
+): Promise<Timetable | null> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("timetables")
+    .select("*")
+    .eq("school", school)
+    .eq("grade", grade)
+    .eq("view_type", view)
+    .eq("is_active", true)
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) {
+    console.error("[getTimetable]", error);
+    return null;
+  }
+  return (data as Timetable | null) ?? null;
+}
+
 export const getTimetable = cache(
   async (
     school: School,
@@ -43,22 +66,13 @@ export const getTimetable = cache(
     if (!hasSupabaseEnv()) return null;
 
     try {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from("timetables")
-        .select("*")
-        .eq("school", school)
-        .eq("grade", grade)
-        .eq("view_type", view)
-        .eq("is_active", true)
-        .order("updated_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (error) {
-        console.error("[getTimetable]", error);
-        return null;
+      const row = await fetchActiveTimetable(school, grade, view);
+      if (row) return row;
+
+      if (school === "private" && grade !== "all") {
+        const legacyAll = await fetchActiveTimetable(school, "all", view);
+        if (legacyAll) return legacyAll;
       }
-      if (data) return data as Timetable;
 
       const legacyGrade =
         grade === "high-1"
@@ -70,21 +84,7 @@ export const getTimetable = cache(
               : null;
       if (!legacyGrade) return null;
 
-      const { data: legacyData, error: legacyError } = await supabase
-        .from("timetables")
-        .select("*")
-        .eq("school", school)
-        .eq("grade", legacyGrade)
-        .eq("view_type", view)
-        .eq("is_active", true)
-        .order("updated_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (legacyError) {
-        console.error("[getTimetable] legacy grade", legacyError);
-        return null;
-      }
-      return (legacyData as Timetable | null) ?? null;
+      return fetchActiveTimetable(school, legacyGrade, view);
     } catch (e) {
       console.error("[getTimetable]", e);
       return null;
@@ -101,21 +101,32 @@ export const listTimetableCourses = cache(
 
     try {
       const supabase = createClient();
-      const { data, error } = await supabase
-        .from("timetable_courses")
-        .select(
-          "*, teacher:teachers(id, name, photo_url, subject)",
-        )
-        .eq("school", school)
-        .eq("grade", grade)
-        .eq("is_active", true)
-        .order("subject", { ascending: true })
-        .order("order_index", { ascending: true });
-      if (error) {
-        console.error("[listTimetableCourses]", error);
-        return [];
+      const queryByGrade = async (gradeKey: string) => {
+        const { data, error } = await supabase
+          .from("timetable_courses")
+          .select(
+            "*, teacher:teachers(id, name, photo_url, subject)",
+          )
+          .eq("school", school)
+          .eq("grade", gradeKey)
+          .eq("is_active", true)
+          .order("subject", { ascending: true })
+          .order("order_index", { ascending: true });
+        if (error) {
+          console.error("[listTimetableCourses]", error);
+          return [];
+        }
+        return (data as unknown as TimetableCourseWithTeacher[] | null) ?? [];
+      };
+
+      const rows = await queryByGrade(grade);
+      if (rows.length > 0) return rows;
+
+      if (school === "private" && grade !== "all") {
+        return queryByGrade("all");
       }
-      return (data as unknown as TimetableCourseWithTeacher[] | null) ?? [];
+
+      return rows;
     } catch (e) {
       console.error("[listTimetableCourses]", e);
       return [];

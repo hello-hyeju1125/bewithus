@@ -4,6 +4,7 @@ import { cache } from "react";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
+  ConsultationRequest,
   InfoSession,
   Post,
   Teacher,
@@ -254,6 +255,41 @@ export const adminGetPost = cache(
       return (data as unknown as Post | null) ?? null;
     } catch (e) {
       console.error("[adminGetPost]", e);
+      return null;
+    }
+  },
+);
+
+export const adminListConsultationRequests = cache(
+  async (): Promise<ConsultationRequest[]> => {
+    try {
+      const supabase = createAdminClient();
+      const { data, error } = await supabase
+        .from("consultation_requests")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data as unknown as ConsultationRequest[]) ?? [];
+    } catch (e) {
+      console.error("[adminListConsultationRequests]", e);
+      return [];
+    }
+  },
+);
+
+export const adminGetConsultationRequest = cache(
+  async (id: string): Promise<ConsultationRequest | null> => {
+    try {
+      const supabase = createAdminClient();
+      const { data, error } = await supabase
+        .from("consultation_requests")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+      if (error) throw error;
+      return (data as unknown as ConsultationRequest | null) ?? null;
+    } catch (e) {
+      console.error("[adminGetConsultationRequest]", e);
       return null;
     }
   },

@@ -36,7 +36,7 @@ export const SCHOOL_GRADES: Record<School, readonly string[]> = {
   daewon: ["high-1", "high-2", "high-3"],
   hanyoung: ["high-1", "high-2", "high-3"],
   general: ["high-1", "high-2", "high-3"],
-  private: ["all"],
+  private: ["high-1", "high-2", "high-3"],
 } as const;
 
 /** 예전 URL·DB 값(middle-*) → 고등 학년 키 */
@@ -92,6 +92,8 @@ export function resolveGradeForSchool(
 ): string {
   const defaultGrade = SCHOOL_GRADES[school][0];
   if (!gradeParam) return defaultGrade;
+  /** 개인 및 팀 수업 — 예전 단일 학년 키 `all` */
+  if (school === "private" && gradeParam === "all") return defaultGrade;
   if (isGradeOfSchool(school, gradeParam)) return gradeParam;
   const mapped = LEGACY_GRADE_ALIASES[gradeParam];
   if (mapped && isGradeOfSchool(school, mapped)) return mapped;
@@ -102,3 +104,7 @@ export function resolveGradeForSchool(
 export function asSchoolType(value: string): SchoolType | null {
   return isSchool(value) ? value : null;
 }
+
+/** 대치위더스학원 문자수신 신청 Google Form */
+export const SMS_REGISTRATION_FORM_URL =
+  "https://docs.google.com/forms/d/1Avu-t9dSlfYuGvpNOul_p6mBiqVnz2zJvp2zZhkXZ_k/viewform";

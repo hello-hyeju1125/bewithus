@@ -261,6 +261,33 @@ export type PostAttachmentInsert = Omit<PostAttachment, "id" | "created_at"> & {
 
 export type PostAttachmentUpdate = Partial<PostAttachmentInsert>;
 
+export type ConsultationStatus = "new" | "read" | "archived";
+
+export type ConsultationRequest = {
+  id: string;
+  student_name: string;
+  parent_name: string;
+  phone: string;
+  school_grade: string;
+  subject: string;
+  message: string;
+  status: ConsultationStatus;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ConsultationRequestInsert = Omit<
+  ConsultationRequest,
+  "id" | "created_at" | "updated_at" | "status"
+> & {
+  id?: string;
+  status?: ConsultationStatus;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type ConsultationRequestUpdate = Partial<ConsultationRequestInsert>;
+
 /**
  * Supabase 클라이언트에 제네릭으로 주입할 전체 스키마 타입.
  * `createClient<Database>(...)` 형태로 사용합니다.
@@ -297,6 +324,11 @@ export type Database = {
         Row: PostAttachment;
         Insert: PostAttachmentInsert;
         Update: PostAttachmentUpdate;
+      };
+      consultation_requests: {
+        Row: ConsultationRequest;
+        Insert: ConsultationRequestInsert;
+        Update: ConsultationRequestUpdate;
       };
     };
     Views: Record<string, never>;
