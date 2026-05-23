@@ -11,14 +11,12 @@ export default function TimetablePageHero({
   schoolLabel,
   description,
 }: TimetablePageHeroProps) {
-  const title = `${schoolLabel} 시간표`;
-
   return (
     <SubPageHero
-      ariaLabel={`${title} 페이지 소개`}
+      ariaLabel={`${schoolLabel} 페이지 소개`}
       eyebrow="Timetable"
       icon={CalendarDays}
-      title={title}
+      title={schoolLabel}
       description={description}
       section="timetable"
     />

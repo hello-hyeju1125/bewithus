@@ -1,3 +1,5 @@
+import { SMS_REGISTRATION_FORM_URL } from "@/lib/constants";
+
 /**
  * W대치위더스 (bewithus) 한국어 카피 모음
  *
@@ -53,7 +55,7 @@ export const ko = {
         ],
       },
     ],
-    cta: { label: "상담 신청", href: "/contact" },
+    cta: { label: "상담 신청" },
     a11y: {
       primaryLabel: "주요 메뉴",
       openMenu: "메뉴 열기",
@@ -64,7 +66,11 @@ export const ko = {
   sideWidget: {
     a11y: { label: "빠른 신청 및 연락처" },
     actions: [
-      { label: "문자 수신\n등록 / 신청", href: "/sms", icon: "bell" as const },
+      {
+        label: "문자 수신\n등록 / 신청",
+        href: SMS_REGISTRATION_FORM_URL,
+        icon: "bell" as const,
+      },
       {
         label: "설명회\n등록 / 신청",
         href: "/info-session/daewon",
@@ -85,19 +91,17 @@ export const ko = {
         {
           tagline: "대원외고 부동의 1위",
           mainHeadline: "대원외고\n수업 안내",
-          subtitle: "2026년 2학기",
           href: "/timetable/daewon",
         },
         {
           tagline: "한영외고 진학 1위",
           mainHeadline: "한영외고\n수업 안내",
-          subtitle: "2026년 2학기",
           href: "/timetable/hanyoung",
         },
       ] as ReadonlyArray<{
         tagline?: string;
         mainHeadline: string;
-        subtitle: string;
+        subtitle?: string;
         href: string;
       }>,
       a11y: {
@@ -130,16 +134,31 @@ export const ko = {
           subtitle: "시간표 및 강사 소개",
           href: "/timetable/private",
         },
-        { title: "입학 상담", href: "/contact" },
-        { title: "문자 수신 등록", href: "/sms" },
+        { title: "입학 상담", openConsultation: true as const },
+        { title: "문자 수신 등록", href: SMS_REGISTRATION_FORM_URL },
         { title: "오시는 길", href: "/location" },
         { title: "학원 소개", href: "/facility" },
-      ] as ReadonlyArray<{
-        title: string;
-        subtitle?: string;
-        href: string;
-      }>,
+      ] as ReadonlyArray<
+        | { title: string; subtitle?: string; href: string }
+        | { title: string; openConsultation: true }
+      >,
     },
+  },
+  consultation: {
+    title: "입학 상담 신청",
+    description:
+      "아래 내용을 작성해 주시면 담당자가 확인 후 연락드리겠습니다.",
+    fields: {
+      studentName: "학생 이름",
+      parentName: "학부모 성함",
+      phone: "전화번호",
+      schoolGrade: "학교 및 학년",
+      subject: "과목",
+      message: "상담 내용",
+    },
+    submit: "상담 신청하기",
+    submitting: "접수 중…",
+    success: "상담 신청이 접수되었습니다. 빠른 시일 내에 연락드리겠습니다.",
   },
   footer: {
     brand: {
@@ -161,7 +180,13 @@ export const ko = {
         { display: "02.562.5757", tel: "02-562-5757" },
         { display: "02.562.5759", tel: "02-562-5759" },
       ],
-      hours: "[상담 시간] 평일 14:00 ~ 22:00, 주말 09:00 ~ 22:00",
+      hours: {
+        label: "[상담 시간]",
+        weekday: "평일 14:00 ~ 22:00,",
+        weekend: "주말 09:00 ~ 22:00",
+        /** sm 이상 — 한 줄 표기 */
+        desktop: "[상담 시간] 평일 14:00 ~ 22:00, 주말 09:00 ~ 22:00",
+      },
     },
     legal: {
       businessNumber: "사업자등록번호: 592-87-01265",

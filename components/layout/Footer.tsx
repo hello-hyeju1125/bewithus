@@ -66,8 +66,19 @@ export default function Footer() {
               ))}
             </ul>
           </div>
-          <p className="mt-3 text-[20px] font-bold leading-relaxed text-white sm:text-[24px]">
-            {customerCenter.hours}
+          <div className="mt-3 sm:hidden">
+            <p className="text-[18px] font-bold leading-snug text-white">
+              {customerCenter.hours.label}
+            </p>
+            <p className="mt-1 text-[18px] font-bold leading-snug text-white">
+              {customerCenter.hours.weekday}
+            </p>
+            <p className="text-[18px] font-bold leading-snug text-white">
+              {customerCenter.hours.weekend}
+            </p>
+          </div>
+          <p className="mt-3 hidden text-[20px] font-bold leading-relaxed text-white sm:block sm:text-[24px]">
+            {customerCenter.hours.desktop}
           </p>
         </div>
 

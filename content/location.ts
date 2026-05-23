@@ -8,8 +8,8 @@ export type LocationCampus = {
   phone: { display: string; tel: string };
   /** 네이버 지도 장소 페이지 (새 탭) */
   naverMapUrl: string;
-  /** iframe 임베드용 place id */
-  naverPlaceId: string;
+  /** Google Maps iframe 검색어 (주소·관 이름 기준) */
+  mapQuery: string;
   coordinates: { lat: number; lng: number };
 };
 
@@ -22,7 +22,7 @@ export const LOCATION_CAMPUSES: readonly LocationCampus[] = [
     phone: { display: "02-562-8787", tel: "02-562-8787" },
     naverMapUrl:
       "https://map.naver.com/p/entry/place/1996752971?placePath=%2Fhome&searchType=place&lng=127.0585517&lat=37.4993134",
-    naverPlaceId: "1996752971",
+    mapQuery: "서울특별시 강남구 도곡로77길 14 양지빌딩 대치위더스 P관",
     coordinates: { lat: 37.4993134, lng: 127.0585517 },
   },
   {
@@ -33,7 +33,7 @@ export const LOCATION_CAMPUSES: readonly LocationCampus[] = [
     phone: { display: "02-562-5757", tel: "02-562-5757" },
     naverMapUrl:
       "https://map.naver.com/p/entry/place/1174818993?placePath=/home?entry=pll&from=map&fromPanelNum=1&additionalHeight=76&timestamp=202605170236&locale=ko&svcName=map_pcv5&searchType=place&lng=127.0583849&lat=37.4986565&c=15.00,0,0,0,dh",
-    naverPlaceId: "1174818993",
+    mapQuery: "서울특별시 강남구 도곡로77길 5 유성빌딩 대치위더스 M관",
     coordinates: { lat: 37.4986565, lng: 127.0583849 },
   },
   {
@@ -43,9 +43,9 @@ export const LOCATION_CAMPUSES: readonly LocationCampus[] = [
     address: "강남구 대치동 929-11",
     phone: { display: "02-562-8787", tel: "02-562-8787" },
     naverMapUrl:
-      "https://map.naver.com/p/entry/place/1996752971?placePath=%2Fhome&searchType=place&lng=127.0585517&lat=37.4993134",
-    naverPlaceId: "1996752971",
-    coordinates: { lat: 37.4993134, lng: 127.0585517 },
+      "https://map.naver.com/p/search/%EB%8C%80%EC%B9%98%EC%9C%84%EB%8D%94%EC%8A%A4%20S%EA%B4%80?c=15.00,127.0656600,37.4988200,0,0,dh",
+    mapQuery: "서울특별시 강남구 대치동 929-11 대치위더스 S관",
+    coordinates: { lat: 37.49882, lng: 127.06566 },
   },
   {
     id: "admissions",
@@ -55,17 +55,15 @@ export const LOCATION_CAMPUSES: readonly LocationCampus[] = [
     phone: { display: "02-562-5759", tel: "02-562-5759" },
     naverMapUrl:
       "https://map.naver.com/p/entry/place/1883947519?placePath=/home?entry=pll&from=map&fromPanelNum=1&additionalHeight=76&timestamp=202605170237&locale=ko&svcName=map_pcv5&searchType=place&lng=127.0583849&lat=37.4986565&c=15.00,0,0,0,dh",
-    naverPlaceId: "1883947519",
+    mapQuery: "서울특별시 강남구 도곡로77길 5 유성빌딩 대치위더스 입시관",
     coordinates: { lat: 37.4986565, lng: 127.0583849 },
   },
 ] as const;
 
-/** 네이버 지도 「퍼가기」용 iframe URL (v5/embed 는 /p/embed 로 리다이렉트됨) */
-export function naverMapEmbedSrc(campus: Pick<LocationCampus, "naverPlaceId" | "coordinates">): string {
-  const { naverPlaceId, coordinates } = campus;
-  const params = new URLSearchParams({
-    lng: String(coordinates.lng),
-    lat: String(coordinates.lat),
-  });
-  return `https://map.naver.com/p/embed/place/${naverPlaceId}?${params}`;
+/** Google Maps iframe 임베드 — 관별 주소·이름으로 검색 */
+export function googleMapEmbedSrc(
+  campus: Pick<LocationCampus, "mapQuery">,
+): string {
+  const q = encodeURIComponent(campus.mapQuery);
+  return `https://maps.google.com/maps?q=${q}&hl=ko&z=17&output=embed`;
 }

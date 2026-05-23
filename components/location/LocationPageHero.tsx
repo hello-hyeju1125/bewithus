@@ -9,7 +9,7 @@ type LocationPageHeroProps = {
 
 export default function LocationPageHero({
   title = "대치위더스 위치 안내",
-  description = "대치동 학원가 중심에 위치한 대치위더스로 오시는 길을 안내합니다.",
+  description = "대치동 중심에 위치한 대치위더스로 오시는 길을 안내합니다.",
 }: LocationPageHeroProps) {
   return (
     <SubPageHero
@@ -17,6 +17,7 @@ export default function LocationPageHero({
       eyebrow="Location"
       icon={MapPin}
       title={title}
+      mobileTitle="위더스 위치 안내"
       description={description}
     />
   );

@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   LogOut,
   Megaphone,
+  MessageSquare,
   Newspaper,
   type LucideIcon,
 } from "lucide-react";
@@ -29,6 +30,7 @@ const ADMIN_NAV: readonly AdminNavItem[] = [
   { href: "/admin/teachers", label: "강사진", icon: GraduationCap },
   { href: "/admin/info-session", label: "설명회", icon: Megaphone },
   { href: "/admin/notice", label: "공지사항", icon: Newspaper },
+  { href: "/admin/consultations", label: "입학 상담", icon: MessageSquare },
 ];
 
 /**

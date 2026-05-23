@@ -3,8 +3,8 @@
 import { useCallback, useState } from "react";
 
 import {
+  googleMapEmbedSrc,
   LOCATION_CAMPUSES,
-  naverMapEmbedSrc,
   type LocationCampus,
 } from "@/content/location";
 
@@ -97,10 +97,11 @@ export default function LocationCampusMap() {
       <div className="min-h-[360px] overflow-hidden rounded-hero border border-neutral-200 bg-neutral-100 sm:min-h-[480px] lg:min-h-[640px]">
         <iframe
           key={active.id}
-          title={`${active.name} 네이버 지도`}
-          src={naverMapEmbedSrc(active)}
+          title={`${active.name} 지도`}
+          src={googleMapEmbedSrc(active)}
           className="h-full min-h-[360px] w-full border-0 sm:min-h-[480px] lg:min-h-[640px]"
           loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
           allowFullScreen
         />
       </div>

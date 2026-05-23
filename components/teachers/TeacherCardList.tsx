@@ -23,7 +23,8 @@ function formatTeacherName(name: string): string {
 }
 
 /**
- * 강사 카드 그리드 — 과목 필터 칩, 가나다순 단일 그리드, 호버 시 소개(bio) 오버레이.
+ * 강사 카드 그리드 — 과목 필터 칩, 가나다순.
+ * 모바일: 1열 가로 카드(사진 + 프로필 항상 노출). md+: 그리드 + 호버 시 bio 오버레이.
  */
 export default function TeacherCardList({ teachers }: TeacherCardListProps) {
   const subjects = useMemo(() => {
@@ -71,7 +72,7 @@ export default function TeacherCardList({ teachers }: TeacherCardListProps) {
           선택한 과목에 등록된 강사가 없습니다.
         </p>
       ) : (
-        <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 lg:gap-5">
+        <ul className="grid grid-cols-1 gap-4 md:grid-cols-4 lg:grid-cols-5 lg:gap-5">
           {visibleTeachers.map((t) => (
             <TeacherCard key={t.id} teacher={t} />
           ))}
@@ -81,39 +82,84 @@ export default function TeacherCardList({ teachers }: TeacherCardListProps) {
   );
 }
 
-function TeacherCard({ teacher: t }: { teacher: Teacher }) {
+function TeacherCardMobile({ teacher: t }: { teacher: Teacher }) {
   const displayName = formatTeacherName(t.name);
   const bio = t.bio?.trim() ?? "";
 
   return (
-    <li>
-      <article
-        tabIndex={0}
-        className={cn(
-          "group flex aspect-[4/5] flex-col overflow-hidden rounded-card border border-neutral-200 bg-white outline-none transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_10px_20px_-10px_rgba(42,145,133,0.25)] focus-visible:ring-2",
-          sectionBodyClass.teacher.hoverBorder,
-          sectionBodyClass.teacher.focusRing,
+    <article
+      className="flex gap-4 rounded-card border border-neutral-200 bg-white p-4 md:hidden"
+      aria-label={`${t.subject} ${displayName}`}
+    >
+      <div className="relative h-[132px] w-[100px] shrink-0 overflow-hidden rounded-button bg-neutral-100">
+        {t.photo_url ? (
+          <Image
+            src={t.photo_url}
+            alt=""
+            fill
+            sizes="100px"
+            className="object-contain object-top"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            <User
+              className={cn("h-10 w-10", sectionBodyClass.teacher.text)}
+              strokeWidth={1.25}
+              aria-hidden="true"
+            />
+          </div>
         )}
-        aria-label={`${t.subject} ${displayName}`}
-      >
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <p className="text-[13px] font-black tracking-tight text-primary">
+          {t.subject}
+        </p>
+        <h3 className="mt-0.5 text-[18px] font-black tracking-tight text-primary">
+          {displayName}
+        </h3>
+        <p className="mt-2.5 whitespace-pre-line text-[14px] font-normal leading-[1.85] text-neutral-800">
+          {bio || "소개가 준비 중입니다."}
+        </p>
+      </div>
+    </article>
+  );
+}
+
+function TeacherCardDesktop({ teacher: t }: { teacher: Teacher }) {
+  const displayName = formatTeacherName(t.name);
+  const bio = t.bio?.trim() ?? "";
+
+  return (
+    <article
+      tabIndex={0}
+      className={cn(
+        "group hidden aspect-[4/5] flex-col overflow-hidden rounded-card border border-neutral-200 bg-white outline-none transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_10px_20px_-10px_rgba(42,145,133,0.25)] focus-visible:ring-2 md:flex",
+        sectionBodyClass.teacher.hoverBorder,
+        sectionBodyClass.teacher.focusRing,
+      )}
+      aria-label={`${t.subject} ${displayName}`}
+    >
         <div className="shrink-0 border-b border-neutral-200 bg-white px-2 py-3 sm:py-3.5">
           <p className="text-center text-[17px] font-black tracking-tight text-primary sm:text-[19px]">
             {t.subject}
           </p>
         </div>
 
-        <div className="relative min-h-0 flex-1 bg-neutral-100 transition-colors duration-200 group-hover:bg-primary group-focus-within:bg-primary">
-          <div className="relative h-full min-h-[140px] overflow-hidden transition-opacity duration-200 group-hover:opacity-0 group-focus-within:opacity-0">
+        <div className="relative min-h-0 w-full flex-1 bg-neutral-100 transition-colors duration-200 group-hover:bg-primary group-focus-within:bg-primary">
+          <div className="absolute inset-3 transition-opacity duration-200 group-hover:opacity-0 group-focus-within:opacity-0 sm:inset-4">
             {t.photo_url ? (
-              <Image
-                src={t.photo_url}
-                alt=""
-                fill
-                sizes="(min-width: 1024px) 20vw, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw"
-                className="object-contain object-center p-2 pt-3 sm:p-2.5 sm:pt-3.5"
-              />
+              <div className="relative h-full w-full">
+                <Image
+                  src={t.photo_url}
+                  alt=""
+                  fill
+                  sizes="(min-width: 1024px) 20vw, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw"
+                  className="object-contain object-top"
+                />
+              </div>
             ) : (
-              <div className="flex h-full min-h-[140px] w-full items-center justify-center">
+              <div className="flex h-full w-full items-center justify-center">
                 <User
                   className={cn(
                     "h-12 w-12 sm:h-14 sm:w-14",
@@ -144,6 +190,14 @@ function TeacherCard({ teacher: t }: { teacher: Teacher }) {
           </h3>
         </div>
       </article>
+  );
+}
+
+function TeacherCard({ teacher }: { teacher: Teacher }) {
+  return (
+    <li>
+      <TeacherCardMobile teacher={teacher} />
+      <TeacherCardDesktop teacher={teacher} />
     </li>
   );
 }

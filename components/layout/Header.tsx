@@ -11,6 +11,7 @@ import {
   useState,
 } from "react";
 import { Menu, X } from "lucide-react";
+import ConsultationTrigger from "@/components/consultation/ConsultationTrigger";
 import { ko } from "@/content/ko";
 import { headerBarTopClass } from "@/lib/layout/spacing";
 import { cn } from "@/lib/utils";
@@ -18,13 +19,13 @@ import { cn } from "@/lib/utils";
 const SCROLL_THRESHOLD = 80;
 
 /** 상단 메뉴·세부 메뉴 열 사이 간격 (값을 키울수록 메뉴 간 여백이 넓어짐) */
-const NAV_COLUMN_GAP = "min-w-0 flex-[0.26]";
+const NAV_COLUMN_GAP = "min-w-0 flex-[0.22]";
 
 const logoMarkClassName =
-  "flex h-11 w-11 shrink-0 items-center justify-center rounded-button bg-primary p-0.5 font-bold leading-none text-accent text-[22px] lg:h-12 lg:w-12 lg:p-1 lg:text-[24px]";
+  "flex h-9 w-9 shrink-0 items-center justify-center rounded-button bg-primary p-0.5 text-[22px] font-bold leading-none text-accent lg:h-11 lg:w-11 lg:p-1";
 
 const ctaBaseClass =
-  "shrink-0 rounded-button bg-accent-500 font-bold leading-tight text-primary outline-none transition-colors duration-200 hover:bg-accent-400 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-white";
+  "shrink-0 rounded-button bg-accent-500 font-bold leading-tight text-primary outline-none transition-colors duration-200 hover:bg-primary hover:text-accent-500 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-white";
 
 export default function Header() {
   const pathname = usePathname();
@@ -110,20 +111,21 @@ export default function Header() {
         >
           <div
             className={cn(
-              "mx-auto max-w-[1400px] grid-cols-[1fr_auto] px-5 sm:px-8 lg:grid lg:grid-cols-[45fr_55fr_100px] lg:items-start lg:gap-8 lg:px-10",
+              "mx-auto flex h-12 max-w-[1400px] items-center justify-between gap-3 px-5 sm:px-8",
+              "lg:grid lg:h-auto lg:grid-cols-[45fr_55fr_100px] lg:items-start lg:gap-8 lg:px-10",
             )}
           >
-            <div className="flex h-[72px] items-center">
+            <div className="flex min-w-0 items-center lg:h-[72px]">
               <Link
                 href="/"
                 aria-label={ko.brand.fullAria}
                 onClick={closeAllMenus}
-                className="group/logo inline-flex w-fit items-center gap-2.5 rounded-button outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                className="group/logo inline-flex w-fit max-w-full items-center gap-2.5 rounded-button outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-white"
               >
                 <span aria-hidden="true" className={logoMarkClassName}>
                   {ko.brand.mark}
                 </span>
-                <span className="font-logo text-[20px] font-bold tracking-[-0.03em] text-primary lg:text-[26px]">
+                <span className="truncate font-logo text-[20px] font-bold leading-none tracking-[-0.03em] text-primary lg:text-[26px]">
                   {ko.brand.short}
                 </span>
               </Link>
@@ -198,17 +200,15 @@ export default function Header() {
               </div>
             </nav>
 
-            <div className="flex h-[72px] items-center justify-end gap-2 lg:justify-center">
-              <Link
-                href={ko.nav.cta.href}
-                onClick={closeAllMenus}
+            <div className="flex shrink-0 items-center justify-end gap-2 lg:h-[72px] lg:justify-center">
+              <ConsultationTrigger
                 className={cn(
                   ctaBaseClass,
                   "hidden px-3 py-2.5 text-[14px] lg:inline-flex lg:w-full lg:items-center lg:justify-center lg:px-2 lg:text-[13px]",
                 )}
               >
                 {ko.nav.cta.label}
-              </Link>
+              </ConsultationTrigger>
 
               <button
                 ref={hamburgerRef}
@@ -217,7 +217,7 @@ export default function Header() {
                 aria-label={ko.nav.a11y.openMenu}
                 aria-expanded={menuOpen}
                 aria-controls="mobile-nav-drawer"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-button text-primary outline-none transition-colors hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-primary lg:hidden"
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-button text-primary outline-none transition-colors hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-primary lg:hidden"
               >
                 <Menu className="h-6 w-6" aria-hidden="true" />
               </button>
@@ -246,16 +246,16 @@ export default function Header() {
           role="dialog"
           aria-modal="true"
           aria-label={ko.nav.a11y.mobileDialogLabel}
-          className={`relative h-full w-[300px] max-w-[82%] bg-white shadow-2xl transition-transform duration-300 ease-out ${
-            menuOpen ? "translate-x-0" : "-translate-x-full"
+          className={`relative ml-auto flex h-full w-[300px] max-w-[82%] flex-col bg-white shadow-2xl transition-transform duration-300 ease-out ${
+            menuOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
-          <div className="flex h-[72px] items-center justify-between border-b border-neutral-100 px-5">
-            <span className="flex items-center gap-2.5">
+          <div className="flex h-16 shrink-0 items-center justify-between border-b border-neutral-100 px-4">
+            <span className="flex items-center gap-2">
               <span aria-hidden="true" className={logoMarkClassName}>
                 {ko.brand.mark}
               </span>
-              <span className="font-logo text-[18px] font-bold tracking-[-0.03em] text-primary">
+              <span className="font-logo text-[17px] font-bold tracking-[-0.03em] text-primary">
                 {ko.brand.short}
               </span>
             </span>
@@ -265,14 +265,14 @@ export default function Header() {
               onClick={() => setMenuOpen(false)}
               tabIndex={menuOpen ? 0 : -1}
               aria-label={ko.nav.a11y.closeMenu}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-button text-primary outline-none transition-colors hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-primary"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-button text-primary outline-none transition-colors hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-primary"
             >
-              <X className="h-6 w-6" aria-hidden="true" />
+              <X className="h-5 w-5" aria-hidden="true" />
             </button>
           </div>
 
           <nav
-            className="px-3 py-4"
+            className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3"
             aria-label={ko.nav.a11y.mobileDialogLabel}
           >
             <ul className="flex flex-col">
@@ -282,19 +282,19 @@ export default function Header() {
                     href={item.href}
                     onClick={closeAllMenus}
                     tabIndex={menuOpen ? 0 : -1}
-                    className="block rounded-button px-4 py-3.5 text-[16px] font-medium text-neutral-800 outline-none transition-colors hover:bg-neutral-50 hover:text-primary focus-visible:text-primary focus-visible:ring-2 focus-visible:ring-primary"
+                    className="block rounded-button px-3.5 py-2.5 text-[15px] font-semibold leading-snug text-neutral-800 outline-none transition-colors hover:bg-neutral-50 hover:text-primary focus-visible:text-primary focus-visible:ring-2 focus-visible:ring-primary"
                   >
                     {item.label}
                   </Link>
                   {"children" in item && item.children.length > 0 ? (
-                    <ul className="mt-1 space-y-1 pb-2 pl-4">
+                    <ul className="space-y-0.5 pb-1 pl-3.5">
                       {item.children.map((child) => (
                         <li key={child.href}>
                           <Link
                             href={child.href}
                             onClick={closeAllMenus}
                             tabIndex={menuOpen ? 0 : -1}
-                            className="block rounded-button px-4 py-2 text-[14px] text-neutral-600 outline-none transition-colors hover:bg-neutral-50 hover:text-primary focus-visible:text-primary focus-visible:ring-2 focus-visible:ring-primary"
+                            className="block rounded-button px-3.5 py-1.5 text-[14px] leading-snug text-neutral-600 outline-none transition-colors hover:bg-neutral-50 hover:text-primary focus-visible:text-primary focus-visible:ring-2 focus-visible:ring-primary"
                           >
                             {child.label}
                           </Link>

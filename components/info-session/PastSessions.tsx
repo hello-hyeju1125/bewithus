@@ -63,12 +63,14 @@ export default function PastSessions({ sessions }: PastSessionsProps) {
                 key={s.id}
                 className="rounded-card border border-neutral-200 bg-white p-5"
               >
-                <p className="text-[13px] font-semibold text-neutral-500">
-                  {formatDateTime(s.session_date)}
-                </p>
-                <h3 className="mt-1 whitespace-pre-line text-[18px] font-bold text-primary">
-                  {s.title}
-                </h3>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                  <h3 className="min-w-0 flex-1 whitespace-pre-line text-left text-[18px] font-bold leading-snug text-primary">
+                    {s.title}
+                  </h3>
+                  <p className="shrink-0 text-[13px] font-semibold text-neutral-500 sm:text-right">
+                    {formatDateTime(s.session_date)}
+                  </p>
+                </div>
                 <InfoSessionDescription
                   session={s}
                   className="mt-2 text-[14px] sm:text-[14px]"

@@ -8,8 +8,8 @@ type FacilityPageHeroProps = {
 };
 
 export default function FacilityPageHero({
-  title = "대치위더스의 학습 공간",
-  description = "집중을 위한 최적의 환경을 카테고리별로 안내해 드립니다.",
+  title = "학습 공간",
+  description = "집중을 위한 최적의 환경을 안내해 드립니다.",
 }: FacilityPageHeroProps) {
   return (
     <SubPageHero
