@@ -2,12 +2,10 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { BellRing, MessageSquare, Presentation } from "lucide-react";
+import SideWidgetActions from "@/components/layout/SideWidgetActions";
 import SideWidgetPhoneName from "@/components/layout/SideWidgetPhoneName";
-import WidgetActionLink from "@/components/layout/WidgetActionLink";
 import { ko } from "@/content/ko";
 import {
-  sideWidgetButtonAction,
   sideWidgetButtonPhone,
 } from "@/lib/layout/side-widget";
 import {
@@ -16,12 +14,6 @@ import {
   siteFloatingWidgetWidthClass,
 } from "@/lib/layout/spacing";
 import { cn } from "@/lib/utils";
-
-const ACTION_ICONS = {
-  message: MessageSquare,
-  bell: BellRing,
-  presentation: Presentation,
-} as const;
 
 const FOOTER_SELECTOR = "footer";
 
@@ -84,7 +76,7 @@ export default function FloatingSideWidget() {
 
   if (pathname === "/") return null;
 
-  const { a11y, actions, phones } = ko.sideWidget;
+  const { a11y, phones } = ko.sideWidget;
 
   return (
     <div
@@ -105,21 +97,7 @@ export default function FloatingSideWidget() {
             siteFloatingWidgetWidthClass,
           )}
         >
-          {actions.map((action) => {
-            const Icon = ACTION_ICONS[action.icon];
-            return (
-              <WidgetActionLink
-                key={action.label}
-                href={action.href}
-                className={sideWidgetButtonAction}
-              >
-                <Icon className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-                <span className="whitespace-pre-line text-[12px] font-bold leading-tight tracking-tight">
-                  {action.label}
-                </span>
-              </WidgetActionLink>
-            );
-          })}
+          <SideWidgetActions />
 
           <ul className="flex flex-col gap-2.5">
             {phones.map((phone) => (

@@ -17,6 +17,9 @@ export type School = (typeof SCHOOLS)[number];
 export const STAFF_SCHOOLS = ["daewon", "hanyoung", "general"] as const;
 export type StaffSchool = (typeof STAFF_SCHOOLS)[number];
 
+/** 사이드 위젯·GNB 등 설명회 기본 진입 경로 */
+export const DEFAULT_INFO_SESSION_PATH = "/info-session/daewon" as const;
+
 export const SCHOOL_LABELS: Record<School, string> = {
   daewon: "대원외고",
   hanyoung: "한영외고",

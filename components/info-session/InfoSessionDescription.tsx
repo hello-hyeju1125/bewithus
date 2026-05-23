@@ -1,4 +1,8 @@
-import { sanitizePostHtml } from "@/lib/html-sanitize";
+"use client";
+
+import { useEffect, useState } from "react";
+
+import { sanitizePostHtmlWithPurify, type DomPurifyLike } from "@/lib/html-sanitize";
 import { cn } from "@/lib/utils";
 import type { InfoSession } from "@/types/database";
 
@@ -18,24 +22,68 @@ type Props = {
   className?: string;
 };
 
+function PlainDescription({
+  text,
+  className,
+}: {
+  text: string;
+  className?: string;
+}) {
+  return (
+    <p className={cn("whitespace-pre-line", proseClass, className)}>{text}</p>
+  );
+}
+
 export default function InfoSessionDescription({ session, className }: Props) {
+  const [safeHtml, setSafeHtml] = useState<string | null>(null);
+
+  useEffect(() => {
+    const raw = session.description_html?.trim();
+    if (!raw) {
+      setSafeHtml(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    import("isomorphic-dompurify")
+      .then(({ default: DOMPurify }) => {
+        if (cancelled) return;
+        const sanitized = sanitizePostHtmlWithPurify(
+          DOMPurify as unknown as DomPurifyLike,
+          raw,
+        );
+        setSafeHtml(sanitized || null);
+      })
+      .catch((error) => {
+        console.error("[InfoSessionDescription]", error);
+        if (!cancelled) setSafeHtml(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session.description_html]);
+
   if (session.description_html?.trim()) {
-    const safeHtml = sanitizePostHtml(session.description_html);
-    if (!safeHtml) return null;
-    return (
-      <div
-        className={cn(proseClass, className)}
-        dangerouslySetInnerHTML={{ __html: safeHtml }}
-      />
-    );
+    if (safeHtml) {
+      return (
+        <div
+          className={cn(proseClass, className)}
+          dangerouslySetInnerHTML={{ __html: safeHtml }}
+        />
+      );
+    }
+
+    if (session.description?.trim()) {
+      return <PlainDescription text={session.description} className={className} />;
+    }
+
+    return null;
   }
 
   if (session.description?.trim()) {
-    return (
-      <p className={cn("whitespace-pre-line", proseClass, className)}>
-        {session.description}
-      </p>
-    );
+    return <PlainDescription text={session.description} className={className} />;
   }
 
   return null;

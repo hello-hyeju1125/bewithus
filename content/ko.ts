@@ -1,4 +1,7 @@
-import { SMS_REGISTRATION_FORM_URL } from "@/lib/constants";
+import {
+  DEFAULT_INFO_SESSION_PATH,
+  SMS_REGISTRATION_FORM_URL,
+} from "@/lib/constants";
 
 /**
  * W대치위더스 (bewithus) 한국어 카피 모음
@@ -73,7 +76,7 @@ export const ko = {
       },
       {
         label: "설명회\n등록 / 신청",
-        href: "/info-session/daewon",
+        href: DEFAULT_INFO_SESSION_PATH,
         icon: "presentation" as const,
       },
     ],
