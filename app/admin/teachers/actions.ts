@@ -3,7 +3,12 @@
 import { revalidatePath } from "next/cache";
 
 import { requireAdmin } from "@/lib/admin/auth";
-import { teacherFormSchema, teacherOrderUpdateSchema } from "@/lib/admin/schemas";
+import {
+  teacherFormSchema,
+  teacherOrderUpdateSchema,
+  teacherSubjectOrderUpdateSchema,
+} from "@/lib/admin/schemas";
+import { syncTeacherSubjectOrders } from "@/lib/teachers/sync-subject-orders";
 import {
   inferExtension,
   removeFromStorage,
@@ -100,6 +105,9 @@ export async function createTeacherAction(
     .maybeSingle();
   if (error) return { ok: false, error: error.message };
 
+  await syncTeacherSubjectOrders(admin, [values.subject]);
+
+  revalidatePath("/teachers");
   revalidatePath(`/teachers/${values.school}`);
   revalidatePath("/admin/teachers");
   return {
@@ -159,6 +167,12 @@ export async function updateTeacherAction(
     .eq("id", id);
   if (error) return { ok: false, error: error.message };
 
+  await syncTeacherSubjectOrders(admin, [values.subject]);
+  if (existing.subject !== values.subject) {
+    await syncTeacherSubjectOrders(admin, [existing.subject]);
+  }
+
+  revalidatePath("/teachers");
   revalidatePath(`/teachers/${values.school}`);
   if (existing.school !== values.school) {
     revalidatePath(`/teachers/${existing.school}`);
@@ -186,6 +200,7 @@ export async function deleteTeacherAction(id: string): Promise<ActionResult> {
     if (path) await removeFromStorage({ bucket: "teachers", paths: [path] });
   }
 
+  revalidatePath("/teachers");
   revalidatePath(`/teachers/${existing.school}`);
   revalidatePath("/admin/teachers");
   return { ok: true };
@@ -214,6 +229,40 @@ export async function updateTeacherOrderAction(
   }
 
   revalidatePath("/admin/teachers");
+  revalidatePath("/teachers");
+  revalidatePath("/teachers/daewon");
+  revalidatePath("/teachers/hanyoung");
+  revalidatePath("/teachers/general");
+  return { ok: true };
+}
+
+export async function updateTeacherSubjectOrderAction(
+  updates: { subject: string; order_index: number }[],
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+
+  const parsed = teacherSubjectOrderUpdateSchema.safeParse({ updates });
+  if (!parsed.success) {
+    return { ok: false, error: "과목 순서 데이터가 올바르지 않습니다." };
+  }
+
+  const admin = createAdminClient();
+  for (const u of parsed.data.updates) {
+    const { error } = await admin
+      .from("teacher_subject_orders")
+      .upsert(
+        { subject: u.subject, order_index: u.order_index } as never,
+        { onConflict: "subject" },
+      );
+    if (error) return { ok: false, error: error.message };
+  }
+
+  revalidatePath("/admin/teachers");
+  revalidatePath("/teachers");
   revalidatePath("/teachers/daewon");
   revalidatePath("/teachers/hanyoung");
   revalidatePath("/teachers/general");

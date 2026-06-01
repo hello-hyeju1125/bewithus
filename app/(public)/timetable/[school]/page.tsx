@@ -56,6 +56,7 @@ export default async function TimetablePage({
       pageKey={pageKey}
       hero={
         <TimetablePageHero
+          school={school}
           schoolLabel={SCHOOL_LABELS[school]}
           description={timetable?.description ?? SCHOOL_DESCRIPTIONS[school]}
         />
@@ -67,7 +68,7 @@ export default async function TimetablePage({
             aria-label="상세 시간표"
             className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} pb-10 pt-8 sm:pb-12 sm:pt-10 lg:pb-14 lg:pt-12`}
           >
-            <TimetableDetailTable courses={courses} />
+            <TimetableDetailTable school={school} courses={courses} />
           </section>
         ) : (
           <section

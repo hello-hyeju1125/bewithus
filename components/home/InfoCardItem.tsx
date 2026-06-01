@@ -2,8 +2,6 @@
 
 import {
   ArrowRight,
-  BellRing,
-  Info,
   MapPin,
   MessageCircle,
   type LucideIcon,
@@ -15,8 +13,8 @@ import WidgetActionLink from "@/components/layout/WidgetActionLink";
 type LinkCard = { title: string; href: string };
 type ConsultationCard = { title: string; openConsultation: true };
 
-/** 안내 카드 순서: 입학 상담 / 문자 수신 등록 / 오시는 길 / 학원 소개 */
-const INFO_ICONS: LucideIcon[] = [MessageCircle, BellRing, MapPin, Info];
+/** 안내 카드 순서: 입학 상담 / 오시는 길 */
+const INFO_ICONS: LucideIcon[] = [MessageCircle, MapPin];
 
 type InfoCardItemProps = {
   item: LinkCard | ConsultationCard;
@@ -27,7 +25,7 @@ const cardClassName =
   "group flex h-full min-h-[52px] w-full items-center justify-between gap-2 rounded-card border border-neutral-200 bg-white px-4 py-2 text-primary outline-none transition-all duration-200 ease-out hover:-translate-y-1 hover:border-primary hover:bg-primary hover:text-white hover:shadow-[0_10px_20px_-8px_rgba(34,41,93,0.22)] focus-visible:ring-2 focus-visible:ring-primary sm:min-h-[80px] sm:gap-3 sm:px-5 sm:py-4";
 
 export default function InfoCardItem({ item, iconIndex }: InfoCardItemProps) {
-  const Icon = INFO_ICONS[iconIndex] ?? Info;
+  const Icon = INFO_ICONS[iconIndex] ?? MessageCircle;
   const inner = (
     <>
       <div className="flex min-w-0 items-center gap-3">

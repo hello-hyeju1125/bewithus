@@ -1,15 +1,22 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ko } from "@/content/ko";
+import type { PublicHeroSlide } from "@/lib/home/hero-slides";
 
 const AUTOPLAY_DELAY_MS = 5000;
 
-export default function HeroSlider() {
+type HeroSliderProps = {
+  slides: PublicHeroSlide[];
+  ctaLabel: string;
+};
+
+export default function HeroSlider({ slides, ctaLabel }: HeroSliderProps) {
   const autoplay = useRef(
     Autoplay({
       delay: AUTOPLAY_DELAY_MS,
@@ -19,7 +26,7 @@ export default function HeroSlider() {
   );
 
   const [emblaRef, emblaApi] = useEmblaCarousel(
-    { loop: true, align: "start" },
+    { loop: slides.length > 1, align: "start" },
     [autoplay.current],
   );
 
@@ -60,8 +67,9 @@ export default function HeroSlider() {
     [emblaApi],
   );
 
-  const slides = ko.home.hero.slides;
   const total = slides.length;
+
+  if (total === 0) return null;
 
   return (
     <section
@@ -75,21 +83,40 @@ export default function HeroSlider() {
         <div className="flex h-full">
           {slides.map((slide, idx) => (
             <div
-              key={slide.href}
+              key={slide.slot}
               role="group"
               aria-roledescription="slide"
               aria-label={`${idx + 1} / ${total}`}
               aria-hidden={selectedIndex !== idx}
               className="relative h-full min-w-0 flex-[0_0_100%]"
             >
+              {slide.backgroundImageUrl ? (
+                <>
+                  <Image
+                    src={slide.backgroundImageUrl}
+                    alt=""
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 45vw"
+                    priority={idx === 0}
+                  />
+                  <div
+                    className="absolute inset-0 bg-primary/55"
+                    aria-hidden="true"
+                  />
+                </>
+              ) : (
+                <div className="absolute inset-0 bg-primary" aria-hidden="true" />
+              )}
+
               <Link
                 href={slide.href}
                 tabIndex={selectedIndex === idx ? 0 : -1}
-                aria-label={`${slide.mainHeadline.replace(/\n/g, " ")} — ${ko.home.hero.ctaLabel}`}
-                className="flex h-full flex-col items-center justify-start px-7 pb-10 pt-4 text-center outline-none transition-opacity duration-200 hover:opacity-[0.98] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-500 sm:px-10 sm:pb-28 sm:pt-14 lg:px-12 lg:pb-32 lg:pt-[4.5rem]"
+                aria-label={`${slide.mainHeadline.replace(/\n/g, " ")} — ${ctaLabel}`}
+                className="relative z-10 flex h-full flex-col items-center justify-start px-7 pb-10 pt-4 text-center outline-none transition-opacity duration-200 hover:opacity-[0.98] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-500 sm:px-10 sm:pb-28 sm:pt-14 lg:px-12 lg:pb-32 lg:pt-[4.5rem]"
               >
                 <p className="mb-2 inline-flex max-w-full rounded-leaf bg-accent-500 px-2 py-0.5 text-[17px] font-black leading-tight tracking-tight text-primary sm:mb-6 sm:px-3 sm:py-0.5 sm:text-[24px] lg:mb-7 lg:px-3.5 lg:py-1 lg:text-[28px]">
-                  {slide.tagline ?? ko.home.hero.tagline}
+                  {slide.tagline}
                 </p>
                 <h2 className="whitespace-pre-line text-[38px] font-black leading-[1.05] tracking-tight text-white sm:text-[60px] lg:text-[80px]">
                   {slide.mainHeadline}
@@ -106,7 +133,7 @@ export default function HeroSlider() {
                       : "mt-2.5 sm:mt-6 lg:mt-7"
                   }`}
                 >
-                  {ko.home.hero.ctaLabel}
+                  {ctaLabel}
                   <ArrowRight
                     className="h-6 w-6 shrink-0 transition-transform duration-200 group-hover:translate-x-1 sm:h-10 sm:w-10 lg:h-12 lg:w-12"
                     aria-hidden="true"
@@ -118,27 +145,29 @@ export default function HeroSlider() {
         </div>
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-2.5 z-10 flex justify-center sm:bottom-10 lg:bottom-12">
-        <div className="pointer-events-auto flex items-center gap-3">
-          {slides.map((_, idx) => {
-            const isActive = idx === selectedIndex;
-            return (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => scrollTo(idx)}
-                aria-label={ko.home.hero.a11y.goTo(idx + 1, total)}
-                aria-current={isActive ? "true" : undefined}
-                className={`rounded-full outline-none transition-all duration-300 ease-out focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 focus-visible:ring-offset-primary ${
-                  isActive
-                    ? "h-1.5 w-12 bg-accent-500 sm:h-2 sm:w-16 lg:w-20"
-                    : "h-1.5 w-5 bg-white/35 hover:bg-white/55 sm:h-2 sm:w-6 lg:w-8"
-                }`}
-              />
-            );
-          })}
+      {total > 1 ? (
+        <div className="pointer-events-none absolute inset-x-0 bottom-2.5 z-20 flex justify-center sm:bottom-10 lg:bottom-12">
+          <div className="pointer-events-auto flex items-center gap-3">
+            {slides.map((_, idx) => {
+              const isActive = idx === selectedIndex;
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => scrollTo(idx)}
+                  aria-label={ko.home.hero.a11y.goTo(idx + 1, total)}
+                  aria-current={isActive ? "true" : undefined}
+                  className={`rounded-full outline-none transition-all duration-300 ease-out focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 focus-visible:ring-offset-primary ${
+                    isActive
+                      ? "h-1.5 w-12 bg-accent-500 sm:h-2 sm:w-16 lg:w-20"
+                      : "h-1.5 w-5 bg-white/35 hover:bg-white/55 sm:h-2 sm:w-6 lg:w-8"
+                  }`}
+                />
+              );
+            })}
+          </div>
         </div>
-      </div>
+      ) : null}
     </section>
   );
 }

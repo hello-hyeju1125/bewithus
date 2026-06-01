@@ -3,12 +3,19 @@ import {
   ArrowRight,
   CalendarRange,
   GraduationCap,
+  ImageIcon,
   Megaphone,
   MessageSquare,
   Newspaper,
 } from "lucide-react";
 
 const SECTIONS = [
+  {
+    href: "/admin/home-banners",
+    label: "메인 배너",
+    description: "메인 히어로 슬라이더 2개의 배경·문구와 하단 CTA 문구를 수정합니다.",
+    icon: ImageIcon,
+  },
   {
     href: "/admin/timetable",
     label: "시간표 관리",

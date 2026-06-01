@@ -12,7 +12,7 @@ import {
   siteContainerClass,
   siteFloatingWidgetSafeClass,
 } from "@/lib/layout/spacing";
-import { listTeachers } from "@/lib/supabase/queries";
+import { listTeacherSubjectOrder, listTeachers } from "@/lib/supabase/queries";
 
 type TeachersPageProps = {
   params: { school: string };
@@ -30,7 +30,10 @@ export default async function TeachersPage({ params }: TeachersPageProps) {
   if (!isStaffSchool(params.school)) notFound();
   const school = params.school;
 
-  const teachers = await listTeachers(school);
+  const [teachers, subjectOrder] = await Promise.all([
+    listTeachers(school),
+    listTeacherSubjectOrder(),
+  ]);
 
   return (
     <StaggeredPageShell
@@ -46,7 +49,7 @@ export default async function TeachersPage({ params }: TeachersPageProps) {
           aria-label="강사 카드 그리드"
           className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} py-10 sm:py-12 lg:py-14`}
         >
-          <TeacherCardList teachers={teachers} />
+          <TeacherCardList teachers={teachers} subjectOrder={subjectOrder} />
         </section>
       }
     />
