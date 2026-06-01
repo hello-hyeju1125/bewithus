@@ -74,6 +74,15 @@ export const teacherOrderUpdateSchema = z.object({
   ),
 });
 
+export const teacherSubjectOrderUpdateSchema = z.object({
+  updates: z.array(
+    z.object({
+      subject: z.string().min(1),
+      order_index: z.number().int().min(0),
+    }),
+  ),
+});
+
 const courseSessionSchema = z.object({
   day_time: z.string().min(1, "시간을 입력하세요.").max(120),
   is_full: z.boolean().optional(),
@@ -116,4 +125,33 @@ export const timetableCourseFormSchema = z
 
 export type TimetableCourseFormValues = z.infer<
   typeof timetableCourseFormSchema
+>;
+
+export const homeHeroSlideFormSchema = z.object({
+  tagline: z.string().min(1, "상단 라벨을 입력하세요.").max(80),
+  main_headline: z
+    .string()
+    .min(1, "메인 제목을 입력하세요.")
+    .max(120),
+  subtitle: z.string().max(80).optional().or(z.literal("")),
+  href: z
+    .string()
+    .min(1, "링크 경로를 입력하세요.")
+    .max(200)
+    .refine((v) => v.startsWith("/"), {
+      message: "내부 링크는 / 로 시작해야 합니다.",
+    }),
+  background_image_url: z.string().optional().or(z.literal("")),
+  is_active: z.boolean(),
+});
+
+export type HomeHeroSlideFormValues = z.infer<typeof homeHeroSlideFormSchema>;
+
+export const homeHeroSettingsFormSchema = z.object({
+  cta_label: z.string().min(1, "CTA 문구를 입력하세요.").max(40),
+  popup_enabled: z.boolean(),
+});
+
+export type HomeHeroSettingsFormValues = z.infer<
+  typeof homeHeroSettingsFormSchema
 >;

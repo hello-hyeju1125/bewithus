@@ -25,8 +25,8 @@ export const sectionBodyClass = {
     hoverBorder: "hover:border-primary",
   },
   teacher: {
-    focusRing: "focus-visible:ring-teacher",
-    hoverBorder: "hover:border-teacher",
+    focusRing: "focus-visible:ring-primary",
+    hoverBorder: "hover:border-primary",
     surface: "bg-teacher-50 text-teacher",
     text: "text-teacher",
     textBold: "font-bold text-teacher",

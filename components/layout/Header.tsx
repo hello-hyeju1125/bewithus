@@ -12,6 +12,7 @@ import {
 } from "react";
 import { Menu, X } from "lucide-react";
 import ConsultationTrigger from "@/components/consultation/ConsultationTrigger";
+import SiteLogo from "@/components/layout/SiteLogo";
 import { ko } from "@/content/ko";
 import { headerBarTopClass } from "@/lib/layout/spacing";
 import { cn } from "@/lib/utils";
@@ -20,9 +21,6 @@ const SCROLL_THRESHOLD = 80;
 
 /** 상단 메뉴·세부 메뉴 열 사이 간격 (값을 키울수록 메뉴 간 여백이 넓어짐) */
 const NAV_COLUMN_GAP = "min-w-0 flex-[0.22]";
-
-const logoMarkClassName =
-  "flex h-9 w-9 shrink-0 items-center justify-center rounded-button bg-primary p-0.5 text-[22px] font-bold leading-none text-accent lg:h-11 lg:w-11 lg:p-1";
 
 const ctaBaseClass =
   "shrink-0 rounded-button bg-accent-500 font-bold leading-tight text-primary outline-none transition-colors duration-200 hover:bg-primary hover:text-accent-500 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-white";
@@ -120,14 +118,9 @@ export default function Header() {
                 href="/"
                 aria-label={ko.brand.fullAria}
                 onClick={closeAllMenus}
-                className="group/logo inline-flex w-fit max-w-full items-center gap-2.5 rounded-button outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                className="group/logo inline-flex w-fit max-w-full shrink-0 rounded-button outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-white"
               >
-                <span aria-hidden="true" className={logoMarkClassName}>
-                  {ko.brand.mark}
-                </span>
-                <span className="truncate font-logo text-[20px] font-bold leading-none tracking-[-0.03em] text-primary lg:text-[26px]">
-                  {ko.brand.short}
-                </span>
+                <SiteLogo priority />
               </Link>
             </div>
 
@@ -251,14 +244,7 @@ export default function Header() {
           }`}
         >
           <div className="flex h-16 shrink-0 items-center justify-between border-b border-neutral-100 px-4">
-            <span className="flex items-center gap-2">
-              <span aria-hidden="true" className={logoMarkClassName}>
-                {ko.brand.mark}
-              </span>
-              <span className="font-logo text-[17px] font-bold tracking-[-0.03em] text-primary">
-                {ko.brand.short}
-              </span>
-            </span>
+            <SiteLogo />
             <button
               ref={closeRef}
               type="button"

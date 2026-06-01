@@ -8,6 +8,7 @@ import {
   VIEW_TYPES,
   TIMETABLE_VIEW_TYPE_LABELS,
 } from "@/lib/constants";
+import { getTimetableSchoolTheme } from "@/lib/layout/timetable-school-theme";
 import { siteContainerClass } from "@/lib/layout/spacing";
 
 type GradeViewToggleProps = {
@@ -25,28 +26,14 @@ function buildHref(
   return `/timetable/${school}?${params.toString()}`;
 }
 
-/** 학년 선택 — 활성: 옐로우 / 비활성: 흰 배경 */
-const gradeLinkClass = (isActive: boolean) =>
-  `inline-flex min-w-[80px] items-center justify-center rounded-full border-[3px] px-4 py-2.5 text-[16px] font-black transition-colors duration-150 sm:min-w-[120px] sm:px-9 sm:py-4 sm:text-[19px] ${
-    isActive
-      ? "border-primary bg-accent-500 text-primary"
-      : "border-neutral-200 bg-white text-neutral-700 hover:border-primary hover:text-primary"
-  }`;
+const gradeLinkBase =
+  "inline-flex min-w-[80px] items-center justify-center rounded-full border-[3px] px-4 py-2.5 text-[16px] font-black transition-colors duration-150 sm:min-w-[120px] sm:px-9 sm:py-4 sm:text-[19px]";
 
-/** 보기 형식 — 활성: 네이비 / 비활성: 투명 테두리 (학년과 동일 rounded-full) */
-const viewLinkClass = (isActive: boolean) =>
-  `relative z-10 flex min-w-0 flex-1 items-center justify-center rounded-full border-[3px] px-2 py-2.5 text-center text-[14px] font-black transition-colors duration-150 sm:px-3 sm:py-3 sm:text-[16px] ${
-    isActive
-      ? "border-primary bg-primary text-white"
-      : "border-transparent text-neutral-600 hover:text-primary"
-  }`;
+const viewLinkBase =
+  "relative z-10 flex min-w-0 flex-1 items-center justify-center rounded-full border-[3px] px-2 py-2.5 text-center text-[14px] font-black transition-colors duration-150 sm:px-3 sm:py-3 sm:text-[16px]";
 
-const viewLinkClassStandalone = (isActive: boolean) =>
-  `relative z-10 inline-flex min-w-[124px] items-center justify-center rounded-full border-[3px] px-5 py-2.5 text-[16px] font-black transition-colors duration-150 sm:min-w-[132px] sm:text-[17px] ${
-    isActive
-      ? "border-primary bg-primary text-white"
-      : "border-transparent text-neutral-600 hover:text-primary"
-  }`;
+const viewLinkStandaloneBase =
+  "relative z-10 inline-flex min-w-[124px] items-center justify-center rounded-full border-[3px] px-5 py-2.5 text-[16px] font-black transition-colors duration-150 sm:min-w-[132px] sm:text-[17px]";
 
 /**
  * 시간표 페이지의 학년 + 뷰 토글 (서버 컴포넌트).
@@ -57,6 +44,7 @@ export default function GradeViewToggle({
   grade,
   view,
 }: GradeViewToggleProps) {
+  const theme = getTimetableSchoolTheme(school);
   const grades = SCHOOL_GRADES[school];
   const showGradeTabs = grades.length > 1;
 
@@ -76,11 +64,9 @@ export default function GradeViewToggle({
             role="tab"
             aria-selected={isActive}
             href={buildHref(school, grade, v)}
-            className={
-              showGradeTabs
-                ? viewLinkClass(isActive)
-                : viewLinkClassStandalone(isActive)
-            }
+            className={`${
+              showGradeTabs ? viewLinkBase : viewLinkStandaloneBase
+            } ${isActive ? theme.view.active : theme.view.inactive}`}
           >
             {TIMETABLE_VIEW_TYPE_LABELS[v]}
           </Link>
@@ -110,7 +96,9 @@ export default function GradeViewToggle({
                     <Link
                       href={buildHref(school, g, view)}
                       aria-current={isActive ? "page" : undefined}
-                      className={gradeLinkClass(isActive)}
+                      className={`${gradeLinkBase} ${
+                        isActive ? theme.grade.active : theme.grade.inactive
+                      }`}
                     >
                       {GRADE_LABELS[g] ?? g}
                     </Link>

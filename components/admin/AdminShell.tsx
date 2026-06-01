@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   CalendarRange,
   GraduationCap,
+  ImageIcon,
   LayoutDashboard,
   LogOut,
   Megaphone,
@@ -26,6 +27,7 @@ type AdminNavItem = {
 
 const ADMIN_NAV: readonly AdminNavItem[] = [
   { href: "/admin", label: "대시보드", icon: LayoutDashboard, exact: true },
+  { href: "/admin/home-banners", label: "메인 배너", icon: ImageIcon },
   { href: "/admin/timetable", label: "시간표", icon: CalendarRange },
   { href: "/admin/teachers", label: "강사진", icon: GraduationCap },
   { href: "/admin/info-session", label: "설명회", icon: Megaphone },

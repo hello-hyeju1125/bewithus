@@ -15,7 +15,7 @@ export const ko = {
   brand: {
     short: "대치위더스",
     mark: "W",
-    fullAria: "W대치위더스 홈으로 이동",
+    fullAria: "대치위더스 홈으로 이동",
   },
   nav: {
     primary: [
@@ -26,18 +26,14 @@ export const ko = {
         children: [
           { label: "대원외고", href: "/timetable/daewon" },
           { label: "한영외고", href: "/timetable/hanyoung" },
-          { label: "일반고", href: "/timetable/general" },
+          { label: "고등관", href: "/timetable/general" },
           { label: "개인 팀 수업", href: "/timetable/private" },
         ],
       },
       {
         label: "강사진",
-        href: "/teachers/daewon",
-        children: [
-          { label: "대원외고", href: "/teachers/daewon" },
-          { label: "한영외고", href: "/teachers/hanyoung" },
-          { label: "일반고", href: "/teachers/general" },
-        ],
+        href: "/teachers",
+        children: [{ label: "전체", href: "/teachers" }],
       },
       {
         label: "설명회",
@@ -119,32 +115,46 @@ export const ko = {
       items: [
         {
           title: "대원외고",
-          subtitle: "시간표 및 강사 소개",
+          subtitle: "시간표",
           href: "/timetable/daewon",
         },
         {
           title: "한영외고",
-          subtitle: "시간표 및 강사 소개",
+          subtitle: "시간표",
           href: "/timetable/hanyoung",
         },
         {
-          title: "입시관",
-          subtitle: "시간표 및 강사 소개",
+          title: "고등관",
+          subtitle: "시간표",
           href: "/timetable/general",
         },
         {
           title: "개인 및 팀 수업",
-          subtitle: "시간표 및 강사 소개",
+          subtitle: "시간표",
           href: "/timetable/private",
         },
+      ] as ReadonlyArray<{ title: string; subtitle?: string; href: string }>,
+      teachers: {
+        title: "강사 소개",
+        href: "/teachers",
+      },
+      info: [
         { title: "입학 상담", openConsultation: true as const },
-        { title: "문자 수신 등록", href: SMS_REGISTRATION_FORM_URL },
         { title: "오시는 길", href: "/location" },
-        { title: "학원 소개", href: "/facility" },
       ] as ReadonlyArray<
-        | { title: string; subtitle?: string; href: string }
+        | { title: string; href: string }
         | { title: string; openConsultation: true }
       >,
+    },
+  },
+  teachersPage: {
+    all: {
+      title: "강사진",
+      description:
+        "대원외고·한영외고·일반고 전문 강사진을 한곳에서 확인하실 수 있습니다.",
+      metaTitle: "강사진 | W대치위더스",
+      metaDescription:
+        "대원외고·한영외고·일반고 전문 강사진을 소개합니다.",
     },
   },
   consultation: {
@@ -171,9 +181,9 @@ export const ko = {
     quickLinks: {
       title: "빠른 메뉴",
       items: [
-        { label: "개인정보처리방침", href: "#" },
-        { label: "이용약관", href: "#" },
-        { label: "교습비", href: "#" },
+        { label: "개인정보처리방침", action: "privacy-policy" },
+        { label: "이용약관", action: "terms-of-service" },
+        { label: "교습비", action: "tuition" },
       ],
     },
     customerCenter: {

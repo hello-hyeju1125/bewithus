@@ -8,14 +8,19 @@ import { cn } from "@/lib/utils";
 
 type SubPageHeroProps = {
   ariaLabel: string;
-  eyebrow: string;
-  icon: LucideIcon;
+  /** 미지정 시 아이콘·영문 라벨(eyebrow) 행을 렌더하지 않음 */
+  eyebrow?: string;
+  icon?: LucideIcon;
   title: string;
   /** sm 미만 뷰포트용 짧은 제목 (미지정 시 title 사용) */
   mobileTitle?: string;
   description?: string;
-  /** Hero eyebrow·본문 액센트 구분 (배경은 항상 네이비) */
+  /** Hero eyebrow·본문 액센트 구분 (배경은 기본 네이비, surfaceClass 로 덮어쓸 수 있음) */
   section?: PublicSection;
+  /** 섹션 래퍼 (예: 대원외고 시간표 라이트 스카이블루 Hero) */
+  surfaceClass?: string;
+  titleClass?: string;
+  descriptionClass?: string;
 };
 
 export default function SubPageHero({
@@ -26,24 +31,37 @@ export default function SubPageHero({
   mobileTitle,
   description,
   section = "default",
+  surfaceClass,
+  titleClass,
+  descriptionClass,
 }: SubPageHeroProps) {
   return (
-    <section aria-label={ariaLabel} className="bg-primary text-white">
+    <section
+      aria-label={ariaLabel}
+      className={cn(surfaceClass ?? "bg-primary text-white")}
+    >
       <div className="mx-auto flex max-w-[1400px] flex-col items-center gap-5 px-5 pb-12 pt-[120px] text-center sm:gap-6 sm:px-8 sm:pb-14 sm:pt-[128px] lg:gap-7 lg:px-10 lg:pb-16 lg:pt-[136px]">
-        <p
+        {eyebrow && Icon ? (
+          <p
+            className={cn(
+              "inline-flex items-center gap-3 text-[18px] font-black leading-none tracking-tight sm:gap-3.5 sm:text-[20px] lg:text-[24px]",
+              sectionHeroEyebrowClass[section],
+            )}
+          >
+            <Icon
+              className="h-7 w-7 shrink-0 sm:h-8 sm:w-8 lg:h-9 lg:w-9"
+              strokeWidth={2.25}
+              aria-hidden="true"
+            />
+            {eyebrow}
+          </p>
+        ) : null}
+        <h1
           className={cn(
-            "inline-flex items-center gap-3 text-[18px] font-black leading-none tracking-tight sm:gap-3.5 sm:text-[20px] lg:text-[24px]",
-            sectionHeroEyebrowClass[section],
+            "max-w-4xl text-balance text-[42px] font-black leading-[1.08] tracking-tight sm:text-[52px] lg:text-[64px]",
+            titleClass ?? "text-white",
           )}
         >
-          <Icon
-            className="h-7 w-7 shrink-0 sm:h-8 sm:w-8 lg:h-9 lg:w-9"
-            strokeWidth={2.25}
-            aria-hidden="true"
-          />
-          {eyebrow}
-        </p>
-        <h1 className="max-w-4xl text-balance text-[42px] font-black leading-[1.08] tracking-tight text-white sm:text-[52px] lg:text-[64px]">
           {mobileTitle ? (
             <>
               <span className="sm:hidden">{mobileTitle}</span>
@@ -54,7 +72,12 @@ export default function SubPageHero({
           )}
         </h1>
         {description ? (
-          <p className="max-w-2xl text-[17px] leading-relaxed text-white/85 sm:text-[19px] lg:text-[22px]">
+          <p
+            className={cn(
+              "max-w-2xl text-[17px] leading-relaxed sm:text-[19px] lg:text-[22px]",
+              descriptionClass ?? "text-white/85",
+            )}
+          >
             {description}
           </p>
         ) : null}

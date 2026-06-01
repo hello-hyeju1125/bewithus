@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Phone } from "lucide-react";
+import FooterQuickLinks from "@/components/layout/FooterQuickLinks";
+import SiteLogo from "@/components/layout/SiteLogo";
 import { ko } from "@/content/ko";
 import { LOCATION_CAMPUSES } from "@/content/location";
 import {
@@ -8,45 +10,25 @@ import {
 } from "@/lib/layout/spacing";
 
 export default function Footer() {
-  const { brand, quickLinks, customerCenter, legal, a11y } = ko.footer;
+  const { customerCenter, legal, a11y } = ko.footer;
 
   return (
     <footer
       aria-label={a11y.label}
       className={`${siteGapBeforeFooterClass} bg-primary text-white`}
     >
-      {/* 빠른 메뉴 띠 — 라이트 블루 배경, 우측 정렬 */}
-      <div className="bg-primary-100">
-        <nav
-          aria-label={quickLinks.title}
-          className={siteContainerClass}
-        >
-          <ul className="flex min-h-[52px] flex-wrap items-center justify-end gap-x-5 gap-y-2 py-2 sm:gap-x-7">
-            {quickLinks.items.map((item) => (
-              <li key={item.label}>
-                <Link
-                  href={item.href}
-                  className="text-[14px] font-semibold text-primary/80 transition-colors hover:text-primary focus-visible:text-primary focus-visible:outline-none"
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </div>
+      <FooterQuickLinks />
 
       <div className={`${siteContainerClass} py-8 sm:py-9 lg:py-10`}>
         {/* 핵심 정보 영역 — 브랜드 + 전화번호 한 줄, 그 아래 상담시간 */}
         <div className="border-b border-white/15 pb-6">
-          <div className="flex flex-wrap items-baseline gap-x-7 gap-y-3">
+          <div className="flex flex-wrap items-center gap-x-7 gap-y-3">
             <Link
               href="/"
-              className="inline-flex rounded-button outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
+              aria-label={ko.brand.fullAria}
+              className="inline-flex shrink-0 rounded-button outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
             >
-              <span className="font-logo text-[32px] font-black leading-none tracking-[-0.03em] text-accent">
-                {brand.name}
-              </span>
+              <SiteLogo onDark className="h-7 sm:h-8" />
             </Link>
             <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
               {customerCenter.phones.map((phone) => (

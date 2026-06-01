@@ -23,7 +23,7 @@ export const DEFAULT_INFO_SESSION_PATH = "/info-session/daewon" as const;
 export const SCHOOL_LABELS: Record<School, string> = {
   daewon: "대원외고",
   hanyoung: "한영외고",
-  general: "입시관",
+  general: "고등관",
   private: "개인 및 팀 수업",
 };
 
@@ -31,7 +31,7 @@ export const SCHOOL_LABELS: Record<School, string> = {
 export const SCHOOL_DESCRIPTIONS: Record<School, string> = {
   daewon: "대원외고 입시 전문, 합격률 1위의 노하우로 완성하는 외고 합격 로드맵.",
   hanyoung: "한영외고 진학에 최적화된 커리큘럼과 전담 강사진이 함께합니다.",
-  general: "대입 전과정을 체계적으로 설계하는 입시관 통합 프로그램.",
+  general: "대입 전과정을 체계적으로 설계하는 고등관 통합 프로그램.",
   private: "1:1 맞춤 또는 소수 팀 단위로 진행되는 프리미엄 개인 수업.",
 };
 

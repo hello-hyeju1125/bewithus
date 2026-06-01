@@ -2,12 +2,17 @@ import "server-only";
 
 import { cache } from "react";
 
+import { mergeSubjectOrder } from "@/lib/teachers/subject-order";
+import { syncTeacherSubjectOrders } from "@/lib/teachers/sync-subject-orders";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
   ConsultationRequest,
+  HomeHeroSettings,
+  HomeHeroSlide,
   InfoSession,
   Post,
   Teacher,
+  TeacherSubjectOrder,
   Timetable,
   TimetableCourse,
 } from "@/types/database";
@@ -175,6 +180,40 @@ export const adminListTeachers = cache(async (): Promise<Teacher[]> => {
   }
 });
 
+/** 관리자 — 과목 해시태그 노출 순서 (전체 강사 과목 기준, 미등록 과목 자동 추가) */
+export const adminListTeacherSubjectOrder = cache(
+  async (): Promise<string[]> => {
+    try {
+      const supabase = createAdminClient();
+      const { data: teacherRows, error: teacherError } = await supabase
+        .from("teachers")
+        .select("subject");
+      if (teacherError) throw teacherError;
+
+      const subjectsInUse =
+        (teacherRows as Array<{ subject: string }> | null)?.map(
+          (r) => r.subject,
+        ) ?? [];
+
+      await syncTeacherSubjectOrders(supabase, subjectsInUse);
+
+      const { data: orderRows, error: orderError } = await supabase
+        .from("teacher_subject_orders")
+        .select("*")
+        .order("order_index", { ascending: true });
+      if (orderError) throw orderError;
+
+      return mergeSubjectOrder(
+        (orderRows as TeacherSubjectOrder[]) ?? [],
+        subjectsInUse,
+      );
+    } catch (e) {
+      console.error("[adminListTeacherSubjectOrder]", e);
+      return [];
+    }
+  },
+);
+
 export const adminGetTeacher = cache(
   async (id: string): Promise<Teacher | null> => {
     try {
@@ -290,6 +329,41 @@ export const adminGetConsultationRequest = cache(
       return (data as unknown as ConsultationRequest | null) ?? null;
     } catch (e) {
       console.error("[adminGetConsultationRequest]", e);
+      return null;
+    }
+  },
+);
+
+export const adminListHomeHeroSlides = cache(
+  async (): Promise<HomeHeroSlide[]> => {
+    try {
+      const supabase = createAdminClient();
+      const { data, error } = await supabase
+        .from("home_hero_slides")
+        .select("*")
+        .order("slot", { ascending: true });
+      if (error) throw error;
+      return (data as unknown as HomeHeroSlide[]) ?? [];
+    } catch (e) {
+      console.error("[adminListHomeHeroSlides]", e);
+      return [];
+    }
+  },
+);
+
+export const adminGetHomeHeroSettings = cache(
+  async (): Promise<HomeHeroSettings | null> => {
+    try {
+      const supabase = createAdminClient();
+      const { data, error } = await supabase
+        .from("home_hero_settings")
+        .select("*")
+        .eq("id", 1)
+        .maybeSingle();
+      if (error) throw error;
+      return (data as unknown as HomeHeroSettings | null) ?? null;
+    } catch (e) {
+      console.error("[adminGetHomeHeroSettings]", e);
       return null;
     }
   },

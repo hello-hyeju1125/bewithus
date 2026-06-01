@@ -10,14 +10,26 @@
 import { cache } from "react";
 
 import { createClient } from "@/lib/supabase/server";
+import { mergeSubjectOrder } from "@/lib/teachers/subject-order";
+import {
+  FALLBACK_HERO_SETTINGS_VERSION,
+  fallbackHeroContent,
+  fallbackHeroCtaLabel,
+  fallbackHeroSlides,
+  mapHomeHeroSlideRow,
+  type PublicHeroContent,
+} from "@/lib/home/hero-slides";
 import type {
+  HomeHeroSettings,
+  HomeHeroSlide,
   InfoSession,
   Post,
   Teacher,
+  TeacherSubjectOrder,
   Timetable,
   TimetableCourse,
 } from "@/types/database";
-import type { School, StaffSchool, ViewType } from "@/lib/constants";
+import { STAFF_SCHOOLS, type School, type StaffSchool, type ViewType } from "@/lib/constants";
 
 export type TimetableCourseWithTeacher = TimetableCourse & {
   teacher: Pick<Teacher, "id" | "name" | "photo_url" | "subject"> | null;
@@ -134,6 +146,22 @@ export const listTimetableCourses = cache(
   },
 );
 
+const STAFF_SCHOOL_ORDER = Object.fromEntries(
+  STAFF_SCHOOLS.map((school, index) => [school, index]),
+) as Record<StaffSchool, number>;
+
+function sortTeachersForDisplay(teachers: Teacher[]): Teacher[] {
+  return [...teachers].sort((a, b) => {
+    const bySchool =
+      STAFF_SCHOOL_ORDER[a.school] - STAFF_SCHOOL_ORDER[b.school];
+    if (bySchool !== 0) return bySchool;
+    if (a.order_index !== b.order_index) {
+      return a.order_index - b.order_index;
+    }
+    return a.name.localeCompare(b.name, "ko", { sensitivity: "base" });
+  });
+}
+
 export const listTeachers = cache(
   async (school: StaffSchool): Promise<Teacher[]> => {
     if (!hasSupabaseEnv()) return [];
@@ -157,6 +185,67 @@ export const listTeachers = cache(
     }
   },
 );
+
+/** 학교 구분 없이 노출 중인 전체 강사 (대원외고·한영외고·일반고) */
+/** 강사진 페이지 과목 해시태그 노출 순서 (활성 강사 과목 기준) */
+export const listTeacherSubjectOrder = cache(async (): Promise<string[]> => {
+  if (!hasSupabaseEnv()) return [];
+
+  try {
+    const supabase = createClient();
+    const { data: teacherRows, error: teacherError } = await supabase
+      .from("teachers")
+      .select("subject")
+      .in("school", [...STAFF_SCHOOLS])
+      .eq("is_active", true);
+    if (teacherError) {
+      console.error("[listTeacherSubjectOrder] teachers", teacherError);
+      return [];
+    }
+
+    const subjectsInUse =
+      (teacherRows as Array<{ subject: string }> | null)?.map((r) => r.subject) ??
+      [];
+
+    const { data: orderRows, error: orderError } = await supabase
+      .from("teacher_subject_orders")
+      .select("*")
+      .order("order_index", { ascending: true });
+    if (orderError) {
+      console.error("[listTeacherSubjectOrder] orders", orderError);
+      return [];
+    }
+
+    return mergeSubjectOrder(
+      (orderRows as TeacherSubjectOrder[] | null) ?? [],
+      subjectsInUse,
+    );
+  } catch (e) {
+    console.error("[listTeacherSubjectOrder]", e);
+    return [];
+  }
+});
+
+export const listAllTeachers = cache(async (): Promise<Teacher[]> => {
+  if (!hasSupabaseEnv()) return [];
+
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("teachers")
+      .select("*")
+      .in("school", [...STAFF_SCHOOLS])
+      .eq("is_active", true);
+    if (error) {
+      console.error("[listAllTeachers]", error);
+      return [];
+    }
+    return sortTeachersForDisplay((data as Teacher[] | null) ?? []);
+  } catch (e) {
+    console.error("[listAllTeachers]", e);
+    return [];
+  }
+});
 
 export const listInfoSessions = cache(
   async (
@@ -319,6 +408,59 @@ export const getPost = cache(
  * 게시글 조회수 +1. 실패해도 페이지 렌더를 막지 않도록 silent.
  * `cache()` 로 감싸지 않아 같은 요청 내 한 번만 호출되도록 호출 측에서 보장.
  */
+export const getHomeHeroContent = cache(async (): Promise<PublicHeroContent> => {
+  if (!hasSupabaseEnv()) return fallbackHeroContent();
+
+  try {
+    const supabase = createClient();
+    const [slidesRes, settingsRes] = await Promise.all([
+      supabase
+        .from("home_hero_slides")
+        .select("*")
+        .eq("is_active", true)
+        .order("slot", { ascending: true }),
+      supabase
+        .from("home_hero_settings")
+        .select("cta_label, popup_enabled, updated_at")
+        .eq("id", 1)
+        .maybeSingle(),
+    ]);
+
+    if (slidesRes.error) {
+      console.error("[getHomeHeroContent:slides]", slidesRes.error);
+    }
+    if (settingsRes.error) {
+      console.error("[getHomeHeroContent:settings]", settingsRes.error);
+    }
+
+    const rows = (slidesRes.data as HomeHeroSlide[] | null) ?? [];
+    const slides =
+      rows.length > 0 && !slidesRes.error
+        ? rows.map(mapHomeHeroSlideRow)
+        : fallbackHeroSlides();
+
+    const settings = settingsRes.data as Pick<
+      HomeHeroSettings,
+      "cta_label" | "popup_enabled" | "updated_at"
+    > | null;
+    const ctaLabel =
+      settings?.cta_label?.trim() && !settingsRes.error
+        ? settings.cta_label.trim()
+        : fallbackHeroCtaLabel();
+    const popupEnabled =
+      !settingsRes.error && settings != null ? settings.popup_enabled : false;
+    const settingsUpdatedAt =
+      !settingsRes.error && settings?.updated_at
+        ? settings.updated_at
+        : FALLBACK_HERO_SETTINGS_VERSION;
+
+    return { slides, ctaLabel, popupEnabled, settingsUpdatedAt };
+  } catch (e) {
+    console.error("[getHomeHeroContent]", e);
+    return fallbackHeroContent();
+  }
+});
+
 export async function incrementPostViewCount(postId: string): Promise<void> {
   if (!hasSupabaseEnv()) return;
   try {
