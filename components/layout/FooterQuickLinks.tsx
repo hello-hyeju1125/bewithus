@@ -14,8 +14,13 @@ const linkClassName =
 
 type QuickLinkAction = "privacy-policy" | "terms-of-service" | "tuition";
 
+type FooterQuickLinkItem =
+  | { label: string; action: QuickLinkAction }
+  | { label: string; href: string };
+
 export default function FooterQuickLinks() {
   const { quickLinks } = ko.footer;
+  const items = quickLinks.items as readonly FooterQuickLinkItem[];
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   const [tuitionOpen, setTuitionOpen] = useState(false);
@@ -31,7 +36,7 @@ export default function FooterQuickLinks() {
       <div className="bg-primary-100">
         <nav aria-label={quickLinks.title} className={siteContainerClass}>
           <ul className="flex min-h-[52px] flex-wrap items-center justify-end gap-x-5 gap-y-2 py-2 sm:gap-x-7">
-            {quickLinks.items.map((item) => (
+            {items.map((item) => (
               <li key={item.label}>
                 {"action" in item ? (
                   <button
@@ -43,7 +48,7 @@ export default function FooterQuickLinks() {
                   </button>
                 ) : (
                   <Link
-                    href={"href" in item ? item.href : "#"}
+                    href={item.href}
                     className={linkClassName}
                   >
                     {item.label}
