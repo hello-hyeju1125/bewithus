@@ -169,6 +169,23 @@ export type TeacherInsert = Omit<
 
 export type TeacherUpdate = Partial<TeacherInsert>;
 
+export type TeacherSubjectOrder = {
+  subject: string;
+  order_index: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type TeacherSubjectOrderInsert = Omit<
+  TeacherSubjectOrder,
+  "created_at" | "updated_at"
+> & {
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type TeacherSubjectOrderUpdate = Partial<TeacherSubjectOrderInsert>;
+
 export type InfoSession = {
   id: string;
   school: StaffSchool;
@@ -288,6 +305,50 @@ export type ConsultationRequestInsert = Omit<
 
 export type ConsultationRequestUpdate = Partial<ConsultationRequestInsert>;
 
+/** 메인 히어로 슬라이더 슬롯 (1 또는 2) */
+export type HomeHeroSlideSlot = 1 | 2;
+
+export type HomeHeroSlide = {
+  slot: HomeHeroSlideSlot;
+  tagline: string;
+  main_headline: string;
+  subtitle: string | null;
+  href: string;
+  background_image_url: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type HomeHeroSlideInsert = Omit<
+  HomeHeroSlide,
+  "created_at" | "updated_at" | "subtitle" | "background_image_url" | "is_active"
+> & {
+  subtitle?: string | null;
+  background_image_url?: string | null;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type HomeHeroSlideUpdate = Partial<HomeHeroSlideInsert>;
+
+export type HomeHeroSettings = {
+  id: 1;
+  cta_label: string;
+  popup_enabled: boolean;
+  updated_at: string;
+};
+
+export type HomeHeroSettingsInsert = Omit<
+  HomeHeroSettings,
+  "updated_at"
+> & {
+  updated_at?: string;
+};
+
+export type HomeHeroSettingsUpdate = Partial<HomeHeroSettingsInsert>;
+
 /**
  * Supabase 클라이언트에 제네릭으로 주입할 전체 스키마 타입.
  * `createClient<Database>(...)` 형태로 사용합니다.
@@ -310,6 +371,11 @@ export type Database = {
         Insert: TeacherInsert;
         Update: TeacherUpdate;
       };
+      teacher_subject_orders: {
+        Row: TeacherSubjectOrder;
+        Insert: TeacherSubjectOrderInsert;
+        Update: TeacherSubjectOrderUpdate;
+      };
       info_sessions: {
         Row: InfoSession;
         Insert: InfoSessionInsert;
@@ -329,6 +395,16 @@ export type Database = {
         Row: ConsultationRequest;
         Insert: ConsultationRequestInsert;
         Update: ConsultationRequestUpdate;
+      };
+      home_hero_slides: {
+        Row: HomeHeroSlide;
+        Insert: HomeHeroSlideInsert;
+        Update: HomeHeroSlideUpdate;
+      };
+      home_hero_settings: {
+        Row: HomeHeroSettings;
+        Insert: HomeHeroSettingsInsert;
+        Update: HomeHeroSettingsUpdate;
       };
     };
     Views: Record<string, never>;
