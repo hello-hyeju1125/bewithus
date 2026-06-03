@@ -16,15 +16,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ko } from "@/content/ko";
+import type { PublicConsultationFormField } from "@/lib/consultation/fields";
 
 type ConsultationModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  fields: PublicConsultationFormField[];
 };
 
 export default function ConsultationModal({
   open,
   onOpenChange,
+  fields,
 }: ConsultationModalProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [pending, startTransition] = useTransition();
@@ -57,67 +60,45 @@ export default function ConsultationModal({
         </DialogHeader>
 
         <form ref={formRef} onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="student_name">{copy.fields.studentName}</Label>
-            <Input
-              id="student_name"
-              name="student_name"
-              required
-              autoComplete="name"
-              disabled={pending}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="parent_name">{copy.fields.parentName}</Label>
-            <Input
-              id="parent_name"
-              name="parent_name"
-              required
-              disabled={pending}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="phone">{copy.fields.phone}</Label>
-            <Input
-              id="phone"
-              name="phone"
-              type="tel"
-              required
-              autoComplete="tel"
-              placeholder="010-0000-0000"
-              disabled={pending}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="school_grade">{copy.fields.schoolGrade}</Label>
-            <Input
-              id="school_grade"
-              name="school_grade"
-              required
-              placeholder="예: ○○고등학교 2학년"
-              disabled={pending}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="subject">{copy.fields.subject}</Label>
-            <Input
-              id="subject"
-              name="subject"
-              required
-              placeholder="예: 수학, 영어"
-              disabled={pending}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="message">{copy.fields.message}</Label>
-            <Textarea
-              id="message"
-              name="message"
-              required
-              rows={5}
-              disabled={pending}
-            />
-          </div>
+          {fields.map((field) => (
+            <div key={field.id} className="space-y-1.5">
+              <Label htmlFor={field.fieldKey}>
+                {field.label}
+                {field.isRequired ? (
+                  <span className="text-red-600" aria-hidden="true">
+                    {" "}
+                    *
+                  </span>
+                ) : null}
+              </Label>
+              {field.fieldType === "textarea" ? (
+                <Textarea
+                  id={field.fieldKey}
+                  name={field.fieldKey}
+                  required={field.isRequired}
+                  rows={5}
+                  placeholder={field.placeholder}
+                  disabled={pending}
+                />
+              ) : (
+                <Input
+                  id={field.fieldKey}
+                  name={field.fieldKey}
+                  type={field.fieldType === "tel" ? "tel" : "text"}
+                  required={field.isRequired}
+                  autoComplete={
+                    field.fieldType === "tel"
+                      ? "tel"
+                      : field.fieldKey === "student_name"
+                        ? "name"
+                        : undefined
+                  }
+                  placeholder={field.placeholder}
+                  disabled={pending}
+                />
+              )}
+            </div>
+          ))}
 
           {error ? (
             <p className="text-[13px] font-semibold text-red-600" role="alert">
@@ -128,7 +109,7 @@ export default function ConsultationModal({
           <Button
             type="submit"
             className="w-full bg-primary text-white hover:bg-primary-700"
-            disabled={pending}
+            disabled={pending || fields.length === 0}
           >
             {pending ? copy.submitting : copy.submit}
           </Button>

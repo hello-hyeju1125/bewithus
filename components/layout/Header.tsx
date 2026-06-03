@@ -120,7 +120,7 @@ export default function Header() {
                 onClick={closeAllMenus}
                 className="group/logo inline-flex w-fit max-w-full shrink-0 rounded-button outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-white"
               >
-                <SiteLogo priority />
+                <SiteLogo />
               </Link>
             </div>
 

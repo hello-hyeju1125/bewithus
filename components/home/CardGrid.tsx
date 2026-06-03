@@ -3,11 +3,11 @@ import InfoCardItem from "@/components/home/InfoCardItem";
 import WidgetActionLink from "@/components/layout/WidgetActionLink";
 import { ko } from "@/content/ko";
 
-// 시간표 카드 순서: 대원외고 / 한영외고 / 고등관 / 개인 및 팀 수업
-const TIMETABLE_ICONS = [School, School, GraduationCap, Users] as const;
+// 시간표 카드 순서: 대원외고 / 한영외고 / 고등관 / 중등관 / 개인 및 팀 수업
+const TIMETABLE_ICONS = [School, School, GraduationCap, GraduationCap, Users] as const;
 
 const PRIMARY_CARD_CLASS =
-  "group relative flex h-full min-h-[108px] flex-col justify-start rounded-card border-2 border-transparent bg-primary-50 px-5 py-2.5 outline-none transition-all duration-200 ease-out hover:-translate-y-1 hover:border-primary hover:bg-accent-500 hover:shadow-[0_12px_24px_-8px_rgba(34,41,93,0.25)] focus-visible:ring-2 focus-visible:ring-primary sm:min-h-[150px] sm:px-6 sm:py-4";
+  "group relative flex h-full min-h-[108px] flex-col justify-start rounded-card border-2 border-transparent bg-primary-50 px-5 py-2.5 outline-none transition-all duration-200 ease-out hover:-translate-y-1 hover:border-primary hover:bg-accent-500 hover:shadow-[0_12px_24px_-8px_rgba(34,41,93,0.25)] focus-visible:ring-2 focus-visible:ring-primary sm:min-h-0 sm:px-6 sm:py-4";
 
 type PrimaryCardItem = {
   title: string;
@@ -18,16 +18,16 @@ type PrimaryCardItem = {
 function PrimaryCard({
   item,
   icon: Icon,
-  rowSpan = false,
+  className = "",
 }: {
   item: PrimaryCardItem;
   icon: LucideIcon;
-  rowSpan?: boolean;
+  className?: string;
 }) {
   return (
     <WidgetActionLink
       href={item.href}
-      className={`${PRIMARY_CARD_CLASS}${rowSpan ? " sm:row-span-2" : ""}`}
+      className={`${PRIMARY_CARD_CLASS} ${className}`.trim()}
     >
       <Icon
         className="h-8 w-8 text-primary sm:h-10 sm:w-10"
@@ -58,23 +58,34 @@ function PrimaryCard({
 }
 
 export default function CardGrid() {
-  const { items, teachers, info } = ko.home.cards;
+  const { items, info } = ko.home.cards;
+  const mainTimetableItems = items.slice(0, -1);
+  const privateTimetableItem = items[items.length - 1];
+  const privateIcon = TIMETABLE_ICONS[items.length - 1] ?? Users;
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-4 sm:min-h-[560px] sm:gap-5">
-      {/* 시간표 그룹 — Primary (라이트 네이비, 큰 카드) */}
-      <div className="grid flex-[2] grid-cols-1 gap-5 sm:grid-cols-2">
-        {items.map((item, idx) => {
-          const Icon = TIMETABLE_ICONS[idx] ?? School;
-          return <PrimaryCard key={item.title} item={item} icon={Icon} />;
-        })}
-      </div>
+    <div className="grid h-full min-h-0 grid-cols-1 gap-4 sm:min-h-[560px] sm:grid-cols-2 sm:grid-rows-3 sm:gap-5">
+      {mainTimetableItems.map((item, idx) => {
+        const Icon = TIMETABLE_ICONS[idx] ?? School;
+        return (
+          <PrimaryCard
+            key={item.title}
+            item={item}
+            icon={Icon}
+            className="h-full"
+          />
+        );
+      })}
 
-      {/* 강사 소개 + 안내 그룹 */}
-      <div className="grid flex-[1] grid-cols-1 gap-5 sm:grid-cols-2 sm:grid-rows-2">
-        <PrimaryCard item={teachers} icon={GraduationCap} rowSpan />
+      <PrimaryCard
+        item={privateTimetableItem}
+        icon={privateIcon}
+        className="h-full"
+      />
+
+      <div className="grid h-full min-h-[108px] grid-rows-2 gap-4 sm:min-h-0 sm:gap-5">
         {info.map((item, idx) => (
-          <InfoCardItem key={item.title} item={item} iconIndex={idx} />
+          <InfoCardItem key={item.title} item={item} iconIndex={idx} compact />
         ))}
       </div>
     </div>

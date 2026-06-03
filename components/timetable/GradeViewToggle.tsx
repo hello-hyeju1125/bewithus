@@ -3,7 +3,6 @@ import Link from "next/link";
 import {
   GRADE_LABELS,
   type School,
-  SCHOOL_GRADES,
   type ViewType,
   VIEW_TYPES,
   TIMETABLE_VIEW_TYPE_LABELS,
@@ -15,6 +14,8 @@ type GradeViewToggleProps = {
   school: School;
   grade: string;
   view: ViewType;
+  /** 콘텐츠가 있는 학년만 (비어 있으면 학년 탭 숨김) */
+  visibleGrades: string[];
 };
 
 function buildHref(
@@ -43,10 +44,10 @@ export default function GradeViewToggle({
   school,
   grade,
   view,
+  visibleGrades,
 }: GradeViewToggleProps) {
   const theme = getTimetableSchoolTheme(school);
-  const grades = SCHOOL_GRADES[school];
-  const showGradeTabs = grades.length > 1;
+  const showGradeTabs = visibleGrades.length > 1;
 
   const viewTablist = (
     <div
@@ -89,7 +90,7 @@ export default function GradeViewToggle({
               className="relative z-10 flex flex-nowrap items-center justify-center gap-3 sm:gap-6"
               aria-label="학년 탭"
             >
-              {grades.map((g) => {
+              {visibleGrades.map((g) => {
                 const isActive = g === grade;
                 return (
                   <li key={g} className="shrink-0">

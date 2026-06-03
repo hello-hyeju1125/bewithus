@@ -10,16 +10,21 @@
 import { cache } from "react";
 
 import { createClient } from "@/lib/supabase/server";
+import {
+  fallbackConsultationFormFields,
+  mapConsultationFormFieldRow,
+  type PublicConsultationFormField,
+} from "@/lib/consultation/fields";
 import { mergeSubjectOrder } from "@/lib/teachers/subject-order";
 import {
   FALLBACK_HERO_SETTINGS_VERSION,
   fallbackHeroContent,
-  fallbackHeroCtaLabel,
-  fallbackHeroSlides,
-  mapHomeHeroSlideRow,
+  resolveMainBanners,
+  resolvePopupBanners,
   type PublicHeroContent,
 } from "@/lib/home/hero-slides";
 import type {
+  ConsultationFormField,
   HomeHeroSettings,
   HomeHeroSlide,
   InfoSession,
@@ -29,7 +34,15 @@ import type {
   Timetable,
   TimetableCourse,
 } from "@/types/database";
-import { STAFF_SCHOOLS, type School, type StaffSchool, type ViewType } from "@/lib/constants";
+import {
+  SCHOOL_GRADES,
+  STAFF_SCHOOLS,
+  type School,
+  type StaffSchool,
+  type ViewType,
+} from "@/lib/constants";
+
+const PRIVATE_MIDDLE_GRADES = ["middle-1", "middle-2", "middle-3"] as const;
 
 export type TimetableCourseWithTeacher = TimetableCourse & {
   teacher: Pick<Teacher, "id" | "name" | "photo_url" | "subject"> | null;
@@ -86,17 +99,36 @@ export const getTimetable = cache(
         if (legacyAll) return legacyAll;
       }
 
-      const legacyGrade =
-        grade === "high-1"
-          ? "middle-1"
-          : grade === "high-2"
-            ? "middle-2"
-            : grade === "high-3"
-              ? "middle-3"
-              : null;
-      if (!legacyGrade) return null;
+      if (school === "middle") {
+        const legacyHigh =
+          grade === "middle-1"
+            ? "high-1"
+            : grade === "middle-2"
+              ? "high-2"
+              : grade === "high-3"
+                ? "high-3"
+                : null;
+        if (legacyHigh) {
+          return fetchActiveTimetable(school, legacyHigh, view);
+        }
+        return null;
+      }
 
-      return fetchActiveTimetable(school, legacyGrade, view);
+      if (school !== "private") {
+        const legacyGrade =
+          grade === "high-1"
+            ? "middle-1"
+            : grade === "high-2"
+              ? "middle-2"
+              : grade === "high-3"
+                ? "middle-3"
+                : null;
+        if (legacyGrade) {
+          return fetchActiveTimetable(school, legacyGrade, view);
+        }
+      }
+
+      return null;
     } catch (e) {
       console.error("[getTimetable]", e);
       return null;
@@ -138,10 +170,94 @@ export const listTimetableCourses = cache(
         return queryByGrade("all");
       }
 
+      if (school === "middle") {
+        const legacyHigh =
+          grade === "middle-1"
+            ? "high-1"
+            : grade === "middle-2"
+              ? "high-2"
+              : grade === "middle-3"
+                ? "high-3"
+                : null;
+        if (legacyHigh) return queryByGrade(legacyHigh);
+      } else if (school !== "private") {
+        const legacyGrade =
+          grade === "high-1"
+            ? "middle-1"
+            : grade === "high-2"
+              ? "middle-2"
+              : grade === "high-3"
+                ? "middle-3"
+                : null;
+        if (legacyGrade) return queryByGrade(legacyGrade);
+      }
+
       return rows;
     } catch (e) {
       console.error("[listTimetableCourses]", e);
       return [];
+    }
+  },
+);
+
+/**
+ * 공개 시간표 페이지에 노출할 학년 탭 목록.
+ * 개인 및 팀 수업만 중1~중3을 DB 콘텐츠 유무에 따라 숨깁니다. 고1~고3·타 학교는 항상 전체 학년.
+ */
+export const listVisibleTimetableGrades = cache(
+  async (school: School, view: ViewType): Promise<string[]> => {
+    const allGrades = [...SCHOOL_GRADES[school]];
+
+    if (school !== "private") return allGrades;
+
+    const highGrades = allGrades.filter((g) => g.startsWith("high-"));
+    if (!hasSupabaseEnv()) return highGrades;
+
+    try {
+      const supabase = createClient();
+      const gradesWithMiddleData = new Set<string>();
+
+      const { data: timetableRows, error: timetableError } = await supabase
+        .from("timetables")
+        .select("grade")
+        .eq("school", "private")
+        .eq("view_type", view)
+        .eq("is_active", true)
+        .in("grade", [...PRIVATE_MIDDLE_GRADES]);
+
+      if (timetableError) {
+        console.error("[listVisibleTimetableGrades] timetables", timetableError);
+      } else {
+        for (const row of (timetableRows ?? []) as { grade: string }[]) {
+          if (row.grade) gradesWithMiddleData.add(row.grade);
+        }
+      }
+
+      if (view === "detail") {
+        const { data: courseRows, error: courseError } = await supabase
+          .from("timetable_courses")
+          .select("grade")
+          .eq("school", "private")
+          .eq("is_active", true)
+          .in("grade", [...PRIVATE_MIDDLE_GRADES]);
+
+        if (courseError) {
+          console.error("[listVisibleTimetableGrades] courses", courseError);
+        } else {
+          for (const row of (courseRows ?? []) as { grade: string }[]) {
+            if (row.grade) gradesWithMiddleData.add(row.grade);
+          }
+        }
+      }
+
+      const visibleMiddle = PRIVATE_MIDDLE_GRADES.filter((g) =>
+        gradesWithMiddleData.has(g),
+      );
+
+      return [...visibleMiddle, ...highGrades];
+    } catch (e) {
+      console.error("[listVisibleTimetableGrades]", e);
+      return highGrades;
     }
   },
 );
@@ -417,11 +533,10 @@ export const getHomeHeroContent = cache(async (): Promise<PublicHeroContent> => 
       supabase
         .from("home_hero_slides")
         .select("*")
-        .eq("is_active", true)
         .order("slot", { ascending: true }),
       supabase
         .from("home_hero_settings")
-        .select("cta_label, popup_enabled, updated_at")
+        .select("updated_at")
         .eq("id", 1)
         .maybeSingle(),
     ]);
@@ -434,32 +549,64 @@ export const getHomeHeroContent = cache(async (): Promise<PublicHeroContent> => 
     }
 
     const rows = (slidesRes.data as HomeHeroSlide[] | null) ?? [];
-    const slides =
+
+    const mainSlides =
       rows.length > 0 && !slidesRes.error
-        ? rows.map(mapHomeHeroSlideRow)
-        : fallbackHeroSlides();
+        ? resolveMainBanners(rows)
+        : fallbackHeroContent().mainSlides;
+
+    const popupSlides =
+      rows.length > 0 && !slidesRes.error ? resolvePopupBanners(rows) : [];
 
     const settings = settingsRes.data as Pick<
       HomeHeroSettings,
-      "cta_label" | "popup_enabled" | "updated_at"
+      "updated_at"
     > | null;
-    const ctaLabel =
-      settings?.cta_label?.trim() && !settingsRes.error
-        ? settings.cta_label.trim()
-        : fallbackHeroCtaLabel();
-    const popupEnabled =
-      !settingsRes.error && settings != null ? settings.popup_enabled : false;
+
+    const versionCandidates = [
+      !settingsRes.error ? settings?.updated_at : null,
+      ...rows.map((r) => r.updated_at),
+    ].filter((v): v is string => Boolean(v));
+
     const settingsUpdatedAt =
-      !settingsRes.error && settings?.updated_at
-        ? settings.updated_at
+      versionCandidates.length > 0
+        ? versionCandidates.sort((a, b) => (a > b ? -1 : a < b ? 1 : 0))[0]
         : FALLBACK_HERO_SETTINGS_VERSION;
 
-    return { slides, ctaLabel, popupEnabled, settingsUpdatedAt };
+    return { mainSlides, popupSlides, settingsUpdatedAt };
   } catch (e) {
     console.error("[getHomeHeroContent]", e);
     return fallbackHeroContent();
   }
 });
+
+export const getConsultationFormFields = cache(
+  async (): Promise<PublicConsultationFormField[]> => {
+    if (!hasSupabaseEnv()) return fallbackConsultationFormFields();
+
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("consultation_form_fields")
+        .select("*")
+        .eq("is_active", true)
+        .order("order_index", { ascending: true });
+
+      if (error) {
+        console.error("[getConsultationFormFields]", error);
+        return fallbackConsultationFormFields();
+      }
+
+      const rows = (data as ConsultationFormField[] | null) ?? [];
+      if (rows.length === 0) return fallbackConsultationFormFields();
+
+      return rows.map(mapConsultationFormFieldRow);
+    } catch (e) {
+      console.error("[getConsultationFormFields]", e);
+      return fallbackConsultationFormFields();
+    }
+  },
+);
 
 export async function incrementPostViewCount(postId: string): Promise<void> {
   if (!hasSupabaseEnv()) return;

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { ArrowUpRight, ChevronDown } from "lucide-react";
 
 import SubjectFilterChips, {
@@ -59,7 +59,7 @@ export default function TimetableDetailTable({
   }
 
   return (
-    <div className="w-full space-y-10">
+    <div className="w-full space-y-14 sm:space-y-16">
       <SubjectFilterChips
         subjects={subjects}
         active={active}
@@ -74,7 +74,7 @@ export default function TimetableDetailTable({
           <section key={subject} aria-labelledby={`subject-${subject}`}>
             <h2
               id={`subject-${subject}`}
-              className={`mb-4 text-[24px] font-black tracking-tight sm:text-[28px] ${theme.body.heading}`}
+              className="mb-4 text-[24px] font-black tracking-tight text-primary sm:text-[28px]"
             >
               {subject}
             </h2>
@@ -89,8 +89,8 @@ export default function TimetableDetailTable({
             {/* md 이상 — 표 */}
             <div className="hidden border-y border-neutral-900 bg-white md:block">
               <table className="w-full border-collapse text-left text-[16px]">
-                <thead className="bg-white text-[15px] font-bold text-neutral-900">
-                  <tr className="border-b border-neutral-900">
+                <thead className="text-[15px] font-bold text-neutral-900">
+                  <tr className="border-b border-neutral-900 bg-tiffany/70">
                     <th className="w-[168px] px-5 py-4 text-center">강사</th>
                     <th className="px-5 py-4 text-center">강의</th>
                     <th className="w-[260px] px-5 py-4 text-center">요일 / 시간</th>
@@ -111,10 +111,34 @@ export default function TimetableDetailTable({
   );
 }
 
-function CourseTag({ tag, theme }: { tag: string; theme: TimetableSchoolTheme }) {
+function courseTagStyle(course: TimetableCourseWithTeacher): CSSProperties | undefined {
+  if (course.tag_bg_color && course.tag_text_color) {
+    return {
+      backgroundColor: course.tag_bg_color,
+      color: course.tag_text_color,
+    };
+  }
+  return undefined;
+}
+
+function CourseTag({
+  tag,
+  course,
+  theme,
+}: {
+  tag: string;
+  course: TimetableCourseWithTeacher;
+  theme: TimetableSchoolTheme;
+}) {
+  const customStyle = courseTagStyle(course);
   return (
     <span
-      className={`inline-flex w-fit max-w-full items-center justify-center rounded-[3px] bg-accent-500 px-1.5 py-0.5 text-[10px] font-black leading-tight tracking-tight md:px-2 md:py-1 md:text-[11px] md:tracking-wider ${theme.body.tagText}`}
+      style={customStyle}
+      className={
+        customStyle
+          ? "inline-flex w-fit max-w-full items-center justify-center rounded-[3px] px-1.5 py-0.5 text-[10px] font-black leading-tight tracking-tight md:px-2 md:py-1 md:text-[11px] md:tracking-wider"
+          : `inline-flex w-fit max-w-full items-center justify-center rounded-[3px] bg-accent-500 px-1.5 py-0.5 text-[10px] font-black leading-tight tracking-tight md:px-2 md:py-1 md:text-[11px] md:tracking-wider ${theme.body.tagText}`
+      }
     >
       {tag}
     </span>
@@ -124,14 +148,22 @@ function CourseTag({ tag, theme }: { tag: string; theme: TimetableSchoolTheme })
 /** 모바일 카드 전용 — 신설·마감임박 등 강조 태그 */
 function CourseTagMobile({
   tag,
+  course,
   theme,
 }: {
   tag: string;
+  course: TimetableCourseWithTeacher;
   theme: TimetableSchoolTheme;
 }) {
+  const customStyle = courseTagStyle(course);
   return (
     <span
-      className={`inline-flex w-fit max-w-full shrink-0 items-center justify-center rounded-button border-2 bg-accent-500 px-2.5 py-1 text-[12px] font-black leading-none tracking-wide ${theme.body.tagBorder} ${theme.body.tagText}`}
+      style={customStyle}
+      className={
+        customStyle
+          ? "inline-flex w-fit max-w-full shrink-0 items-center justify-center rounded-button border-2 border-transparent px-2.5 py-1 text-[12px] font-black leading-none tracking-wide"
+          : `inline-flex w-fit max-w-full shrink-0 items-center justify-center rounded-button border-2 bg-accent-500 px-2.5 py-1 text-[12px] font-black leading-none tracking-wide ${theme.body.tagBorder} ${theme.body.tagText}`
+      }
     >
       {tag}
     </span>
@@ -207,19 +239,13 @@ function StartDateList({
   );
 }
 
-function DetailVideoLink({
-  url,
-  theme,
-}: {
-  url: string;
-  theme: TimetableSchoolTheme;
-}) {
+function DetailVideoLink({ url }: { url: string }) {
   return (
     <a
       href={url}
       target="_blank"
       rel="noreferrer noopener"
-      className={`flex w-full max-w-full items-center justify-center rounded-button border bg-white px-2 py-2 text-center text-[11px] font-black leading-tight tracking-tight sm:text-[12px] md:px-2.5 md:py-2.5 md:text-[13px] ${theme.body.link}`}
+      className="inline-flex w-fit max-w-full items-center justify-center rounded-button bg-accent-500 px-3 py-2.5 text-[11px] font-black leading-tight tracking-tight text-primary transition-colors duration-200 hover:bg-primary hover:text-accent sm:text-[12px] md:px-3.5 md:py-3 md:text-[13px]"
     >
       <span className="inline-flex items-center justify-center gap-1">
         <span className="text-center">설명회 영상 보기</span>
@@ -275,7 +301,9 @@ function CourseTitleCell({
         <p className="min-w-0 text-[17px] font-black leading-snug text-neutral-900 md:text-[18px]">
           {course.course_title}
         </p>
-        {course.tag ? <CourseTag tag={course.tag} theme={theme} /> : null}
+        {course.tag ? (
+          <CourseTag tag={course.tag} course={course} theme={theme} />
+        ) : null}
       </div>
       {course.course_subtitle ? (
         <p className="text-[15px] font-bold text-neutral-900 sm:text-[16px]">
@@ -308,14 +336,14 @@ function CourseRow({
       </td>
       <td className="px-5 py-5">
         <SessionList sessions={course.sessions} />
+        {course.detail_url ? (
+          <div className="mt-4">
+            <DetailVideoLink url={course.detail_url} />
+          </div>
+        ) : null}
       </td>
       <td className="px-5 py-5">
         <StartDateList dates={course.start_dates} />
-        {course.detail_url ? (
-          <div className="mt-4">
-            <DetailVideoLink url={course.detail_url} theme={theme} />
-          </div>
-        ) : null}
       </td>
     </tr>
   );
@@ -359,7 +387,9 @@ function CourseCard({
             <p className="min-w-0 flex-1 basis-full text-[20px] font-black leading-[1.25] tracking-tight text-neutral-900">
               {course.course_title}
             </p>
-            {course.tag ? <CourseTagMobile tag={course.tag} theme={theme} /> : null}
+            {course.tag ? (
+              <CourseTagMobile tag={course.tag} course={course} theme={theme} />
+            ) : null}
           </div>
         </div>
       </div>
@@ -381,6 +411,11 @@ function CourseCard({
               <span className="text-[17px] font-bold text-neutral-400">—</span>
             )}
           </div>
+          {course.detail_url ? (
+            <div className="mt-3">
+              <DetailVideoLink url={course.detail_url} />
+            </div>
+          ) : null}
         </div>
         <div className={`border-t-2 pt-3.5 ${theme.body.cardDivider}`}>
           <p
@@ -391,11 +426,6 @@ function CourseCard({
           <div className="mt-2">
             <StartDateList dates={course.start_dates} emphasized />
           </div>
-          {course.detail_url ? (
-            <div className="mt-3">
-              <DetailVideoLink url={course.detail_url} theme={theme} />
-            </div>
-          ) : null}
         </div>
       </div>
 

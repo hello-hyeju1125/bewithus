@@ -7,7 +7,6 @@ import { User } from "lucide-react";
 import SubjectFilterChips, {
   ALL_SUBJECT,
 } from "@/components/filters/SubjectFilterChips";
-import { SCHOOL_LABELS } from "@/lib/constants";
 import { sectionBodyClass } from "@/lib/layout/section-theme";
 import { resolveTeacherPhotoFrame } from "@/lib/teachers/photo-overrides";
 import { subjectsForTeacherList } from "@/lib/teachers/subject-order";
@@ -18,8 +17,6 @@ type TeacherCardListProps = {
   teachers: Teacher[];
   /** 관리자에서 지정한 과목(해시태그) 노출 순서 */
   subjectOrder: string[];
-  /** 전체 강사진 페이지 — 카드에 소속 학교 표시 */
-  showSchool?: boolean;
 };
 
 function formatTeacherName(name: string): string {
@@ -29,9 +26,9 @@ function formatTeacherName(name: string): string {
   return `${trimmed} 선생님`;
 }
 
-/** 모든 강사 카드에 동일한 사진 프레임·크롭 적용 */
+/** 모든 강사 카드에 동일한 사진 프레임·크롭 (사진 영역 가로 전체) */
 const TEACHER_PHOTO_FRAME_CLASS =
-  "relative w-full shrink-0 overflow-hidden bg-neutral-100 aspect-[3/4]";
+  "relative w-full shrink-0 overflow-hidden aspect-[4/5]";
 
 const TEACHER_PHOTO_IMAGE_CLASS = "object-cover";
 
@@ -91,7 +88,6 @@ function TeacherPhotoFrame({
 export default function TeacherCardList({
   teachers,
   subjectOrder,
-  showSchool = false,
 }: TeacherCardListProps) {
   const subjects = useMemo(
     () => subjectsForTeacherList(subjectOrder, teachers),
@@ -114,7 +110,7 @@ export default function TeacherCardList({
   }
 
   return (
-    <div className="w-full space-y-10">
+    <div className="w-full space-y-14 sm:space-y-16">
       <SubjectFilterChips
         subjects={subjects}
         active={active}
@@ -127,9 +123,9 @@ export default function TeacherCardList({
           선택한 과목에 등록된 강사가 없습니다.
         </p>
       ) : (
-        <ul className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4 lg:gap-6 [&>li]:h-full">
+        <ul className="grid grid-cols-1 gap-x-4 gap-y-10 sm:grid-cols-2 sm:gap-y-11 md:grid-cols-3 lg:grid-cols-5 lg:gap-x-5 lg:gap-y-12">
           {visibleTeachers.map((t) => (
-            <TeacherCard key={t.id} teacher={t} showSchool={showSchool} />
+            <TeacherCard key={t.id} teacher={t} />
           ))}
         </ul>
       )}
@@ -137,13 +133,7 @@ export default function TeacherCardList({
   );
 }
 
-function TeacherCardMobile({
-  teacher: t,
-  showSchool,
-}: {
-  teacher: Teacher;
-  showSchool: boolean;
-}) {
+function TeacherCardMobile({ teacher: t }: { teacher: Teacher }) {
   const displayName = formatTeacherName(t.name);
   const bio = t.bio?.trim() ?? "";
 
@@ -152,33 +142,23 @@ function TeacherCardMobile({
       className="flex gap-3 rounded-card border border-neutral-200 bg-white p-3 md:hidden"
       aria-label={`${t.subject} ${displayName}`}
     >
-      <div className="w-[112px] shrink-0 overflow-hidden rounded-button">
+      <div className="w-[76px] shrink-0 overflow-hidden rounded-button">
         <TeacherPhotoFrame
           teacherName={t.name}
           photoUrl={t.photo_url}
-          sizes="112px"
-          placeholderIconClass="h-11 w-11"
+          sizes="76px"
+          placeholderIconClass="h-9 w-9"
         />
       </div>
 
       <div className="min-w-0 flex-1">
-        {showSchool ? (
-          <p className="text-[12px] font-semibold leading-none text-neutral-500">
-            {SCHOOL_LABELS[t.school]}
-          </p>
-        ) : null}
-        <p
-          className={cn(
-            "text-[15px] font-black leading-tight tracking-tight text-primary",
-            showSchool && "mt-0.5",
-          )}
-        >
+        <p className="text-[14px] font-black leading-tight tracking-tight text-primary">
           {t.subject}
         </p>
-        <h3 className="mt-0.5 text-[20px] font-black leading-tight tracking-tight text-primary">
+        <h3 className="mt-0.5 text-[17px] font-black leading-tight tracking-tight text-primary">
           {displayName}
         </h3>
-        <p className="mt-1.5 whitespace-pre-line text-[15px] font-normal leading-[1.75] text-neutral-800">
+        <p className="mt-1.5 whitespace-pre-line text-[14px] font-normal leading-[1.65] text-neutral-800">
           {bio || "소개가 준비 중입니다."}
         </p>
       </div>
@@ -186,13 +166,7 @@ function TeacherCardMobile({
   );
 }
 
-function TeacherCardDesktop({
-  teacher: t,
-  showSchool,
-}: {
-  teacher: Teacher;
-  showSchool: boolean;
-}) {
+function TeacherCardDesktop({ teacher: t }: { teacher: Teacher }) {
   const displayName = formatTeacherName(t.name);
   const bio = t.bio?.trim() ?? "";
 
@@ -200,77 +174,54 @@ function TeacherCardDesktop({
     <article
       tabIndex={0}
       className={cn(
-        "group hidden h-full w-full flex-col overflow-hidden rounded-card border border-neutral-200 bg-white outline-none transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_10px_20px_-10px_rgba(34,41,93,0.22)] focus-visible:ring-2 md:flex",
+        "group hidden w-full flex-col overflow-hidden rounded-card border border-neutral-200 bg-white outline-none transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_10px_20px_-10px_rgba(34,41,93,0.22)] focus-visible:ring-2 md:flex",
         sectionBodyClass.teacher.hoverBorder,
         sectionBodyClass.teacher.focusRing,
       )}
       aria-label={`${t.subject} ${displayName}`}
     >
+      <div className="flex min-h-[3.25rem] shrink-0 flex-col justify-center border-b border-neutral-200 bg-accent-500 px-2 py-2.5 sm:min-h-[3.5rem] sm:px-3 sm:py-3">
+        <p className="text-center text-[18px] font-black leading-tight tracking-tight text-primary sm:text-[21px]">
+          {t.subject}
+        </p>
+      </div>
+
+      <div className="relative flex w-full shrink-0 flex-col items-center justify-end bg-neutral-100 px-3 pt-1 pb-0 transition-colors duration-200 group-hover:bg-primary group-focus-within:bg-primary sm:px-4 sm:pt-1.5">
+        <div className="mx-auto w-[85%] max-w-[128px] transition-opacity duration-200 group-hover:opacity-0 group-focus-within:opacity-0 sm:max-w-[134px] lg:max-w-[138px]">
+          <TeacherPhotoFrame
+            teacherName={t.name}
+            photoUrl={t.photo_url}
+            sizes="(min-width: 1024px) 18vw, (min-width: 768px) 24vw, 44vw"
+            placeholderIconClass="h-9 w-9 sm:h-10 sm:w-10"
+          />
+        </div>
+
         <div
-          className={cn(
-            "flex shrink-0 flex-col justify-center border-b border-neutral-200 bg-accent-500 px-1.5 py-1.5 sm:px-2 sm:py-2",
-            showSchool ? "min-h-[3.75rem]" : "min-h-[2.75rem]",
-          )}
+          className="pointer-events-none absolute inset-0 flex flex-col justify-start overflow-y-auto bg-primary p-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 sm:p-2"
+          aria-hidden="true"
         >
-          {showSchool ? (
-            <p className="text-center text-[11px] font-semibold leading-none text-primary/75 sm:text-[12px]">
-              {SCHOOL_LABELS[t.school]}
-            </p>
-          ) : (
-            <span className="sr-only">강사 과목</span>
-          )}
-          <p
-            className={cn(
-              "text-center text-[20px] font-black leading-tight tracking-tight text-primary sm:text-[22px]",
-              showSchool && "mt-0.5",
-            )}
-          >
-            {t.subject}
+          <p className="whitespace-pre-line text-left text-[14px] font-medium leading-[1.6] text-white sm:text-[15px] sm:leading-[1.65]">
+            {bio || "소개가 준비 중입니다."}
           </p>
         </div>
 
-        <div className="relative w-full shrink-0 transition-colors duration-200 group-hover:bg-primary group-focus-within:bg-primary">
-          <div className="transition-opacity duration-200 group-hover:opacity-0 group-focus-within:opacity-0">
-            <TeacherPhotoFrame
-              teacherName={t.name}
-              photoUrl={t.photo_url}
-              sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
-              placeholderIconClass="h-16 w-16 sm:h-[72px] sm:w-[72px]"
-            />
-          </div>
+        {bio ? <p className="sr-only">{bio}</p> : null}
+      </div>
 
-          <div
-            className="pointer-events-none absolute inset-0 flex flex-col justify-start overflow-y-auto bg-primary p-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 sm:p-2.5"
-            aria-hidden="true"
-          >
-            <p className="whitespace-pre-line text-left text-[15px] font-medium leading-[1.75] text-white sm:text-[16px] sm:leading-[1.85]">
-              {bio || "소개가 준비 중입니다."}
-            </p>
-          </div>
-
-          {bio ? <p className="sr-only">{bio}</p> : null}
-        </div>
-
-        <div className="flex min-h-[2.75rem] shrink-0 items-center justify-center border-t border-neutral-200 bg-white px-1.5 py-1.5 sm:min-h-[3rem] sm:px-2 sm:py-2">
-          <h3 className="text-center text-[20px] font-black leading-tight tracking-tight text-primary sm:text-[22px]">
-            {displayName}
-          </h3>
-        </div>
-      </article>
+      <div className="flex min-h-[3.25rem] shrink-0 items-center justify-center border-t border-neutral-200 bg-white px-2 py-2.5 sm:min-h-[3.5rem] sm:px-3 sm:py-3">
+        <h3 className="text-center text-[18px] font-black leading-tight tracking-tight text-primary sm:text-[21px]">
+          {displayName}
+        </h3>
+      </div>
+    </article>
   );
 }
 
-function TeacherCard({
-  teacher,
-  showSchool,
-}: {
-  teacher: Teacher;
-  showSchool: boolean;
-}) {
+function TeacherCard({ teacher }: { teacher: Teacher }) {
   return (
     <li>
-      <TeacherCardMobile teacher={teacher} showSchool={showSchool} />
-      <TeacherCardDesktop teacher={teacher} showSchool={showSchool} />
+      <TeacherCardMobile teacher={teacher} />
+      <TeacherCardDesktop teacher={teacher} />
     </li>
   );
 }

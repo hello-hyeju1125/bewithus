@@ -7,16 +7,19 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ko } from "@/content/ko";
-import type { PublicHeroSlide } from "@/lib/home/hero-slides";
+import {
+  isStoredBannerImageUrl,
+  type PublicMainBanner,
+} from "@/lib/home/hero-slides";
 
 const AUTOPLAY_DELAY_MS = 5000;
+const CTA_LABEL = ko.home.hero.ctaLabel;
 
 type HeroSliderProps = {
-  slides: PublicHeroSlide[];
-  ctaLabel: string;
+  slides: PublicMainBanner[];
 };
 
-export default function HeroSlider({ slides, ctaLabel }: HeroSliderProps) {
+export default function HeroSlider({ slides }: HeroSliderProps) {
   const autoplay = useRef(
     Autoplay({
       delay: AUTOPLAY_DELAY_MS,
@@ -81,67 +84,92 @@ export default function HeroSlider({ slides, ctaLabel }: HeroSliderProps) {
     >
       <div ref={emblaRef} className="h-full">
         <div className="flex h-full">
-          {slides.map((slide, idx) => (
-            <div
-              key={slide.slot}
-              role="group"
-              aria-roledescription="slide"
-              aria-label={`${idx + 1} / ${total}`}
-              aria-hidden={selectedIndex !== idx}
-              className="relative h-full min-w-0 flex-[0_0_100%]"
-            >
-              {slide.backgroundImageUrl ? (
-                <>
-                  <Image
-                    src={slide.backgroundImageUrl}
-                    alt=""
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 1024px) 100vw, 45vw"
-                    priority={idx === 0}
-                  />
-                  <div
-                    className="absolute inset-0 bg-primary/55"
-                    aria-hidden="true"
-                  />
-                </>
-              ) : (
-                <div className="absolute inset-0 bg-primary" aria-hidden="true" />
-              )}
+          {slides.map((slide, idx) => {
+            const hasImage = isStoredBannerImageUrl(slide.backgroundImageUrl);
+            const hasCopy = Boolean(slide.mainHeadline || slide.tagline);
+            const linkLabel =
+              slide.mainHeadline?.replace(/\n/g, " ") ?? `배너 ${slide.slot}`;
 
-              <Link
-                href={slide.href}
-                tabIndex={selectedIndex === idx ? 0 : -1}
-                aria-label={`${slide.mainHeadline.replace(/\n/g, " ")} — ${ctaLabel}`}
-                className="relative z-10 flex h-full flex-col items-center justify-start px-7 pb-10 pt-4 text-center outline-none transition-opacity duration-200 hover:opacity-[0.98] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-500 sm:px-10 sm:pb-28 sm:pt-14 lg:px-12 lg:pb-32 lg:pt-[4.5rem]"
+            return (
+              <div
+                key={slide.slot}
+                role="group"
+                aria-roledescription="slide"
+                aria-label={`${idx + 1} / ${total}`}
+                aria-hidden={selectedIndex !== idx}
+                className="relative h-full min-w-0 flex-[0_0_100%]"
               >
-                <p className="mb-2 inline-flex max-w-full rounded-leaf bg-accent-500 px-2 py-0.5 text-[17px] font-black leading-tight tracking-tight text-primary sm:mb-6 sm:px-3 sm:py-0.5 sm:text-[24px] lg:mb-7 lg:px-3.5 lg:py-1 lg:text-[28px]">
-                  {slide.tagline}
-                </p>
-                <h2 className="whitespace-pre-line text-[38px] font-black leading-[1.05] tracking-tight text-white sm:text-[60px] lg:text-[80px]">
-                  {slide.mainHeadline}
-                </h2>
-                {slide.subtitle ? (
-                  <p className="mt-2 text-[20px] font-medium leading-[1.15] tracking-tight text-white/85 sm:mt-5 sm:text-[32px] sm:leading-[1.2] lg:mt-6 lg:text-[40px]">
-                    {slide.subtitle}
-                  </p>
-                ) : null}
-                <span
-                  className={`group inline-flex min-h-[28px] items-center gap-2.5 text-[28px] font-black leading-none text-accent sm:min-h-0 sm:gap-4 sm:text-[38px] lg:text-[44px] ${
-                    slide.subtitle
-                      ? "mt-2.5 sm:mt-8 lg:mt-9"
-                      : "mt-2.5 sm:mt-6 lg:mt-7"
+                <Link
+                  href={slide.href}
+                  tabIndex={selectedIndex === idx ? 0 : -1}
+                  aria-label={`${linkLabel} — ${CTA_LABEL}`}
+                  className={`relative flex h-full w-full flex-col outline-none transition-opacity duration-200 hover:opacity-[0.98] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-500 ${
+                    hasCopy && !hasImage
+                      ? "items-center justify-start px-7 pb-10 pt-4 text-center sm:px-10 sm:pb-28 sm:pt-14 lg:px-12 lg:pb-32 lg:pt-[4.5rem]"
+                      : hasCopy
+                        ? "items-center justify-end px-7 pb-10 pt-4 text-center sm:px-10 sm:pb-28 sm:pt-14"
+                        : "block"
                   }`}
                 >
-                  {ctaLabel}
-                  <ArrowRight
-                    className="h-6 w-6 shrink-0 transition-transform duration-200 group-hover:translate-x-1 sm:h-10 sm:w-10 lg:h-12 lg:w-12"
-                    aria-hidden="true"
-                  />
-                </span>
-              </Link>
-            </div>
-          ))}
+                  {hasImage ? (
+                    <Image
+                      src={slide.backgroundImageUrl!}
+                      alt=""
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 45vw"
+                      priority={idx === 0}
+                    />
+                  ) : (
+                    <span
+                      className="absolute inset-0 bg-primary"
+                      aria-hidden="true"
+                    />
+                  )}
+
+                  {hasImage && hasCopy ? (
+                    <span
+                      className="absolute inset-0 bg-primary/55"
+                      aria-hidden="true"
+                    />
+                  ) : null}
+
+                  {hasCopy ? (
+                    <span className="relative z-10 flex flex-col">
+                      {slide.tagline ? (
+                        <span className="mb-2 inline-flex max-w-full rounded-leaf bg-accent-500 px-2 py-0.5 text-[17px] font-black leading-tight tracking-tight text-primary sm:mb-6 sm:px-3 sm:py-0.5 sm:text-[24px] lg:mb-7 lg:px-3.5 lg:py-1 lg:text-[28px]">
+                          {slide.tagline}
+                        </span>
+                      ) : null}
+                      {slide.mainHeadline ? (
+                        <span className="whitespace-pre-line text-[38px] font-black leading-[1.05] tracking-tight text-white sm:text-[60px] lg:text-[80px]">
+                          {slide.mainHeadline}
+                        </span>
+                      ) : null}
+                      {slide.subtitle ? (
+                        <span className="mt-2 text-[20px] font-medium leading-[1.15] tracking-tight text-white/85 sm:mt-5 sm:text-[32px] sm:leading-[1.2] lg:mt-6 lg:text-[40px]">
+                          {slide.subtitle}
+                        </span>
+                      ) : null}
+                      <span
+                        className={`group inline-flex min-h-[28px] items-center gap-2.5 text-[28px] font-black leading-none text-accent sm:min-h-0 sm:gap-4 sm:text-[38px] lg:text-[44px] ${
+                          slide.subtitle
+                            ? "mt-2.5 sm:mt-8 lg:mt-9"
+                            : "mt-2.5 sm:mt-6 lg:mt-7"
+                        }`}
+                      >
+                        {CTA_LABEL}
+                        <ArrowRight
+                          className="h-6 w-6 shrink-0 transition-transform duration-200 group-hover:translate-x-1 sm:h-10 sm:w-10 lg:h-12 lg:w-12"
+                          aria-hidden="true"
+                        />
+                      </span>
+                    </span>
+                  ) : null}
+                </Link>
+              </div>
+            );
+          })}
         </div>
       </div>
 

@@ -28,7 +28,7 @@ export default function Footer() {
               aria-label={ko.brand.fullAria}
               className="inline-flex shrink-0 rounded-button outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
             >
-              <SiteLogo onDark className="h-7 sm:h-8" />
+              <SiteLogo className="sm:h-9" />
             </Link>
             <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
               {customerCenter.phones.map((phone) => (

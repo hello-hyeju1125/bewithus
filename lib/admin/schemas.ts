@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-import { SCHOOLS, SCHOOL_GRADES, STAFF_SCHOOLS } from "@/lib/constants";
+import { SCHOOL_GRADES, SCHOOLS, STAFF_SCHOOLS } from "@/lib/constants";
+import { optionalHexColorSchema } from "@/lib/admin/hex-color";
 
 const schoolEnum = z.enum(SCHOOLS as unknown as [string, ...string[]]);
 const staffSchoolEnum = z.enum(
@@ -17,13 +18,14 @@ export const timetableFormSchema = z
       .int("연도는 정수여야 합니다.")
       .min(2020)
       .max(2099),
-    semester: z.string().min(1, "학기를 입력하세요."),
+    semester: z.string().min(1, "학기를 입력하세요.").max(40),
     description: z.string().max(500).optional().or(z.literal("")),
-    image_url: z.string().min(1, "이미지를 업로드하세요."),
+    image_urls: z.array(z.string().url()),
     is_active: z.boolean(),
   })
   .refine(
-    (v) => SCHOOL_GRADES[v.school as keyof typeof SCHOOL_GRADES]?.includes(v.grade),
+    (v) =>
+      SCHOOL_GRADES[v.school as keyof typeof SCHOOL_GRADES]?.includes(v.grade),
     {
       message: "선택한 학교에 해당하는 학년이 아닙니다.",
       path: ["grade"],
@@ -49,7 +51,6 @@ export const infoSessionFormSchema = z.object({
   title: z.string().min(1, "제목을 입력하세요."),
   descriptionJson: z.string().optional().or(z.literal("")),
   session_date: z.string().min(1, "날짜·시간을 선택하세요."),
-  location: z.string().max(200).optional().or(z.literal("")),
   registration_url: z.string().url().optional().or(z.literal("")),
   is_active: z.boolean(),
 });
@@ -101,13 +102,15 @@ export const timetableCourseFormSchema = z
     school: schoolEnum,
     grade: z.string().min(1, "학년을 선택하세요."),
     year: z.number().int().min(2020).max(2099),
-    semester: z.string().min(1, "학기를 입력하세요."),
+    semester: z.string().min(1, "학기를 입력하세요.").max(40),
     subject: z.string().min(1, "과목을 입력하세요.").max(40),
     teacher_id: z.string().uuid("강사를 선택하세요."),
     course_title: z.string().min(1, "강의명을 입력하세요.").max(200),
     course_subtitle: z.string().max(200).optional().or(z.literal("")),
     course_note: z.string().max(500).optional().or(z.literal("")),
     tag: z.string().max(40).optional().or(z.literal("")),
+    tag_bg_color: optionalHexColorSchema,
+    tag_text_color: optionalHexColorSchema,
     sessions: z.array(courseSessionSchema).min(1, "요일/시간을 최소 1개 추가하세요.").max(20),
     start_dates: z.array(z.string().min(1).max(40)).max(20),
     apply_buttons: z.array(applyButtonSchema).max(6),
@@ -127,31 +130,41 @@ export type TimetableCourseFormValues = z.infer<
   typeof timetableCourseFormSchema
 >;
 
-export const homeHeroSlideFormSchema = z.object({
-  tagline: z.string().min(1, "상단 라벨을 입력하세요.").max(80),
-  main_headline: z
-    .string()
-    .min(1, "메인 제목을 입력하세요.")
-    .max(120),
-  subtitle: z.string().max(80).optional().or(z.literal("")),
-  href: z
-    .string()
-    .min(1, "링크 경로를 입력하세요.")
-    .max(200)
-    .refine((v) => v.startsWith("/"), {
-      message: "내부 링크는 / 로 시작해야 합니다.",
-    }),
-  background_image_url: z.string().optional().or(z.literal("")),
-  is_active: z.boolean(),
-});
+export const homeBannerFormSchema = z
+  .object({
+    href: z.string().max(200),
+    show_in_main: z.boolean(),
+    show_in_popup: z.boolean(),
+    background_image_url: z.string().optional().or(z.literal("")),
+    has_new_image: z.boolean(),
+  })
+  .superRefine((data, ctx) => {
+    const hasImage =
+      data.has_new_image || Boolean(data.background_image_url?.trim());
+    if (!hasImage) return;
 
-export type HomeHeroSlideFormValues = z.infer<typeof homeHeroSlideFormSchema>;
+    const href = data.href.trim();
+    if (!href) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "이미지가 있으면 링크 경로를 입력하세요.",
+        path: ["href"],
+      });
+      return;
+    }
+    if (!href.startsWith("/")) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "내부 링크는 / 로 시작해야 합니다.",
+        path: ["href"],
+      });
+    }
+  });
 
-export const homeHeroSettingsFormSchema = z.object({
-  cta_label: z.string().min(1, "CTA 문구를 입력하세요.").max(40),
-  popup_enabled: z.boolean(),
-});
+export type HomeBannerFormValues = z.infer<typeof homeBannerFormSchema>;
 
-export type HomeHeroSettingsFormValues = z.infer<
-  typeof homeHeroSettingsFormSchema
->;
+/** @deprecated */
+export const homeHeroSlideFormSchema = homeBannerFormSchema;
+
+/** @deprecated */
+export type HomeHeroSlideFormValues = HomeBannerFormValues;

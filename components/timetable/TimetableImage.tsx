@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { CalendarClock, ImageOff } from "lucide-react";
 
+import { normalizeTimetableImageUrls } from "@/lib/timetable/image-urls";
 import type { Timetable } from "@/types/database";
 
 function formatDate(iso: string): string {
@@ -17,27 +18,28 @@ type TimetableImageProps = {
 };
 
 /**
- * 시간표 이미지 영역.
- *
- * - 실제 이미지가 비어 있거나(`image_url === ""`) 데이터가 없으면 "준비 중"
- *   플레이스홀더를 렌더합니다.
- * - 이미지는 Supabase Storage 의 public URL 이며 `next/image` 로 최적화됩니다.
+ * 요약 시간표 이미지 영역 (1장 이상).
  */
 export default function TimetableImage({ data, alt }: TimetableImageProps) {
-  const hasImage = !!data?.image_url;
+  const imageUrls = data ? normalizeTimetableImageUrls(data) : [];
+  const hasImage = imageUrls.length > 0;
 
   return (
     <figure className="overflow-hidden rounded-hero border border-neutral-200 bg-neutral-50">
       {hasImage ? (
-        <div className="relative w-full">
-          <Image
-            src={data!.image_url}
-            alt={alt}
-            width={1600}
-            height={2200}
-            sizes="(min-width: 1024px) 960px, (min-width: 640px) 90vw, 100vw"
-            className="block h-auto w-full"
-          />
+        <div className="divide-y divide-neutral-200">
+          {imageUrls.map((src, index) => (
+            <div key={src} className="relative w-full bg-white">
+              <Image
+                src={src}
+                alt={imageUrls.length > 1 ? `${alt} ${index + 1}` : alt}
+                width={1600}
+                height={2200}
+                sizes="(min-width: 1024px) 960px, (min-width: 640px) 90vw, 100vw"
+                className="block h-auto w-full"
+              />
+            </div>
+          ))}
         </div>
       ) : (
         <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 bg-neutral-50 text-neutral-500">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, Clock, MapPin } from "lucide-react";
+import { ChevronDown, Clock } from "lucide-react";
 
 import InfoSessionDescription from "@/components/info-session/InfoSessionDescription";
 import type { InfoSession } from "@/types/database";
@@ -75,18 +75,10 @@ export default function PastSessions({ sessions }: PastSessionsProps) {
                   session={s}
                   className="mt-2 text-[14px] sm:text-[14px]"
                 />
-                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-neutral-500">
-                  {s.location ? (
-                    <span className="inline-flex items-center gap-1 whitespace-pre-line">
-                      <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                      {s.location}
-                    </span>
-                  ) : null}
-                  <span className="inline-flex items-center gap-1">
-                    <Clock className="h-3.5 w-3.5" aria-hidden="true" />
-                    종료된 설명회
-                  </span>
-                </div>
+                <p className="mt-3 inline-flex items-center gap-1 text-[13px] text-neutral-500">
+                  <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                  종료된 설명회
+                </p>
               </li>
             ))}
           </ul>

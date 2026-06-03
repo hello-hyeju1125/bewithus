@@ -27,6 +27,7 @@ export const ko = {
           { label: "대원외고", href: "/timetable/daewon" },
           { label: "한영외고", href: "/timetable/hanyoung" },
           { label: "고등관", href: "/timetable/general" },
+          { label: "중등관", href: "/timetable/middle" },
           { label: "개인 팀 수업", href: "/timetable/private" },
         ],
       },
@@ -129,15 +130,16 @@ export const ko = {
           href: "/timetable/general",
         },
         {
+          title: "중등관",
+          subtitle: "시간표",
+          href: "/timetable/middle",
+        },
+        {
           title: "개인 및 팀 수업",
           subtitle: "시간표",
           href: "/timetable/private",
         },
       ] as ReadonlyArray<{ title: string; subtitle?: string; href: string }>,
-      teachers: {
-        title: "강사 소개",
-        href: "/teachers",
-      },
       info: [
         { title: "입학 상담", openConsultation: true as const },
         { title: "오시는 길", href: "/location" },
@@ -209,6 +211,46 @@ export const ko = {
     },
     a11y: {
       label: "사이트 푸터",
+    },
+  },
+  admin: {
+    teachers: {
+      photoSpec: {
+        title: "권장 프로필 사진",
+        intro:
+          "강사진 카드는 세로 4:5 비율로 잘려 표시됩니다. 아래 크기·구도로 올리면 화면에서 가장 선명하게 보입니다.",
+        bullets: [
+          "비율 4:5 (가로 4 × 세로 5, 세로형 인물 사진)",
+          "권장 800 × 1000px (고해상도는 1200 × 1500px)",
+          "최소 560 × 700px",
+          "형식 JPG·PNG·WebP, 파일당 10MB 이하",
+          "얼굴·상반신은 세로 중앙~약간 위(상단 20~35% 부근)에 배치",
+          "정사각형·가로형은 좌우·상하가 잘려 얼굴이 작게 보일 수 있음",
+        ],
+        notes: [
+          "데스크톱 카드: 최대 약 138×173px 영역에 맞춰 표시",
+          "모바일 카드: 약 76×95px 썸네일로 표시",
+          "아래 미리보기 비율이 실제 강사진 페이지와 동일합니다",
+        ],
+      },
+    },
+    homeBanners: {
+      imageSpec: {
+        title: "권장 이미지 크기",
+        intro:
+          "메인 고정·팝업에 같은 이미지가 쓰이며, 화면에 맞춰 가장자리가 잘릴 수 있습니다. 아래 비율·픽셀을 기준으로 제작해 주세요.",
+        bullets: [
+          "비율 4:5 (가로 4 × 세로 5, 세로형)",
+          "권장 1200 × 1500px",
+          "최소 800 × 1000px",
+          "형식 JPG·PNG·WebP, 파일당 10MB 이하",
+          "문구·로고 등 중요 요소는 이미지 중앙 80% 안에 배치 (모바일·PC에서 상하·좌우가 잘릴 수 있음)",
+        ],
+        notes: [
+          "메인 고정: PC 기준 약 540×600px 영역에 맞춰 표시",
+          "팝업: 카드당 4:5 비율, 최대 약 360×450px로 표시",
+        ],
+      },
     },
   },
 } as const;

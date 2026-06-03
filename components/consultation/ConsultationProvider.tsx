@@ -11,6 +11,7 @@ import {
 
 import ConsultationModal from "@/components/consultation/ConsultationModal";
 import { Toaster } from "@/components/ui/sonner";
+import type { PublicConsultationFormField } from "@/lib/consultation/fields";
 
 type ConsultationContextValue = {
   open: () => void;
@@ -31,8 +32,10 @@ export function useConsultation() {
 
 export default function ConsultationProvider({
   children,
+  fields,
 }: {
   children: ReactNode;
+  fields: PublicConsultationFormField[];
 }) {
   const [open, setOpen] = useState(false);
 
@@ -47,7 +50,7 @@ export default function ConsultationProvider({
   return (
     <ConsultationContext.Provider value={value}>
       {children}
-      <ConsultationModal open={open} onOpenChange={setOpen} />
+      <ConsultationModal open={open} onOpenChange={setOpen} fields={fields} />
       <Toaster />
     </ConsultationContext.Provider>
   );

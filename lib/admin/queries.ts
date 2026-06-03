@@ -6,6 +6,7 @@ import { mergeSubjectOrder } from "@/lib/teachers/subject-order";
 import { syncTeacherSubjectOrders } from "@/lib/teachers/sync-subject-orders";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
+  ConsultationFormField,
   ConsultationRequest,
   HomeHeroSettings,
   HomeHeroSlide,
@@ -295,6 +296,41 @@ export const adminGetPost = cache(
     } catch (e) {
       console.error("[adminGetPost]", e);
       return null;
+    }
+  },
+);
+
+export const adminListConsultationFormFields = cache(
+  async (): Promise<ConsultationFormField[]> => {
+    try {
+      const supabase = createAdminClient();
+      const { data, error } = await supabase
+        .from("consultation_form_fields")
+        .select("*")
+        .eq("is_active", true)
+        .order("order_index", { ascending: true });
+      if (error) throw error;
+      return (data as unknown as ConsultationFormField[]) ?? [];
+    } catch (e) {
+      console.error("[adminListConsultationFormFields]", e);
+      return [];
+    }
+  },
+);
+
+export const adminListAllConsultationFormFields = cache(
+  async (): Promise<ConsultationFormField[]> => {
+    try {
+      const supabase = createAdminClient();
+      const { data, error } = await supabase
+        .from("consultation_form_fields")
+        .select("*")
+        .order("order_index", { ascending: true });
+      if (error) throw error;
+      return (data as unknown as ConsultationFormField[]) ?? [];
+    } catch (e) {
+      console.error("[adminListAllConsultationFormFields]", e);
+      return [];
     }
   },
 );

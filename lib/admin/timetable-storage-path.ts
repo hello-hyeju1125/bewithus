@@ -23,7 +23,11 @@ export function buildTimetableImageStoragePath(params: {
   year: number;
   semester: string;
   ext: string;
+  /** 다중 이미지 업로드 시 파일 인덱스 */
+  index?: number;
 }): string {
   const semesterSlug = semesterToStorageSlug(params.semester);
-  return `${params.school}/${params.grade}/${params.view_type}_${params.year}_${semesterSlug}.${params.ext}`;
+  const indexSuffix =
+    params.index != null && params.index > 0 ? `_${params.index}` : "";
+  return `${params.school}/${params.grade}/${params.view_type}_${params.year}_${semesterSlug}${indexSuffix}.${params.ext}`;
 }

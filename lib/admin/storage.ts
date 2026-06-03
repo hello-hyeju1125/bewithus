@@ -59,7 +59,7 @@ export function inferExtension(file: File): string {
  * - `upsert: true` 로 같은 경로에 덮어쓰기를 허용합니다 (시간표 교체 시나리오).
  */
 export async function uploadToStorage(params: {
-  bucket: "timetables" | "teachers" | "post-images" | "home-heroes";
+  bucket: "timetables" | "teachers" | "post-images" | "home-heroes" | "home-popups";
   path: string;
   file: File;
   upsert?: boolean;
@@ -93,7 +93,7 @@ export async function uploadToStorage(params: {
  * 버킷 내 객체를 삭제. 실패해도 호출자가 흐름을 깨지 않도록 throw 는 옵션.
  */
 export async function removeFromStorage(params: {
-  bucket: "timetables" | "teachers" | "post-images" | "home-heroes";
+  bucket: "timetables" | "teachers" | "post-images" | "home-heroes" | "home-popups";
   paths: string[];
   throwOnError?: boolean;
 }): Promise<void> {

@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   LogOut,
   Megaphone,
+  ListChecks,
   MessageSquare,
   Newspaper,
   type LucideIcon,
@@ -33,6 +34,7 @@ const ADMIN_NAV: readonly AdminNavItem[] = [
   { href: "/admin/info-session", label: "설명회", icon: Megaphone },
   { href: "/admin/notice", label: "공지사항", icon: Newspaper },
   { href: "/admin/consultations", label: "입학 상담", icon: MessageSquare },
+  { href: "/admin/consultation-form", label: "상담 신청 양식", icon: ListChecks },
 ];
 
 /**
