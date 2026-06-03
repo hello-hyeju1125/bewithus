@@ -1,6 +1,11 @@
 "use server";
 
-import { consultationFormSchema } from "@/lib/consultation/schema";
+import {
+  fallbackConsultationFormFields,
+  normalizeConsultationResponses,
+  parseConsultationFormData,
+} from "@/lib/consultation/fields";
+import { getConsultationFormFields } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import type { ConsultationRequestInsert } from "@/types/database";
 
@@ -11,14 +16,11 @@ export type SubmitConsultationResult =
 export async function submitConsultationAction(
   formData: FormData,
 ): Promise<SubmitConsultationResult> {
-  const parsed = consultationFormSchema.safeParse({
-    student_name: formData.get("student_name"),
-    parent_name: formData.get("parent_name"),
-    phone: formData.get("phone"),
-    school_grade: formData.get("school_grade"),
-    subject: formData.get("subject"),
-    message: formData.get("message"),
-  });
+  const fields = await getConsultationFormFields();
+  const activeFields =
+    fields.length > 0 ? fields : fallbackConsultationFormFields();
+
+  const parsed = parseConsultationFormData(formData, activeFields);
 
   if (!parsed.success) {
     return {
@@ -27,8 +29,19 @@ export async function submitConsultationAction(
     };
   }
 
+  const responses = normalizeConsultationResponses(parsed.data);
+
+  const row: ConsultationRequestInsert = {
+    responses,
+    student_name: responses.student_name ?? null,
+    parent_name: responses.parent_name ?? null,
+    phone: responses.phone ?? null,
+    school_grade: responses.school_grade ?? null,
+    subject: responses.subject ?? null,
+    message: responses.message ?? null,
+  };
+
   const supabase = createClient();
-  const row: ConsultationRequestInsert = parsed.data;
   const { error } = await supabase
     .from("consultation_requests")
     .insert(row as never);

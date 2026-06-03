@@ -3,15 +3,13 @@
 import { revalidatePath } from "next/cache";
 
 import { requireAdmin } from "@/lib/admin/auth";
-import {
-  homeHeroSettingsFormSchema,
-  homeHeroSlideFormSchema,
-} from "@/lib/admin/schemas";
+import { homeBannerFormSchema } from "@/lib/admin/schemas";
 import {
   inferExtension,
   uploadToStorage,
   UploadValidationError,
 } from "@/lib/admin/storage";
+import { HOME_BANNER_SLOTS, isStoredBannerImageUrl } from "@/lib/home/hero-slides";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { HomeHeroSlideSlot } from "@/types/database";
 
@@ -19,19 +17,17 @@ export type ActionResult =
   | { ok: true }
   | { ok: false; error: string };
 
-const SLOTS: HomeHeroSlideSlot[] = [1, 2];
-
-function parseSlideForm(formData: FormData, slot: HomeHeroSlideSlot) {
+function parseBannerForm(formData: FormData, slot: HomeHeroSlideSlot) {
   const prefix = `slide_${slot}_`;
+  const file = formData.get(`${prefix}image_file`);
   const raw = {
-    tagline: formData.get(`${prefix}tagline`),
-    main_headline: formData.get(`${prefix}main_headline`),
-    subtitle: formData.get(`${prefix}subtitle`) ?? "",
-    href: formData.get(`${prefix}href`),
+    href: formData.get(`${prefix}href`) ?? "",
+    show_in_main: formData.get(`${prefix}show_in_main`) === "on",
+    show_in_popup: formData.get(`${prefix}show_in_popup`) === "on",
     background_image_url: formData.get(`${prefix}background_image_url`) ?? "",
-    is_active: formData.get(`${prefix}is_active`) === "on",
+    has_new_image: file instanceof File && file.size > 0,
   };
-  return homeHeroSlideFormSchema.safeParse(raw);
+  return homeBannerFormSchema.safeParse(raw);
 }
 
 export async function updateHomeHeroSlidesAction(
@@ -45,35 +41,8 @@ export async function updateHomeHeroSlidesAction(
 
   const admin = createAdminClient();
 
-  const settingsParsed = homeHeroSettingsFormSchema.safeParse({
-    cta_label: formData.get("cta_label"),
-    popup_enabled: formData.get("popup_enabled") === "on",
-  });
-  if (!settingsParsed.success) {
-    return {
-      ok: false,
-      error:
-        settingsParsed.error.issues[0]?.message ??
-        "CTA 문구 입력값이 올바르지 않습니다.",
-    };
-  }
-
-  const { error: settingsError } = await admin
-    .from("home_hero_settings")
-    .upsert(
-      {
-        id: 1,
-        cta_label: settingsParsed.data.cta_label,
-        popup_enabled: settingsParsed.data.popup_enabled,
-      } as never,
-      { onConflict: "id" },
-    );
-  if (settingsError) {
-    return { ok: false, error: settingsError.message };
-  }
-
-  for (const slot of SLOTS) {
-    const parsed = parseSlideForm(formData, slot);
+  for (const slot of HOME_BANNER_SLOTS) {
+    const parsed = parseBannerForm(formData, slot);
     if (!parsed.success) {
       return {
         ok: false,
@@ -82,10 +51,12 @@ export async function updateHomeHeroSlidesAction(
           `배너 ${slot}번 입력값이 올바르지 않습니다.`,
       };
     }
-    const values = parsed.data;
 
-    let backgroundUrl =
-      values.background_image_url?.trim() || null;
+    const values = parsed.data;
+    let backgroundUrl = values.background_image_url?.trim() || null;
+    if (backgroundUrl && !isStoredBannerImageUrl(backgroundUrl)) {
+      backgroundUrl = null;
+    }
 
     const file = formData.get(`slide_${slot}_image_file`);
     try {
@@ -112,13 +83,30 @@ export async function updateHomeHeroSlidesAction(
       };
     }
 
+    const hasImage = Boolean(backgroundUrl);
+    const href = values.href.trim() || "/";
+
+    const { data: existing } = await admin
+      .from("home_hero_slides")
+      .select("tagline, main_headline, subtitle")
+      .eq("slot", slot)
+      .maybeSingle();
+
+    const prev = existing as {
+      tagline?: string;
+      main_headline?: string;
+      subtitle?: string | null;
+    } | null;
+
     const payload = {
-      tagline: values.tagline,
-      main_headline: values.main_headline,
-      subtitle: values.subtitle?.trim() ? values.subtitle.trim() : null,
-      href: values.href,
+      href,
       background_image_url: backgroundUrl,
-      is_active: values.is_active,
+      is_active: hasImage,
+      show_in_main: hasImage ? values.show_in_main : false,
+      show_in_popup: hasImage ? values.show_in_popup : false,
+      tagline: prev?.tagline ?? "",
+      main_headline: prev?.main_headline ?? "",
+      subtitle: prev?.subtitle ?? null,
     };
 
     const { error } = await admin
@@ -128,6 +116,15 @@ export async function updateHomeHeroSlidesAction(
     if (error) {
       return { ok: false, error: error.message };
     }
+  }
+
+  const { error: touchError } = await admin
+    .from("home_hero_settings")
+    .update({ popup_enabled: false } as never)
+    .eq("id", 1);
+
+  if (touchError) {
+    return { ok: false, error: touchError.message };
   }
 
   revalidatePath("/");

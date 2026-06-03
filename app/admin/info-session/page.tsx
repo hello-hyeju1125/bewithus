@@ -40,7 +40,6 @@ function Section({ rows }: { rows: InfoSession[] }) {
             <TableHead className="w-44">일시</TableHead>
             <TableHead className="w-28">학교</TableHead>
             <TableHead>제목</TableHead>
-            <TableHead className="w-32">장소</TableHead>
             <TableHead className="w-32 text-right">액션</TableHead>
           </TableRow>
         </TableHeader>
@@ -52,7 +51,6 @@ function Section({ rows }: { rows: InfoSession[] }) {
               </TableCell>
               <TableCell>{SCHOOL_LABELS[s.school as StaffSchool]}</TableCell>
               <TableCell>{s.title}</TableCell>
-              <TableCell>{s.location ?? "—"}</TableCell>
               <TableCell className="text-right">
                 <InfoSessionRowActions id={s.id} />
               </TableCell>

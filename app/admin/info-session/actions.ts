@@ -21,7 +21,6 @@ function parseForm(formData: FormData) {
     title: formData.get("title"),
     descriptionJson: formData.get("descriptionJson") ?? "",
     session_date: formData.get("session_date"),
-    location: formData.get("location") ?? "",
     registration_url: formData.get("registration_url") ?? "",
     is_active: formData.get("is_active") === "on",
   });
@@ -74,7 +73,7 @@ function buildPayload(values: ReturnType<typeof parseForm> extends infer R
     description_json: desc.description_json,
     description_html: desc.description_html,
     session_date: new Date(values.session_date).toISOString(),
-    location: values.location || null,
+    location: null,
     capacity: null,
     registration_url: values.registration_url || null,
     is_active: values.is_active,

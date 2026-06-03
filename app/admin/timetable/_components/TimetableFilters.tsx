@@ -10,9 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { SCHOOLS, SCHOOL_LABELS, GRADE_LABELS } from "@/lib/constants";
-
-const SEMESTERS = ["1학기", "2학기", "여름학기", "봄학기"] as const;
 const ALL_GRADES = ["middle-1", "middle-2", "middle-3", "high-1", "high-2", "high-3", "all"];
 
 const ALL = "__all__";
@@ -76,22 +75,15 @@ export default function TimetableFilters({
         </SelectContent>
       </Select>
 
-      <Select
-        value={initial.semester ?? ALL}
-        onValueChange={(v) => update("semester", v)}
-      >
-        <SelectTrigger className="h-9 w-[140px]">
-          <SelectValue placeholder="학기 전체" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ALL}>학기 전체</SelectItem>
-          {SEMESTERS.map((s) => (
-            <SelectItem key={s} value={s}>
-              {s}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <Input
+        className="h-9 w-[140px]"
+        placeholder="학기"
+        defaultValue={initial.semester ?? ""}
+        onBlur={(e) => update("semester", e.currentTarget.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") update("semester", e.currentTarget.value);
+        }}
+      />
     </div>
   );
 }

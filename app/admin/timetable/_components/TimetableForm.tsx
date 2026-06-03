@@ -1,10 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ImagePlus, Loader2 } from "lucide-react";
+import { ImagePlus, Loader2, X } from "lucide-react";
 
 import {
   AlertDialog,
@@ -31,8 +31,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/sonner";
 import {
   GRADE_LABELS,
-  SCHOOLS,
   SCHOOL_GRADES,
+  SCHOOLS,
   SCHOOL_LABELS,
   VIEW_TYPES,
   VIEW_TYPE_LABELS,
@@ -43,6 +43,7 @@ import {
   timetableFormSchema,
   type TimetableFormValues,
 } from "@/lib/admin/schemas";
+import { normalizeTimetableImageUrls } from "@/lib/timetable/image-urls";
 import type { Timetable } from "@/types/database";
 
 import {
@@ -54,15 +55,19 @@ type Props = {
   initial?: Timetable | null;
 };
 
-const SEMESTERS = ["1학기", "2학기", "여름학기", "봄학기"] as const;
+type PendingPreview = {
+  id: string;
+  file: File;
+  url: string;
+};
 
 export default function TimetableForm({ initial }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [pickedFile, setPickedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(
-    initial?.image_url || null,
+  const [keptUrls, setKeptUrls] = useState<string[]>(() =>
+    initial ? normalizeTimetableImageUrls(initial) : [],
   );
+  const [pendingFiles, setPendingFiles] = useState<PendingPreview[]>([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const form = useForm<TimetableFormValues>({
@@ -74,40 +79,88 @@ export default function TimetableForm({ initial }: Props) {
       year: initial?.year ?? new Date().getFullYear(),
       semester: initial?.semester ?? "2학기",
       description: initial?.description ?? "",
-      image_url: initial?.image_url ?? "",
+      image_urls: initial ? normalizeTimetableImageUrls(initial) : [],
       is_active: initial?.is_active ?? true,
     },
   });
 
   const school = form.watch("school") as School;
 
-  function onFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      toast.error("이미지 파일만 업로드할 수 있습니다.");
-      return;
+  useEffect(() => {
+    return () => {
+      pendingFiles.forEach((p) => URL.revokeObjectURL(p.url));
+    };
+  }, [pendingFiles]);
+
+  useEffect(() => {
+    const grade = form.getValues("grade");
+    const allowed = SCHOOL_GRADES[school];
+    if (!allowed.includes(grade)) {
+      form.setValue("grade", allowed[0], { shouldValidate: true });
     }
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("10MB 이하의 이미지만 업로드할 수 있습니다.");
-      return;
+  }, [school, form]);
+
+  function syncImageUrls(urls: string[]) {
+    setKeptUrls(urls);
+    form.setValue("image_urls", urls, { shouldValidate: true });
+  }
+
+  function removeKeptUrl(url: string) {
+    syncImageUrls(keptUrls.filter((u) => u !== url));
+  }
+
+  function removePendingFile(id: string) {
+    setPendingFiles((prev) => {
+      const target = prev.find((p) => p.id === id);
+      if (target) URL.revokeObjectURL(target.url);
+      return prev.filter((p) => p.id !== id);
+    });
+  }
+
+  function onFiles(e: React.ChangeEvent<HTMLInputElement>) {
+    const list = e.target.files;
+    if (!list?.length) return;
+
+    const next: PendingPreview[] = [];
+    for (const file of Array.from(list)) {
+      if (!file.type.startsWith("image/")) {
+        toast.error("이미지 파일만 업로드할 수 있습니다.");
+        continue;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error("10MB 이하의 이미지만 업로드할 수 있습니다.");
+        continue;
+      }
+      next.push({
+        id: `${file.name}-${file.size}-${Date.now()}-${Math.random()}`,
+        file,
+        url: URL.createObjectURL(file),
+      });
     }
-    setPickedFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
-    form.setValue("image_url", file.name, { shouldValidate: true });
+    if (next.length > 0) {
+      setPendingFiles((prev) => [...prev, ...next]);
+    }
+    e.target.value = "";
   }
 
   const submit: SubmitHandler<TimetableFormValues> = (values) => {
+    if (keptUrls.length + pendingFiles.length === 0) {
+      toast.error("이미지를 1개 이상 등록하세요.");
+      return;
+    }
+
     startTransition(async () => {
       const fd = new FormData();
       Object.entries(values).forEach(([k, v]) => {
         if (k === "is_active") {
           if (v) fd.set("is_active", "on");
+        } else if (k === "image_urls") {
+          fd.set("image_urls", JSON.stringify(keptUrls));
         } else {
           fd.set(k, String(v ?? ""));
         }
       });
-      if (pickedFile) fd.set("image_file", pickedFile);
+      pendingFiles.forEach((p) => fd.append("image_files", p.file));
 
       const res = initial
         ? await updateTimetableAction(initial.id, fd)
@@ -125,11 +178,10 @@ export default function TimetableForm({ initial }: Props) {
 
   function onSubmitClick() {
     form.handleSubmit((values) => {
-      if (!initial && !pickedFile) {
-        toast.error("이미지를 업로드하세요.");
+      if (keptUrls.length + pendingFiles.length === 0) {
+        toast.error("이미지를 1개 이상 등록하세요.");
         return;
       }
-      // 같은 조합이 이미 있을 가능성이 있어 사용자에게 확인. 신규 등록일 때만.
       if (!initial) {
         setConfirmOpen(true);
         return;
@@ -139,6 +191,7 @@ export default function TimetableForm({ initial }: Props) {
   }
 
   const values = form.getValues();
+  const totalImages = keptUrls.length + pendingFiles.length;
 
   return (
     <form
@@ -156,11 +209,9 @@ export default function TimetableForm({ initial }: Props) {
               value={school}
               onValueChange={(v) => {
                 form.setValue("school", v as School, { shouldValidate: true });
-                form.setValue(
-                  "grade",
-                  SCHOOL_GRADES[v as School][0],
-                  { shouldValidate: true },
-                );
+                form.setValue("grade", SCHOOL_GRADES[v as School][0], {
+                  shouldValidate: true,
+                });
               }}
             >
               <SelectTrigger id="school">
@@ -233,23 +284,11 @@ export default function TimetableForm({ initial }: Props) {
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="semester">학기</Label>
-              <Select
-                value={form.watch("semester")}
-                onValueChange={(v) =>
-                  form.setValue("semester", v, { shouldValidate: true })
-                }
-              >
-                <SelectTrigger id="semester">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {SEMESTERS.map((s) => (
-                    <SelectItem key={s} value={s}>
-                      {s}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Input
+                id="semester"
+                placeholder="예: 2학기, 여름방학"
+                {...form.register("semester")}
+              />
             </div>
           </div>
         </div>
@@ -303,30 +342,73 @@ export default function TimetableForm({ initial }: Props) {
       </div>
 
       <aside className="space-y-3 rounded-card border border-neutral-200 bg-white p-6">
-        <Label>시간표 이미지</Label>
-        <label className="flex aspect-[3/4] cursor-pointer items-center justify-center overflow-hidden rounded-card border-2 border-dashed border-neutral-300 bg-neutral-50 text-neutral-500 transition-colors hover:border-primary">
-          {previewUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={previewUrl}
-              alt="시간표 미리보기"
-              className="h-full w-full object-contain"
-            />
-          ) : (
-            <div className="flex flex-col items-center gap-1 text-[12px]">
-              <ImagePlus className="h-7 w-7" strokeWidth={1.5} aria-hidden="true" />
-              클릭하여 이미지 선택
+        <div className="flex items-center justify-between gap-2">
+          <Label>시간표 이미지</Label>
+          <span className="text-[12px] tabular-nums text-neutral-500">
+            {totalImages}장
+          </span>
+        </div>
+
+        <div className="space-y-3">
+          {keptUrls.map((url) => (
+            <div
+              key={url}
+              className="relative overflow-hidden rounded-card border border-neutral-200 bg-neutral-50"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={url}
+                alt="등록된 시간표"
+                className="block max-h-[280px] w-full object-contain"
+              />
+              <button
+                type="button"
+                onClick={() => removeKeptUrl(url)}
+                className="absolute right-2 top-2 rounded-button bg-primary p-1 text-white shadow-sm"
+                aria-label="이미지 제거"
+              >
+                <X className="h-4 w-4" aria-hidden="true" />
+              </button>
             </div>
-          )}
+          ))}
+
+          {pendingFiles.map((p) => (
+            <div
+              key={p.id}
+              className="relative overflow-hidden rounded-card border border-dashed border-neutral-300 bg-neutral-50"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={p.url}
+                alt="업로드 예정 시간표"
+                className="block max-h-[280px] w-full object-contain"
+              />
+              <button
+                type="button"
+                onClick={() => removePendingFile(p.id)}
+                className="absolute right-2 top-2 rounded-button bg-primary p-1 text-white shadow-sm"
+                aria-label="선택 취소"
+              >
+                <X className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <label className="flex cursor-pointer items-center justify-center gap-2 rounded-button border-2 border-dashed border-neutral-300 bg-neutral-50 px-4 py-4 text-[13px] font-semibold text-neutral-600 transition-colors hover:border-primary hover:text-primary">
+          <ImagePlus className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
+          이미지 추가 (여러 장 선택 가능)
           <input
             type="file"
             accept="image/*"
+            multiple
             className="hidden"
-            onChange={onFile}
+            onChange={onFiles}
           />
         </label>
-        <p className="text-[11px] text-neutral-400">
-          PNG/JPG/WebP, 10MB 이하. 같은 조합의 시간표가 있으면 덮어씁니다.
+        <p className="text-[11px] leading-relaxed text-neutral-400">
+          PNG/JPG/WebP, 파일당 10MB 이하. 요약 시간표에 순서대로 표시됩니다. 같은
+          조합의 시간표가 있으면 덮어씁니다.
         </p>
       </aside>
 
@@ -335,8 +417,8 @@ export default function TimetableForm({ initial }: Props) {
           <AlertDialogHeader>
             <AlertDialogTitle>이대로 등록할까요?</AlertDialogTitle>
             <AlertDialogDescription>
-              {SCHOOL_LABELS[values.school as School]} ·{" "}
-              {GRADE_LABELS[values.grade] ?? values.grade} ·{" "}
+              {SCHOOL_LABELS[values.school as School]}{" "}
+              · {GRADE_LABELS[values.grade] ?? values.grade} ·{" "}
               {VIEW_TYPE_LABELS[values.view_type as ViewType]} · {values.year}년{" "}
               {values.semester}
               <br />

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { requireAdmin } from "@/lib/admin/auth";
+import { normalizeHexColor } from "@/lib/admin/hex-color";
 import {
   timetableCourseFormSchema,
   type TimetableCourseFormValues,
@@ -26,6 +27,8 @@ function normalize(values: TimetableCourseFormValues) {
     course_subtitle: values.course_subtitle ? values.course_subtitle.trim() : null,
     course_note: values.course_note ? values.course_note.trim() : null,
     tag: values.tag ? values.tag.trim() : null,
+    tag_bg_color: normalizeHexColor(values.tag_bg_color),
+    tag_text_color: normalizeHexColor(values.tag_text_color),
     sessions: values.sessions.map((s) => ({
       day_time: s.day_time.trim(),
       is_full: !!s.is_full,

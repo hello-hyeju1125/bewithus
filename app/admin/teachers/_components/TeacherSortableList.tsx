@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import {
   DndContext,
   PointerSensor,
@@ -21,7 +21,6 @@ import { GripVertical, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
-import { STAFF_SCHOOLS, SCHOOL_LABELS, type StaffSchool } from "@/lib/constants";
 import type { Teacher } from "@/types/database";
 
 import {
@@ -122,63 +121,6 @@ function SortableRow({ teacher }: { teacher: Teacher }) {
   );
 }
 
-function SchoolGroup({
-  school,
-  teachers,
-  onReorder,
-}: {
-  school: StaffSchool;
-  teachers: Teacher[];
-  onReorder: (school: StaffSchool, ordered: Teacher[]) => void;
-}) {
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
-  );
-
-  function onDragEnd(e: DragEndEvent) {
-    const { active, over } = e;
-    if (!over || active.id === over.id) return;
-    const oldIdx = teachers.findIndex((t) => t.id === active.id);
-    const newIdx = teachers.findIndex((t) => t.id === over.id);
-    if (oldIdx === -1 || newIdx === -1) return;
-    const next = arrayMove(teachers, oldIdx, newIdx);
-    onReorder(school, next);
-  }
-
-  return (
-    <section className="space-y-2">
-      <h2 className="text-[16px] font-bold text-primary">
-        {SCHOOL_LABELS[school]}{" "}
-        <span className="ml-1 text-[12px] font-semibold text-neutral-500">
-          {teachers.length}명
-        </span>
-      </h2>
-      {teachers.length === 0 ? (
-        <p className="rounded-card border border-dashed border-neutral-300 bg-neutral-50 px-4 py-6 text-center text-[13px] text-neutral-500">
-          등록된 강사가 없습니다.
-        </p>
-      ) : (
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={onDragEnd}
-        >
-          <SortableContext
-            items={teachers.map((t) => t.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <ul className="space-y-2">
-              {teachers.map((t) => (
-                <SortableRow key={t.id} teacher={t} />
-              ))}
-            </ul>
-          </SortableContext>
-        </DndContext>
-      )}
-    </section>
-  );
-}
-
 export default function TeacherSortableList({
   teachers,
 }: {
@@ -187,23 +129,23 @@ export default function TeacherSortableList({
   const [items, setItems] = useState(teachers);
   const [, startTransition] = useTransition();
 
-  const grouped: Record<StaffSchool, Teacher[]> = {
-    daewon: [],
-    hanyoung: [],
-    general: [],
-  };
-  for (const t of items) {
-    if (t.school in grouped) {
-      grouped[t.school as StaffSchool].push(t);
-    }
-  }
-  for (const s of STAFF_SCHOOLS) {
-    grouped[s].sort((a, b) => a.order_index - b.order_index);
-  }
+  const sorted = useMemo(
+    () => [...items].sort((a, b) => a.order_index - b.order_index),
+    [items],
+  );
 
-  function onReorder(school: StaffSchool, ordered: Teacher[]) {
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+  );
+
+  function onDragEnd(e: DragEndEvent) {
+    const { active, over } = e;
+    if (!over || active.id === over.id) return;
+    const oldIdx = sorted.findIndex((t) => t.id === active.id);
+    const newIdx = sorted.findIndex((t) => t.id === over.id);
+    if (oldIdx === -1 || newIdx === -1) return;
+    const ordered = arrayMove(sorted, oldIdx, newIdx);
     const newItems = items.map((t) => {
-      if (t.school !== school) return t;
       const idx = ordered.findIndex((o) => o.id === t.id);
       return idx === -1 ? t : { ...t, order_index: idx };
     });
@@ -222,15 +164,38 @@ export default function TeacherSortableList({
   }
 
   return (
-    <div className="space-y-8">
-      {STAFF_SCHOOLS.map((s) => (
-        <SchoolGroup
-          key={s}
-          school={s}
-          teachers={grouped[s]}
-          onReorder={onReorder}
-        />
-      ))}
-    </div>
+    <section className="space-y-2" aria-labelledby="teacher-order-heading">
+      <h2
+        id="teacher-order-heading"
+        className="text-[16px] font-bold text-primary"
+      >
+        강사 노출 순서
+        <span className="ml-2 text-[12px] font-semibold text-neutral-500">
+          {sorted.length}명 · 드래그하여 변경
+        </span>
+      </h2>
+      {sorted.length === 0 ? (
+        <p className="rounded-card border border-dashed border-neutral-300 bg-neutral-50 px-4 py-6 text-center text-[13px] text-neutral-500">
+          등록된 강사가 없습니다.
+        </p>
+      ) : (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={onDragEnd}
+        >
+          <SortableContext
+            items={sorted.map((t) => t.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <ul className="space-y-2">
+              {sorted.map((t) => (
+                <SortableRow key={t.id} teacher={t} />
+              ))}
+            </ul>
+          </SortableContext>
+        </DndContext>
+      )}
+    </section>
   );
 }

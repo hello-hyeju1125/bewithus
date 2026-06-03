@@ -27,6 +27,10 @@ import {
   type School,
 } from "@/lib/constants";
 import {
+  DEFAULT_TAG_BG_COLOR,
+  DEFAULT_TAG_TEXT_COLOR,
+} from "@/lib/admin/hex-color";
+import {
   timetableCourseFormSchema,
   type TimetableCourseFormValues,
 } from "@/lib/admin/schemas";
@@ -36,8 +40,6 @@ import {
   createTimetableCourseAction,
   updateTimetableCourseAction,
 } from "../actions";
-
-const SEMESTERS = ["1학기", "2학기", "여름학기", "봄학기"] as const;
 
 const APPLY_VARIANTS = [
   { value: "primary", label: "수강 신청 (옐로)" },
@@ -62,6 +64,8 @@ const DEFAULT_VALUES: TimetableCourseFormValues = {
   course_subtitle: "",
   course_note: "",
   tag: "",
+  tag_bg_color: DEFAULT_TAG_BG_COLOR,
+  tag_text_color: DEFAULT_TAG_TEXT_COLOR,
   sessions: [{ day_time: "", is_full: false }],
   start_dates: [],
   apply_buttons: [],
@@ -91,6 +95,8 @@ export default function CourseForm({
       course_subtitle: initial.course_subtitle ?? "",
       course_note: initial.course_note ?? "",
       tag: initial.tag ?? "",
+      tag_bg_color: initial.tag_bg_color ?? DEFAULT_TAG_BG_COLOR,
+      tag_text_color: initial.tag_text_color ?? DEFAULT_TAG_TEXT_COLOR,
       sessions:
         initial.sessions.length > 0
           ? initial.sessions.map((s) => ({
@@ -237,23 +243,11 @@ export default function CourseForm({
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="semester">학기</Label>
-              <Select
-                value={form.watch("semester")}
-                onValueChange={(v) =>
-                  form.setValue("semester", v, { shouldValidate: true })
-                }
-              >
-                <SelectTrigger id="semester">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {SEMESTERS.map((s) => (
-                    <SelectItem key={s} value={s}>
-                      {s}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Input
+                id="semester"
+                placeholder="예: 2학기, 여름방학"
+                {...form.register("semester")}
+              />
             </div>
           </div>
 
@@ -308,6 +302,54 @@ export default function CourseForm({
               placeholder="예: 특강 / 신설 / 마감임박"
               {...form.register("tag")}
             />
+            <p className="text-[12px] text-neutral-500">
+              상세 시간표 강의명 옆에 표시됩니다. 색상은 아래에서 지정할 수 있습니다.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="tag_bg_color">태그 배경색</Label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                aria-label="태그 배경색 선택"
+                className="h-10 w-12 cursor-pointer rounded-button border border-neutral-200 bg-white p-0.5"
+                value={form.watch("tag_bg_color") || DEFAULT_TAG_BG_COLOR}
+                onChange={(e) =>
+                  form.setValue("tag_bg_color", e.target.value, {
+                    shouldValidate: true,
+                  })
+                }
+              />
+              <Input
+                id="tag_bg_color"
+                placeholder="#FFF33B"
+                {...form.register("tag_bg_color")}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="tag_text_color">태그 글자색</Label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                aria-label="태그 글자색 선택"
+                className="h-10 w-12 cursor-pointer rounded-button border border-neutral-200 bg-white p-0.5"
+                value={form.watch("tag_text_color") || DEFAULT_TAG_TEXT_COLOR}
+                onChange={(e) =>
+                  form.setValue("tag_text_color", e.target.value, {
+                    shouldValidate: true,
+                  })
+                }
+              />
+              <Input
+                id="tag_text_color"
+                placeholder="#22295D"
+                {...form.register("tag_text_color")}
+              />
+            </div>
           </div>
         </div>
 

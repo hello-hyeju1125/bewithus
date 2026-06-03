@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { ArrowRight, MapPin } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import ConsultationCtaLink from "@/components/consultation/ConsultationCtaLink";
 import StaggeredPageShell from "@/components/layout/StaggeredPageShell";
@@ -89,15 +89,6 @@ function UpcomingCard({ session }: { session: InfoSession }) {
           </time>
         </div>
         <InfoSessionDescription session={session} />
-        {session.location ? (
-          <p className="whitespace-pre-line text-[14px] leading-relaxed text-neutral-600 sm:text-[15px] sm:leading-[1.65]">
-            <MapPin
-              className="mr-1.5 inline-block h-4 w-4 shrink-0 align-text-bottom text-primary"
-              aria-hidden="true"
-            />
-            {session.location}
-          </p>
-        ) : null}
       </div>
       <div className="border-t border-neutral-100 pt-5">{cta}</div>
     </article>
@@ -117,6 +108,7 @@ export default async function InfoSessionPage({ params }: InfoSessionPageProps) 
         <InfoSessionPageHero
           schoolLabel={SCHOOL_LABELS[school]}
           description="다가오는 설명회 일정을 확인하고 신청해 보세요."
+          showEyebrow={false}
         />
       }
       content={

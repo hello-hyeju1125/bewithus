@@ -21,7 +21,7 @@ export default async function AdminTeachersPage() {
     <div className="mx-auto max-w-5xl space-y-10">
       <AdminPageHeader
         title="강사진 관리"
-        description="학교별 강사 순서와 과목 해시태그 순서를 드래그로 변경할 수 있습니다. 변경 내용은 홈페이지 강사진에 반영됩니다."
+        description="강사 노출 순서와 과목 해시태그 순서를 드래그로 변경할 수 있습니다. 변경 내용은 홈페이지 강사진에 반영됩니다."
         actions={
           <Button asChild>
             <Link href="/admin/teachers/new">

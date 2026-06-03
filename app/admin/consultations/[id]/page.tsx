@@ -3,7 +3,15 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
-import { adminGetConsultationRequest } from "@/lib/admin/queries";
+import {
+  buildResponseDisplayRows,
+  getConsultationDisplayTitle,
+  getRequestResponses,
+} from "@/lib/consultation/display";
+import {
+  adminGetConsultationRequest,
+  adminListAllConsultationFormFields,
+} from "@/lib/admin/queries";
 
 import ConsultationRowActions from "../_components/ConsultationRowActions";
 import ConsultationStatusBadge from "../_components/ConsultationStatusBadge";
@@ -16,16 +24,14 @@ function formatDateTime(iso: string) {
 }
 
 export default async function AdminConsultationDetailPage({ params }: PageProps) {
-  const request = await adminGetConsultationRequest(params.id);
+  const [request, fieldDefs] = await Promise.all([
+    adminGetConsultationRequest(params.id),
+    adminListAllConsultationFormFields(),
+  ]);
   if (!request) notFound();
 
-  const fields = [
-    { label: "학생 이름", value: request.student_name },
-    { label: "학부모 성함", value: request.parent_name },
-    { label: "전화번호", value: request.phone },
-    { label: "학교 및 학년", value: request.school_grade },
-    { label: "과목", value: request.subject },
-  ] as const;
+  const responses = getRequestResponses(request);
+  const rows = buildResponseDisplayRows(responses, fieldDefs);
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -38,7 +44,7 @@ export default async function AdminConsultationDetailPage({ params }: PageProps)
       </Link>
 
       <AdminPageHeader
-        title={request.student_name}
+        title={getConsultationDisplayTitle(responses)}
         description={`접수: ${formatDateTime(request.created_at)}`}
         actions={
           <div className="flex items-center gap-3">
@@ -49,24 +55,20 @@ export default async function AdminConsultationDetailPage({ params }: PageProps)
       />
 
       <dl className="space-y-4 rounded-card border border-neutral-200 bg-white p-6">
-        {fields.map((f) => (
-          <div key={f.label}>
+        {rows.map((row) => (
+          <div key={row.key}>
             <dt className="text-[12px] font-bold uppercase tracking-wide text-neutral-500">
-              {f.label}
+              {row.label}
             </dt>
-            <dd className="mt-1 text-[16px] font-semibold text-neutral-900">
-              {f.value}
+            <dd
+              className={`mt-1 text-[15px] leading-relaxed text-neutral-800 ${
+                row.key === "message" ? "whitespace-pre-line" : "font-semibold"
+              }`}
+            >
+              {row.value}
             </dd>
           </div>
         ))}
-        <div>
-          <dt className="text-[12px] font-bold uppercase tracking-wide text-neutral-500">
-            상담 내용
-          </dt>
-          <dd className="mt-2 whitespace-pre-line text-[15px] leading-relaxed text-neutral-800">
-            {request.message}
-          </dd>
-        </div>
       </dl>
     </div>
   );

@@ -50,7 +50,6 @@ function toFormValues(initial?: InfoSession | null): InfoSessionFormValues {
     title: initial?.title ?? "",
     descriptionJson: "",
     session_date: initial ? toDatetimeLocal(initial.session_date) : "",
-    location: initial?.location ?? "",
     registration_url: initial?.registration_url ?? "",
     is_active: initial?.is_active ?? true,
   };
@@ -82,7 +81,6 @@ export default function InfoSessionForm({ initial }: Props) {
         fd.set("descriptionJson", JSON.stringify(description));
       }
       fd.set("session_date", values.session_date);
-      fd.set("location", values.location ?? "");
       fd.set("registration_url", values.registration_url ?? "");
       if (values.is_active) fd.set("is_active", "on");
 
@@ -158,11 +156,6 @@ export default function InfoSessionForm({ initial }: Props) {
           onChange={setDescription}
           placeholder="설명회 안내 문구를 입력하세요…"
         />
-      </div>
-
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="location">장소</Label>
-        <Input id="location" {...form.register("location")} />
       </div>
 
       <div className="flex flex-col gap-1.5">

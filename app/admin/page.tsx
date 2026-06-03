@@ -4,6 +4,7 @@ import {
   CalendarRange,
   GraduationCap,
   ImageIcon,
+  ListChecks,
   Megaphone,
   MessageSquare,
   Newspaper,
@@ -13,7 +14,7 @@ const SECTIONS = [
   {
     href: "/admin/home-banners",
     label: "메인 배너",
-    description: "메인 히어로 슬라이더 2개의 배경·문구와 하단 CTA 문구를 수정합니다.",
+    description: "배너 이미지·링크 공통, 메인·팝업 노출을 슬롯별로 선택합니다.",
     icon: ImageIcon,
   },
   {
@@ -45,6 +46,12 @@ const SECTIONS = [
     label: "입학 상담 신청",
     description: "사이트에서 접수된 입학 상담 문의를 확인하고 처리합니다.",
     icon: MessageSquare,
+  },
+  {
+    href: "/admin/consultation-form",
+    label: "상담 신청 양식",
+    description: "상담 신청 모달의 입력 항목 제목·형식·순서를 설정합니다.",
+    icon: ListChecks,
   },
 ] as const;
 

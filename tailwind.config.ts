@@ -41,7 +41,21 @@ const config: Config = {
           800: "#655F08",
           900: "#332F04",
         },
-        // 대원외고 시간표(/timetable/daewon) 전용. hex 변경 시 스케일 통째 갱신.
+        // 시간표 페이지 통일 티파니 블루 (#81D8CF). hex 변경 시 스케일 통째 갱신.
+        tiffany: {
+          DEFAULT: "#81D8CF",
+          50: "#F0FAF9",
+          100: "#D9F4F1",
+          200: "#B3E9E3",
+          300: "#9AE1D9",
+          400: "#81D8CF",
+          500: "#81D8CF",
+          600: "#66C4B8",
+          700: "#4BA89E",
+          800: "#368278",
+          900: "#245C56",
+        },
+        // 로고 워드마크 등 (시간표 UI와 별도). hex 변경 시 스케일 통째 갱신.
         daewon: {
           DEFAULT: "#224590",
           50: "#EEF2F9",
@@ -159,10 +173,16 @@ const config: Config = {
       },
       borderRadius: {
         button: "8px",
+        /** 로고 박스 내부 — 외곽 rounded-button(8px) 과 이중 radius */
+        "logo-inner": "6px",
         card: "7px",
         hero: "8px",
         // 비대칭 리프 — 히어로 태그라인 박스 등
         leaf: "2.75rem 0.5rem 2.25rem 0.75rem",
+      },
+      boxShadow: {
+        /** 로고 노란 면 — 상단 하이라이트·하단 딤 (accent-300 / accent-600) */
+        "logo-plate": "inset 0 1px 0 0 #FFF45F, inset 0 -1px 0 0 #E6DA2F",
       },
       screens: {
         sm: "640px",

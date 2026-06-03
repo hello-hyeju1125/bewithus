@@ -9,23 +9,24 @@ import { ImagePlus, Loader2, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/sonner";
-import { STAFF_SCHOOLS, SCHOOL_LABELS, type StaffSchool } from "@/lib/constants";
+import { ko } from "@/content/ko";
+import type { StaffSchool } from "@/lib/constants";
 import { teacherFormSchema, type TeacherFormValues } from "@/lib/admin/schemas";
+import {
+  getTeacherBioHoverGuideStatus,
+  teacherBioHoverGuideCopy,
+} from "@/lib/teachers/bio-hover-guide";
+import { cn } from "@/lib/utils";
 import type { Teacher } from "@/types/database";
 
 import { createTeacherAction, updateTeacherAction } from "../actions";
 
 type Props = { initial?: Teacher | null };
+
+const photoSpec = ko.admin.teachers.photoSpec;
 
 function toFormValues(initial?: Teacher | null): TeacherFormValues {
   return {
@@ -51,6 +52,9 @@ export default function TeacherForm({ initial }: Props) {
     resolver: zodResolver(teacherFormSchema),
     defaultValues: toFormValues(initial),
   });
+
+  const bioValue = form.watch("bio") ?? "";
+  const bioGuide = getTeacherBioHoverGuideStatus(bioValue);
 
   useEffect(() => {
     form.reset(toFormValues(initial));
@@ -108,6 +112,8 @@ export default function TeacherForm({ initial }: Props) {
       className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]"
     >
       <div className="space-y-5 rounded-card border border-neutral-200 bg-white p-6">
+        <input type="hidden" {...form.register("school")} />
+
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="name">이름</Label>
@@ -117,42 +123,53 @@ export default function TeacherForm({ initial }: Props) {
             <Label htmlFor="subject">과목</Label>
             <Input id="subject" placeholder="예: 영어" {...form.register("subject")} />
           </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="school">학교</Label>
-            <Select
-              value={form.watch("school")}
-              onValueChange={(v) =>
-                form.setValue("school", v as StaffSchool, {
-                  shouldValidate: true,
-                })
-              }
-            >
-              <SelectTrigger id="school">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {STAFF_SCHOOLS.map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {SCHOOL_LABELS[s]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-1.5 sm:col-span-2">
             <Label htmlFor="order_index">노출 순서</Label>
             <Input
               id="order_index"
               type="number"
               min={0}
+              className="max-w-[200px]"
               {...form.register("order_index", { valueAsNumber: true })}
             />
+            <p className="text-[12px] text-neutral-500">
+              숫자가 작을수록 강사진 목록에서 앞에 표시됩니다.
+            </p>
           </div>
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="bio">소개</Label>
-          <Textarea id="bio" rows={5} {...form.register("bio")} />
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <Label htmlFor="bio">소개</Label>
+            <span
+              className={cn(
+                "text-[12px] tabular-nums",
+                bioGuide.withinRecommended
+                  ? "text-neutral-500"
+                  : "font-medium text-amber-700",
+              )}
+              aria-live="polite"
+            >
+              {teacherBioHoverGuideCopy.counter(
+                bioGuide.charCount,
+                bioGuide.lineCount,
+              )}
+            </span>
+          </div>
+          <Textarea
+            id="bio"
+            rows={5}
+            placeholder="예: 서울대 졸업 · 10년 경력 · 대원외고 전담"
+            {...form.register("bio")}
+          />
+          <p className="text-[12px] leading-relaxed text-neutral-500">
+            {teacherBioHoverGuideCopy.hint}
+          </p>
+          {!bioGuide.withinRecommended && bioGuide.charCount > 0 ? (
+            <p className="text-[12px] font-medium text-amber-700">
+              {teacherBioHoverGuideCopy.overRecommended}
+            </p>
+          ) : null}
         </div>
 
         {Object.values(form.formState.errors).length > 0 ? (
@@ -191,28 +208,47 @@ export default function TeacherForm({ initial }: Props) {
         </div>
       </div>
 
-      <aside className="space-y-3 rounded-card border border-neutral-200 bg-white p-6">
-        <Label>프로필 사진</Label>
-        <label className="flex aspect-square cursor-pointer items-center justify-center overflow-hidden rounded-card border-2 border-dashed border-neutral-300 bg-neutral-50 text-neutral-500 transition-colors hover:border-primary">
-          {photoPreview ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={photoPreview}
-              alt="프로필 미리보기"
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex flex-col items-center gap-1 text-[12px]">
-              <User className="h-8 w-8" strokeWidth={1.25} aria-hidden="true" />
-              <ImagePlus className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
-              클릭하여 사진 선택
-            </div>
-          )}
-          <input type="file" accept="image/*" className="hidden" onChange={onPhoto} />
-        </label>
-        <p className="text-[11px] text-neutral-400">
-          정사각형 권장. PNG/JPG/WebP, 10MB 이하.
-        </p>
+      <aside className="space-y-4">
+        <div className="rounded-card border border-neutral-200 bg-white p-6">
+          <Label>프로필 사진</Label>
+          <label className="mt-2 flex aspect-[4/5] max-w-[240px] cursor-pointer items-center justify-center overflow-hidden rounded-card border-2 border-dashed border-neutral-300 bg-neutral-50 text-neutral-500 transition-colors hover:border-primary">
+            {photoPreview ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={photoPreview}
+                alt="프로필 미리보기"
+                className="h-full w-full object-cover object-[center_18%]"
+              />
+            ) : (
+              <div className="flex flex-col items-center gap-1 px-3 text-center text-[12px]">
+                <User className="h-8 w-8" strokeWidth={1.25} aria-hidden="true" />
+                <ImagePlus className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
+                클릭하여 사진 선택
+              </div>
+            )}
+            <input type="file" accept="image/*" className="hidden" onChange={onPhoto} />
+          </label>
+        </div>
+
+        <div
+          aria-label={photoSpec.title}
+          className="rounded-card border border-neutral-200 bg-neutral-50 px-4 py-4"
+        >
+          <h2 className="text-[15px] font-black text-primary">{photoSpec.title}</h2>
+          <p className="mt-2 text-[13px] leading-relaxed text-neutral-600">
+            {photoSpec.intro}
+          </p>
+          <ul className="mt-3 list-disc space-y-1.5 pl-5 text-[13px] leading-relaxed text-neutral-700">
+            {photoSpec.bullets.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+          <ul className="mt-3 list-disc space-y-1 border-t border-neutral-200 pt-3 pl-5 text-[12px] leading-relaxed text-neutral-500">
+            {photoSpec.notes.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        </div>
       </aside>
     </form>
   );

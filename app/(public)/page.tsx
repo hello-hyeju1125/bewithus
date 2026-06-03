@@ -14,17 +14,12 @@ export default async function Home() {
   return (
     <main className={`min-h-[90vh] ${siteMainBelowHeaderClass}`}>
       <HomeBannerPopup
-        enabled={heroContent.popupEnabled}
-        slides={heroContent.slides}
-        ctaLabel={heroContent.ctaLabel}
+        slides={heroContent.popupSlides}
         settingsUpdatedAt={heroContent.settingsUpdatedAt}
       />
       <section className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-10">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[45fr_55fr_100px] lg:gap-8 lg:items-stretch">
-          <HeroSlider
-            slides={heroContent.slides}
-            ctaLabel={heroContent.ctaLabel}
-          />
+          <HeroSlider slides={heroContent.mainSlides} />
           <CardGrid />
           <div className={siteSideWidgetColumnClass}>
             <SideWidget />

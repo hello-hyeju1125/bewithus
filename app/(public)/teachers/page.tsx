@@ -32,11 +32,7 @@ export default async function AllTeachersPage() {
           aria-label="강사 카드 그리드"
           className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} py-10 sm:py-12 lg:py-14`}
         >
-          <TeacherCardList
-            teachers={teachers}
-            subjectOrder={subjectOrder}
-            showSchool
-          />
+          <TeacherCardList teachers={teachers} subjectOrder={subjectOrder} />
         </section>
       }
     />

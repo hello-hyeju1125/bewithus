@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -9,6 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  getConsultationDisplayPhone,
+  getConsultationDisplayTitle,
+  getRequestResponses,
+} from "@/lib/consultation/display";
 import { adminListConsultationRequests } from "@/lib/admin/queries";
 
 import ConsultationRowActions from "./_components/ConsultationRowActions";
@@ -32,6 +38,11 @@ export default async function AdminConsultationsPage() {
             ? `미확인 신규 ${newCount}건이 있습니다.`
             : "사이트에서 접수된 입학 상담 신청을 확인합니다."
         }
+        actions={
+          <Button asChild variant="outline" className="shrink-0">
+            <Link href="/admin/consultation-form">상담 신청 양식 설정</Link>
+          </Button>
+        }
       />
 
       <div className="overflow-hidden rounded-card border border-neutral-200 bg-white">
@@ -39,11 +50,8 @@ export default async function AdminConsultationsPage() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-20">상태</TableHead>
-              <TableHead>학생</TableHead>
-              <TableHead>학부모</TableHead>
-              <TableHead className="w-32">연락처</TableHead>
-              <TableHead>학교·학년</TableHead>
-              <TableHead className="w-24">과목</TableHead>
+              <TableHead>신청자</TableHead>
+              <TableHead className="w-36">연락처</TableHead>
               <TableHead className="w-36">접수일</TableHead>
               <TableHead className="w-48 text-right">처리</TableHead>
             </TableRow>
@@ -52,42 +60,40 @@ export default async function AdminConsultationsPage() {
             {requests.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={8}
+                  colSpan={5}
                   className="py-12 text-center text-neutral-500"
                 >
                   접수된 상담 신청이 없습니다.
                 </TableCell>
               </TableRow>
             ) : (
-              requests.map((r) => (
-                <TableRow key={r.id}>
-                  <TableCell>
-                    <ConsultationStatusBadge status={r.status} />
-                  </TableCell>
-                  <TableCell className="font-semibold text-primary">
-                    <Link
-                      href={`/admin/consultations/${r.id}`}
-                      className="hover:underline"
-                    >
-                      {r.student_name}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{r.parent_name}</TableCell>
-                  <TableCell className="whitespace-nowrap text-[13px]">
-                    {r.phone}
-                  </TableCell>
-                  <TableCell className="max-w-[140px] truncate">
-                    {r.school_grade}
-                  </TableCell>
-                  <TableCell>{r.subject}</TableCell>
-                  <TableCell className="whitespace-nowrap text-[13px] text-neutral-600">
-                    {formatDateTime(r.created_at)}
-                  </TableCell>
-                  <TableCell>
-                    <ConsultationRowActions id={r.id} status={r.status} />
-                  </TableCell>
-                </TableRow>
-              ))
+              requests.map((r) => {
+                const responses = getRequestResponses(r);
+                return (
+                  <TableRow key={r.id}>
+                    <TableCell>
+                      <ConsultationStatusBadge status={r.status} />
+                    </TableCell>
+                    <TableCell className="font-semibold text-primary">
+                      <Link
+                        href={`/admin/consultations/${r.id}`}
+                        className="hover:underline"
+                      >
+                        {getConsultationDisplayTitle(responses)}
+                      </Link>
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap text-[13px]">
+                      {getConsultationDisplayPhone(responses)}
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap text-[13px] text-neutral-600">
+                      {formatDateTime(r.created_at)}
+                    </TableCell>
+                    <TableCell>
+                      <ConsultationRowActions id={r.id} status={r.status} />
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>

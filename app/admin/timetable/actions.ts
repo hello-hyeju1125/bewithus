@@ -13,11 +13,29 @@ import {
 } from "@/lib/admin/storage";
 import { buildTimetableImageStoragePath } from "@/lib/admin/timetable-storage-path";
 import { adminFindTimetableByKey, adminGetTimetable } from "@/lib/admin/queries";
+import { normalizeTimetableImageUrls } from "@/lib/timetable/image-urls";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export type ActionResult<T = void> =
   | ({ ok: true } & (T extends void ? object : { data: T }))
   | { ok: false; error: string };
+
+function parseImageUrlsField(raw: FormDataEntryValue | null): string[] {
+  if (typeof raw !== "string" || !raw.trim()) return [];
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((u): u is string => typeof u === "string" && u.length > 0);
+  } catch {
+    return [];
+  }
+}
+
+function storagePathsFromUrls(urls: string[]): string[] {
+  return urls
+    .map((u) => urlToStoragePath(u, "timetables"))
+    .filter((p): p is string => Boolean(p));
+}
 
 function parseFormCommon(formData: FormData) {
   const yearRaw = formData.get("year");
@@ -28,10 +46,84 @@ function parseFormCommon(formData: FormData) {
     year: yearRaw != null ? Number(yearRaw) : NaN,
     semester: formData.get("semester"),
     description: formData.get("description") ?? "",
-    image_url: formData.get("image_url") ?? "",
+    image_urls: parseImageUrlsField(formData.get("image_urls")),
     is_active: formData.get("is_active") === "on",
   };
   return timetableFormSchema.safeParse(raw);
+}
+
+async function uploadTimetableImages(
+  values: {
+    school: string;
+    grade: string;
+    view_type: string;
+    year: number;
+    semester: string;
+  },
+  keptUrls: string[],
+  formData: FormData,
+): Promise<{ ok: true; urls: string[] } | { ok: false; error: string }> {
+  const files = formData
+    .getAll("image_files")
+    .filter((f): f is File => f instanceof File && f.size > 0);
+
+  const urls = [...keptUrls];
+
+  try {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]!;
+      const ext = inferExtension(file);
+      const path = buildTimetableImageStoragePath({
+        school: values.school,
+        grade: values.grade,
+        view_type: values.view_type,
+        year: values.year,
+        semester: values.semester,
+        ext,
+        index: urls.length + i,
+      });
+      const { publicUrl } = await uploadToStorage({
+        bucket: "timetables",
+        path,
+        file,
+        upsert: true,
+      });
+      urls.push(publicUrl);
+    }
+  } catch (e) {
+    return {
+      ok: false,
+      error:
+        e instanceof UploadValidationError
+          ? e.message
+          : e instanceof Error
+            ? e.message
+            : "이미지 업로드 중 오류가 발생했습니다.",
+    };
+  }
+
+  if (urls.length === 0) {
+    return { ok: false, error: "이미지를 1개 이상 등록하세요." };
+  }
+
+  return { ok: true, urls };
+}
+
+function timetablePayload(
+  values: ReturnType<typeof timetableFormSchema.parse>,
+  imageUrls: string[],
+) {
+  return {
+    school: values.school,
+    grade: values.grade,
+    view_type: values.view_type,
+    year: values.year,
+    semester: values.semester.trim(),
+    description: values.description || null,
+    image_urls: imageUrls,
+    image_url: imageUrls[0]!,
+    is_active: values.is_active,
+  };
 }
 
 export async function createTimetableAction(
@@ -52,66 +144,33 @@ export async function createTimetableAction(
   }
   const values = parsed.data;
 
-  const file = formData.get("image_file");
-  let imageUrl = values.image_url;
-
-  try {
-    if (file instanceof File && file.size > 0) {
-      const ext = inferExtension(file);
-      const path = buildTimetableImageStoragePath({
-        school: values.school,
-        grade: values.grade,
-        view_type: values.view_type,
-        year: values.year,
-        semester: values.semester,
-        ext,
-      });
-      const { publicUrl } = await uploadToStorage({
-        bucket: "timetables",
-        path,
-        file,
-        upsert: true,
-      });
-      imageUrl = publicUrl;
-    }
-  } catch (e) {
-    return {
-      ok: false,
-      error:
-        e instanceof UploadValidationError
-          ? e.message
-          : e instanceof Error
-            ? e.message
-            : "이미지 업로드 중 오류가 발생했습니다.",
-    };
-  }
-
-  if (!imageUrl) {
-    return { ok: false, error: "이미지를 업로드하세요." };
-  }
+  const uploaded = await uploadTimetableImages(values, values.image_urls, formData);
+  if (!uploaded.ok) return { ok: false, error: uploaded.error };
 
   const admin = createAdminClient();
+  const payload = timetablePayload(values, uploaded.urls);
 
-  // 같은 (school, grade, view_type, year, semester) 조합이 이미 있으면
-  // upsert 로 덮어씁니다. 호출 측에서 확인 모달을 띄운 후 호출하는 것을
-  // 전제로 합니다.
   const existing = await adminFindTimetableByKey({
     school: values.school,
     grade: values.grade,
     view_type: values.view_type,
     year: values.year,
-    semester: values.semester,
+    semester: values.semester.trim(),
   });
 
   if (existing) {
-    const updatePayload = {
-      image_url: imageUrl,
-      description: values.description || null,
-      is_active: values.is_active,
-    };
+    const prevUrls = normalizeTimetableImageUrls(existing);
+    const removed = prevUrls.filter((u) => !uploaded.urls.includes(u));
+    if (removed.length > 0) {
+      await removeFromStorage({
+        bucket: "timetables",
+        paths: storagePathsFromUrls(removed),
+      });
+    }
+
     const { error } = await admin
       .from("timetables")
-      .update(updatePayload as never)
+      .update(payload as never)
       .eq("id", existing.id);
     if (error) return { ok: false, error: error.message };
     revalidatePath(`/timetable/${values.school}`);
@@ -119,19 +178,9 @@ export async function createTimetableAction(
     return { ok: true, data: { id: existing.id } };
   }
 
-  const insertPayload = {
-    school: values.school,
-    grade: values.grade,
-    view_type: values.view_type,
-    year: values.year,
-    semester: values.semester,
-    description: values.description || null,
-    image_url: imageUrl,
-    is_active: values.is_active,
-  };
   const { data, error } = await admin
     .from("timetables")
-    .insert(insertPayload as never)
+    .insert(payload as never)
     .select("id")
     .maybeSingle();
   if (error) return { ok: false, error: error.message };
@@ -163,54 +212,25 @@ export async function updateTimetableAction(
   }
   const values = parsed.data;
 
-  const file = formData.get("image_file");
-  let imageUrl = values.image_url;
+  const row = await adminGetTimetable(id);
+  if (!row) return { ok: false, error: "항목을 찾을 수 없습니다." };
 
-  try {
-    if (file instanceof File && file.size > 0) {
-      const ext = inferExtension(file);
-      const path = buildTimetableImageStoragePath({
-        school: values.school,
-        grade: values.grade,
-        view_type: values.view_type,
-        year: values.year,
-        semester: values.semester,
-        ext,
-      });
-      const { publicUrl } = await uploadToStorage({
-        bucket: "timetables",
-        path,
-        file,
-        upsert: true,
-      });
-      imageUrl = publicUrl;
-    }
-  } catch (e) {
-    return {
-      ok: false,
-      error:
-        e instanceof UploadValidationError
-          ? e.message
-          : e instanceof Error
-            ? e.message
-            : "이미지 업로드 중 오류가 발생했습니다.",
-    };
+  const uploaded = await uploadTimetableImages(values, values.image_urls, formData);
+  if (!uploaded.ok) return { ok: false, error: uploaded.error };
+
+  const prevUrls = normalizeTimetableImageUrls(row);
+  const removed = prevUrls.filter((u) => !uploaded.urls.includes(u));
+  if (removed.length > 0) {
+    await removeFromStorage({
+      bucket: "timetables",
+      paths: storagePathsFromUrls(removed),
+    });
   }
 
   const admin = createAdminClient();
-  const updatePayload = {
-    school: values.school,
-    grade: values.grade,
-    view_type: values.view_type,
-    year: values.year,
-    semester: values.semester,
-    description: values.description || null,
-    image_url: imageUrl,
-    is_active: values.is_active,
-  };
   const { error } = await admin
     .from("timetables")
-    .update(updatePayload as never)
+    .update(timetablePayload(values, uploaded.urls) as never)
     .eq("id", id);
   if (error) return { ok: false, error: error.message };
 
@@ -235,11 +255,9 @@ export async function deleteTimetableAction(
   const { error } = await admin.from("timetables").delete().eq("id", id);
   if (error) return { ok: false, error: error.message };
 
-  if (existing.image_url) {
-    const path = urlToStoragePath(existing.image_url, "timetables");
-    if (path) {
-      await removeFromStorage({ bucket: "timetables", paths: [path] });
-    }
+  const paths = storagePathsFromUrls(normalizeTimetableImageUrls(existing));
+  if (paths.length > 0) {
+    await removeFromStorage({ bucket: "timetables", paths });
   }
 
   revalidatePath(`/timetable/${existing.school}`);
