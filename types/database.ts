@@ -10,9 +10,18 @@
  * supabase/migrations/001_initial.sql 과 항상 동기화하세요.
  */
 
-export type SchoolType = "daewon" | "hanyoung" | "general" | "private";
+export type SchoolType =
+  | "daewon"
+  | "hanyoung"
+  | "general"
+  | "middle"
+  | "private";
+
+/** 시간표·상세 강의 — `school_type` enum 전체 */
 export type TimetableSchool = SchoolType;
-export type StaffSchool = Exclude<SchoolType, "private">;
+
+/** 강사진·설명회 — DB check 제약으로 middle/private 제외 */
+export type StaffSchool = "daewon" | "hanyoung" | "general";
 export type ViewType = "summary" | "detail";
 
 /**
@@ -43,6 +52,7 @@ export type Timetable = {
   grade: string;
   view_type: ViewType;
   image_url: string;
+  image_urls: string[];
   description: string | null;
   year: number;
   semester: string;
@@ -91,6 +101,8 @@ export type TimetableCourse = {
   course_subtitle: string | null;
   course_note: string | null;
   tag: string | null;
+  tag_bg_color: string | null;
+  tag_text_color: string | null;
   sessions: CourseSession[];
   start_dates: string[];
   apply_buttons: CourseApplyButton[];
@@ -110,6 +122,8 @@ export type TimetableCourseInsert = Omit<
   | "course_subtitle"
   | "course_note"
   | "tag"
+  | "tag_bg_color"
+  | "tag_text_color"
   | "detail_url"
   | "order_index"
   | "sessions"
@@ -120,6 +134,8 @@ export type TimetableCourseInsert = Omit<
   course_subtitle?: string | null;
   course_note?: string | null;
   tag?: string | null;
+  tag_bg_color?: string | null;
+  tag_text_color?: string | null;
   detail_url?: string | null;
   sessions?: CourseSession[];
   start_dates?: string[];
@@ -280,33 +296,65 @@ export type PostAttachmentUpdate = Partial<PostAttachmentInsert>;
 
 export type ConsultationStatus = "new" | "read" | "archived";
 
+export type ConsultationFieldType = "text" | "tel" | "textarea";
+
+export type ConsultationFormField = {
+  id: string;
+  field_key: string;
+  label: string;
+  field_type: ConsultationFieldType;
+  placeholder: string | null;
+  is_required: boolean;
+  order_index: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ConsultationFormFieldInsert = Omit<
+  ConsultationFormField,
+  "id" | "created_at" | "updated_at" | "placeholder" | "is_active"
+> & {
+  id?: string;
+  placeholder?: string | null;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type ConsultationFormFieldUpdate = Partial<ConsultationFormFieldInsert>;
+
+export type ConsultationResponses = Record<string, string>;
+
 export type ConsultationRequest = {
   id: string;
-  student_name: string;
-  parent_name: string;
-  phone: string;
-  school_grade: string;
-  subject: string;
-  message: string;
+  student_name: string | null;
+  parent_name: string | null;
+  phone: string | null;
+  school_grade: string | null;
+  subject: string | null;
+  message: string | null;
+  responses: ConsultationResponses;
   status: ConsultationStatus;
   created_at: string;
   updated_at: string;
 };
 
-export type ConsultationRequestInsert = Omit<
-  ConsultationRequest,
-  "id" | "created_at" | "updated_at" | "status"
-> & {
-  id?: string;
+export type ConsultationRequestInsert = {
+  responses: ConsultationResponses;
   status?: ConsultationStatus;
-  created_at?: string;
-  updated_at?: string;
+  student_name?: string | null;
+  parent_name?: string | null;
+  phone?: string | null;
+  school_grade?: string | null;
+  subject?: string | null;
+  message?: string | null;
 };
 
 export type ConsultationRequestUpdate = Partial<ConsultationRequestInsert>;
 
-/** 메인 히어로 슬라이더 슬롯 (1 또는 2) */
-export type HomeHeroSlideSlot = 1 | 2;
+/** 메인 히어로 슬라이더 슬롯 (1~3) */
+export type HomeHeroSlideSlot = 1 | 2 | 3;
 
 export type HomeHeroSlide = {
   slot: HomeHeroSlideSlot;
@@ -316,17 +364,48 @@ export type HomeHeroSlide = {
   href: string;
   background_image_url: string | null;
   is_active: boolean;
+  show_in_main: boolean;
+  show_in_popup: boolean;
   created_at: string;
   updated_at: string;
 };
 
+export type HomePopupBanner = {
+  slot: HomeHeroSlideSlot;
+  href: string;
+  background_image_url: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type HomePopupBannerInsert = Omit<
+  HomePopupBanner,
+  "created_at" | "updated_at" | "background_image_url" | "is_active"
+> & {
+  background_image_url?: string | null;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type HomePopupBannerUpdate = Partial<HomePopupBannerInsert>;
+
 export type HomeHeroSlideInsert = Omit<
   HomeHeroSlide,
-  "created_at" | "updated_at" | "subtitle" | "background_image_url" | "is_active"
+  | "created_at"
+  | "updated_at"
+  | "subtitle"
+  | "background_image_url"
+  | "is_active"
+  | "show_in_main"
+  | "show_in_popup"
 > & {
   subtitle?: string | null;
   background_image_url?: string | null;
   is_active?: boolean;
+  show_in_main?: boolean;
+  show_in_popup?: boolean;
   created_at?: string;
   updated_at?: string;
 };
@@ -391,6 +470,11 @@ export type Database = {
         Insert: PostAttachmentInsert;
         Update: PostAttachmentUpdate;
       };
+      consultation_form_fields: {
+        Row: ConsultationFormField;
+        Insert: ConsultationFormFieldInsert;
+        Update: ConsultationFormFieldUpdate;
+      };
       consultation_requests: {
         Row: ConsultationRequest;
         Insert: ConsultationRequestInsert;
@@ -400,6 +484,11 @@ export type Database = {
         Row: HomeHeroSlide;
         Insert: HomeHeroSlideInsert;
         Update: HomeHeroSlideUpdate;
+      };
+      home_popup_banners: {
+        Row: HomePopupBanner;
+        Insert: HomePopupBannerInsert;
+        Update: HomePopupBannerUpdate;
       };
       home_hero_settings: {
         Row: HomeHeroSettings;
