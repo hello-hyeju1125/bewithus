@@ -80,9 +80,9 @@ export default function Header() {
     };
   }, [menuOpen]);
 
-  /** 홈 최상단만 투명 GNB — 서브 페이지·스크롤·메가메뉴 시 흰 배경 */
-  const headerBg =
-    !isHomePage || hoverMenuOpen || scrolled ? "bg-white" : "bg-transparent";
+  /** 홈 최상단만 티파니 GNB — 서브 페이지·스크롤·메가메뉴 시 흰 배경 */
+  const isHomeTopBar = isHomePage && !hoverMenuOpen && !scrolled;
+  const headerBg = isHomeTopBar ? "bg-tiffany" : "bg-white";
 
   return (
     <>
@@ -104,7 +104,11 @@ export default function Header() {
 
         <header
           className={`relative z-10 transition-[background-color,border-color] duration-300 ${headerBg} ${
-            hoverMenuOpen ? "" : "border-b border-neutral-200"
+            hoverMenuOpen
+              ? ""
+              : isHomeTopBar
+                ? "border-b border-tiffany-600/25"
+                : "border-b border-neutral-200"
           }`}
         >
           <div

@@ -284,6 +284,11 @@ function TeacherCell({
         )}
       </div>
       <span className="text-[14px] font-black text-neutral-900 md:text-[18px]">{name}</span>
+      {course.detail_url ? (
+        <div className="mt-1">
+          <DetailVideoLink url={course.detail_url} />
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -336,11 +341,6 @@ function CourseRow({
       </td>
       <td className="px-5 py-5">
         <SessionList sessions={course.sessions} />
-        {course.detail_url ? (
-          <div className="mt-4">
-            <DetailVideoLink url={course.detail_url} />
-          </div>
-        ) : null}
       </td>
       <td className="px-5 py-5">
         <StartDateList dates={course.start_dates} />
@@ -381,6 +381,11 @@ function CourseCard({
           <p className="w-full text-center text-[12px] font-black leading-tight text-neutral-900">
             {course.teacher?.name ?? ""}
           </p>
+          {course.detail_url ? (
+            <div className="mt-1.5 w-full">
+              <DetailVideoLink url={course.detail_url} />
+            </div>
+          ) : null}
         </div>
         <div className="min-w-0 flex-1 pt-0.5">
           <div className="flex flex-wrap items-start gap-x-2 gap-y-2">
@@ -411,11 +416,6 @@ function CourseCard({
               <span className="text-[17px] font-bold text-neutral-400">—</span>
             )}
           </div>
-          {course.detail_url ? (
-            <div className="mt-3">
-              <DetailVideoLink url={course.detail_url} />
-            </div>
-          ) : null}
         </div>
         <div className={`border-t-2 pt-3.5 ${theme.body.cardDivider}`}>
           <p

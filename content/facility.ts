@@ -1,10 +1,18 @@
-/** 시설 안내 갤러리 — public/asset */
+/** 시설 안내 갤러리 — public/asset/Gallery_* */
 export const FACILITY_GALLERY_IMAGES = [
-  { id: "gallery01", src: "/asset/gallery01.png", alt: "대치위더스 시설 사진 1" },
-  { id: "gallery02", src: "/asset/gallery02.png", alt: "대치위더스 시설 사진 2" },
-  { id: "gallery03", src: "/asset/gallery03.png", alt: "대치위더스 시설 사진 3" },
-  { id: "gallery04", src: "/asset/gallery04.png", alt: "대치위더스 시설 사진 4" },
-  { id: "gallery05", src: "/asset/gallery05.png", alt: "대치위더스 시설 사진 5" },
+  { id: "gallery-a", src: "/asset/Gallery_A.jpg", alt: "대치위더스 시설 사진 (입학)" },
+  { id: "gallery-a2", src: "/asset/Gallery_A2.jpg", alt: "대치위더스 시설 사진 (입학)" },
+  { id: "gallery-a3", src: "/asset/Gallery_A3.jpg", alt: "대치위더스 시설 사진 (입학)" },
+  { id: "gallery-m", src: "/asset/Gallery_M.jpg", alt: "대치위더스 시설 사진 (중등)" },
+  { id: "gallery-m2", src: "/asset/Gallery_M2.jpg", alt: "대치위더스 시설 사진 (중등)" },
+  { id: "gallery-m3", src: "/asset/Gallery_M3.jpg", alt: "대치위더스 시설 사진 (중등)" },
+  { id: "gallery-m4", src: "/asset/Gallery_M4.jpg", alt: "대치위더스 시설 사진 (중등)" },
+  { id: "gallery-p", src: "/asset/Gallery_P.jpg", alt: "대치위더스 시설 사진 (사립관)" },
+  { id: "gallery-p2", src: "/asset/Gallery_P2.jpg", alt: "대치위더스 시설 사진 (사립관)" },
+  { id: "gallery-p3", src: "/asset/Gallery_P3.jpg", alt: "대치위더스 시설 사진 (사립관)" },
+  { id: "gallery-p4", src: "/asset/Gallery_P4.jpg", alt: "대치위더스 시설 사진 (사립관)" },
+  { id: "gallery-p5", src: "/asset/Gallery_P5.jpg", alt: "대치위더스 시설 사진 (사립관)" },
+  { id: "gallery-p6", src: "/asset/Gallery_P6.jpg", alt: "대치위더스 시설 사진 (사립관)" },
 ] as const;
 
 export type FacilityGalleryImage = (typeof FACILITY_GALLERY_IMAGES)[number];

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 import type { FacilityGalleryImage } from "@/content/facility";
@@ -12,7 +13,10 @@ type FacilityGalleryProps = {
 
 export default function FacilityGallery({ images }: FacilityGalleryProps) {
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
+  const [mounted, setMounted] = useState(false);
   const active = activeIdx !== null ? images[activeIdx] : null;
+
+  useEffect(() => setMounted(true), []);
 
   const close = useCallback(() => setActiveIdx(null), []);
   const prev = useCallback(
@@ -57,7 +61,7 @@ export default function FacilityGallery({ images }: FacilityGalleryProps) {
   return (
     <>
       <ul
-        className="columns-1 gap-3 sm:columns-2 sm:gap-4 lg:columns-3 lg:gap-5"
+        className="columns-1 gap-3 sm:columns-2 sm:gap-4 lg:gap-5"
         role="list"
       >
         {images.map((image, idx) => (
@@ -73,7 +77,7 @@ export default function FacilityGallery({ images }: FacilityGalleryProps) {
                 alt={image.alt}
                 width={1600}
                 height={1200}
-                sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                sizes="(min-width: 640px) 50vw, 100vw"
                 className="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
               />
             </button>
@@ -81,56 +85,67 @@ export default function FacilityGallery({ images }: FacilityGalleryProps) {
         ))}
       </ul>
 
-      {active ? (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="시설 사진 보기"
-          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/90 p-4 sm:p-8"
-        >
-          <button
-            type="button"
-            aria-label="닫기"
-            onClick={close}
-            className="absolute inset-0"
-          />
-          <button
-            type="button"
-            onClick={close}
-            aria-label="라이트박스 닫기"
-            className="absolute right-4 top-4 z-10 inline-flex h-11 w-11 items-center justify-center rounded-button bg-white/10 text-white outline-none transition-colors hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white"
-          >
-            <X className="h-5 w-5" aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            onClick={prev}
-            aria-label="이전 사진"
-            className="absolute left-2 top-1/2 z-10 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-button bg-white/10 text-white outline-none transition-colors hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white sm:left-4"
-          >
-            <ChevronLeft className="h-6 w-6" aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            onClick={next}
-            aria-label="다음 사진"
-            className="absolute right-2 top-1/2 z-10 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-button bg-white/10 text-white outline-none transition-colors hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white sm:right-4"
-          >
-            <ChevronRight className="h-6 w-6" aria-hidden="true" />
-          </button>
-          <div className="relative z-[1] max-h-[90vh] w-full max-w-6xl">
-            <Image
-              src={active.src}
-              alt={active.alt}
-              width={1920}
-              height={1280}
-              sizes="100vw"
-              className="mx-auto h-auto max-h-[90vh] w-auto max-w-full object-contain"
-              priority
-            />
-          </div>
-        </div>
-      ) : null}
+      {active && mounted
+        ? createPortal(
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-label="시설 사진 보기"
+              className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 sm:p-8"
+              onClick={close}
+            >
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  close();
+                }}
+                aria-label="닫기"
+                className="absolute right-4 top-4 z-10 inline-flex h-11 items-center gap-1.5 rounded-button bg-white px-3.5 text-[14px] font-black text-primary outline-none transition-colors hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black/90 sm:right-6 sm:top-6"
+              >
+                <X className="h-5 w-5 shrink-0" aria-hidden="true" />
+                <span>닫기</span>
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  prev();
+                }}
+                aria-label="이전 사진"
+                className="absolute left-2 top-1/2 z-10 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-button bg-white/10 text-white outline-none transition-colors hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white sm:left-4"
+              >
+                <ChevronLeft className="h-6 w-6" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  next();
+                }}
+                aria-label="다음 사진"
+                className="absolute right-2 top-1/2 z-10 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-button bg-white/10 text-white outline-none transition-colors hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white sm:right-4"
+              >
+                <ChevronRight className="h-6 w-6" aria-hidden="true" />
+              </button>
+              <div
+                className="relative z-[1] max-h-[90vh] w-full max-w-6xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Image
+                  src={active.src}
+                  alt={active.alt}
+                  width={1920}
+                  height={1280}
+                  sizes="100vw"
+                  className="mx-auto h-auto max-h-[90vh] w-auto max-w-full object-contain"
+                  priority
+                />
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </>
   );
 }
