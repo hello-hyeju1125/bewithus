@@ -1,5 +1,16 @@
 /** 시설 안내 갤러리 — public/asset/Gallery_* */
-export const FACILITY_GALLERY_SECTIONS = [
+export type FacilityGalleryImage = {
+  readonly id: string;
+  readonly src: string;
+  readonly alt: string;
+};
+
+export type FacilityGallerySection = {
+  readonly layout: "pair" | "masonry";
+  readonly images: readonly FacilityGalleryImage[];
+};
+
+export const FACILITY_GALLERY_SECTIONS: readonly FacilityGallerySection[] = [
   {
     layout: "pair",
     images: [
@@ -29,11 +40,7 @@ export const FACILITY_GALLERY_SECTIONS = [
       { id: "gallery-s2", src: "/asset/Gallery_S2.jpg", alt: "대치위더스 시설 사진" },
     ],
   },
-] as const;
+];
 
-export const FACILITY_GALLERY_IMAGES = FACILITY_GALLERY_SECTIONS.flatMap(
-  (section) => section.images,
-);
-
-export type FacilityGalleryImage = (typeof FACILITY_GALLERY_IMAGES)[number];
-export type FacilityGallerySection = (typeof FACILITY_GALLERY_SECTIONS)[number];
+export const FACILITY_GALLERY_IMAGES: FacilityGalleryImage[] =
+  FACILITY_GALLERY_SECTIONS.flatMap((section) => section.images);

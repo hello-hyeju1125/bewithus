@@ -79,6 +79,7 @@ const TIMETABLE_THEME: TimetableSchoolTheme = {
   },
 };
 
-export function getTimetableSchoolTheme(_school: School): TimetableSchoolTheme {
+export function getTimetableSchoolTheme(school: School): TimetableSchoolTheme {
+  void school;
   return TIMETABLE_THEME;
 }
