@@ -105,7 +105,10 @@ export default function ConsultationFormFieldsEditor({
   }
 
   function onSave() {
-    const payload = fields.map(({ clientId: _c, ...rest }) => rest);
+    const payload = fields.map(({ clientId, ...rest }) => {
+      void clientId;
+      return rest;
+    });
     startTransition(async () => {
       const result = await saveConsultationFormFieldsAction(
         JSON.stringify({ fields: payload }),
