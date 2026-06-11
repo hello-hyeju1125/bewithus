@@ -24,7 +24,10 @@ export default async function AdminConsultationFormPage() {
         description="사이트 상담 신청 모달에 표시되는 입력 항목을 관리합니다."
       />
 
-      <ConsultationFormFieldsEditor initialFields={fields} />
+      <ConsultationFormFieldsEditor
+        key={fields.map((field) => `${field.id}:${field.updated_at}`).join("|")}
+        initialFields={fields}
+      />
     </div>
   );
 }

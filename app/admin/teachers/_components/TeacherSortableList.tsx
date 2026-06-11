@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import {
   DndContext,
   PointerSensor,
@@ -28,7 +29,13 @@ import {
   updateTeacherOrderAction,
 } from "../actions";
 
-function SortableRow({ teacher }: { teacher: Teacher }) {
+function SortableRow({
+  teacher,
+  onChanged,
+}: {
+  teacher: Teacher;
+  onChanged: () => void;
+}) {
   const {
     attributes,
     listeners,
@@ -54,6 +61,7 @@ function SortableRow({ teacher }: { teacher: Teacher }) {
         toast.error("삭제 실패", { description: res.error });
       } else {
         toast.success("삭제되었습니다.");
+        onChanged();
       }
     });
   }
@@ -126,8 +134,13 @@ export default function TeacherSortableList({
 }: {
   teachers: Teacher[];
 }) {
+  const router = useRouter();
   const [items, setItems] = useState(teachers);
   const [, startTransition] = useTransition();
+
+  useEffect(() => {
+    setItems(teachers);
+  }, [teachers]);
 
   const sorted = useMemo(
     () => [...items].sort((a, b) => a.order_index - b.order_index),
@@ -159,6 +172,7 @@ export default function TeacherSortableList({
         setItems(teachers);
       } else {
         toast.success("순서가 저장되었습니다.");
+        router.refresh();
       }
     });
   }
@@ -190,7 +204,11 @@ export default function TeacherSortableList({
           >
             <ul className="space-y-2">
               {sorted.map((t) => (
-                <SortableRow key={t.id} teacher={t} />
+                <SortableRow
+                  key={t.id}
+                  teacher={t}
+                  onChanged={() => router.refresh()}
+                />
               ))}
             </ul>
           </SortableContext>

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { requireAdmin } from "@/lib/admin/auth";
+import { revalidateAdminRoutes } from "@/lib/admin/revalidate";
 import { timetableFormSchema } from "@/lib/admin/schemas";
 import {
   inferExtension,
@@ -174,7 +175,7 @@ export async function createTimetableAction(
       .eq("id", existing.id);
     if (error) return { ok: false, error: error.message };
     revalidatePath(`/timetable/${values.school}`);
-    revalidatePath("/admin/timetable");
+    revalidateAdminRoutes("/admin/timetable", `/admin/timetable/${existing.id}`);
     return { ok: true, data: { id: existing.id } };
   }
 
@@ -185,11 +186,12 @@ export async function createTimetableAction(
     .maybeSingle();
   if (error) return { ok: false, error: error.message };
 
+  const newId = (data as unknown as { id: string } | null)?.id ?? "";
   revalidatePath(`/timetable/${values.school}`);
-  revalidatePath("/admin/timetable");
+  revalidateAdminRoutes("/admin/timetable", newId ? `/admin/timetable/${newId}` : undefined);
   return {
     ok: true,
-    data: { id: (data as unknown as { id: string } | null)?.id ?? "" },
+    data: { id: newId },
   };
 }
 
@@ -235,7 +237,7 @@ export async function updateTimetableAction(
   if (error) return { ok: false, error: error.message };
 
   revalidatePath(`/timetable/${values.school}`);
-  revalidatePath("/admin/timetable");
+  revalidateAdminRoutes("/admin/timetable", `/admin/timetable/${id}`);
   return { ok: true };
 }
 
@@ -261,7 +263,7 @@ export async function deleteTimetableAction(
   }
 
   revalidatePath(`/timetable/${existing.school}`);
-  revalidatePath("/admin/timetable");
+  revalidateAdminRoutes("/admin/timetable", `/admin/timetable/${id}`);
   return { ok: true };
 }
 
@@ -280,6 +282,11 @@ export async function toggleTimetableActiveAction(
     .update({ is_active: active } as never)
     .eq("id", id);
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/admin/timetable");
+
+  const row = await adminGetTimetable(id);
+  if (row) {
+    revalidatePath(`/timetable/${row.school}`);
+  }
+  revalidateAdminRoutes("/admin/timetable", `/admin/timetable/${id}`);
   return { ok: true };
 }

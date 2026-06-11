@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { requireAdmin } from "@/lib/admin/auth";
+import { revalidateAdminRoutes } from "@/lib/admin/revalidate";
 import {
   teacherFormSchema,
   teacherOrderUpdateSchema,
@@ -107,12 +108,16 @@ export async function createTeacherAction(
 
   await syncTeacherSubjectOrders(admin, [values.subject]);
 
+  const newId = (data as unknown as { id: string } | null)?.id ?? "";
   revalidatePath("/teachers");
   revalidatePath(`/teachers/${values.school}`);
-  revalidatePath("/admin/teachers");
+  revalidateAdminRoutes(
+    "/admin/teachers",
+    newId ? `/admin/teachers/${newId}` : undefined,
+  );
   return {
     ok: true,
-    data: { id: (data as unknown as { id: string } | null)?.id ?? "" },
+    data: { id: newId },
   };
 }
 
@@ -177,8 +182,7 @@ export async function updateTeacherAction(
   if (existing.school !== values.school) {
     revalidatePath(`/teachers/${existing.school}`);
   }
-  revalidatePath("/admin/teachers");
-  revalidatePath(`/admin/teachers/${id}`);
+  revalidateAdminRoutes("/admin/teachers", `/admin/teachers/${id}`);
   return { ok: true };
 }
 
@@ -202,7 +206,7 @@ export async function deleteTeacherAction(id: string): Promise<ActionResult> {
 
   revalidatePath("/teachers");
   revalidatePath(`/teachers/${existing.school}`);
-  revalidatePath("/admin/teachers");
+  revalidateAdminRoutes("/admin/teachers", `/admin/teachers/${id}`);
   return { ok: true };
 }
 
@@ -228,7 +232,7 @@ export async function updateTeacherOrderAction(
     if (error) return { ok: false, error: error.message };
   }
 
-  revalidatePath("/admin/teachers");
+  revalidateAdminRoutes("/admin/teachers");
   revalidatePath("/teachers");
   revalidatePath("/teachers/daewon");
   revalidatePath("/teachers/hanyoung");
@@ -261,7 +265,7 @@ export async function updateTeacherSubjectOrderAction(
     if (error) return { ok: false, error: error.message };
   }
 
-  revalidatePath("/admin/teachers");
+  revalidateAdminRoutes("/admin/teachers");
   revalidatePath("/teachers");
   revalidatePath("/teachers/daewon");
   revalidatePath("/teachers/hanyoung");

@@ -1,7 +1,10 @@
 import StaggeredPageShell from "@/components/layout/StaggeredPageShell";
 import FacilityGallery from "@/components/facility/FacilityGallery";
 import FacilityPageHero from "@/components/facility/FacilityPageHero";
-import { FACILITY_GALLERY_IMAGES } from "@/content/facility";
+import {
+  FACILITY_GALLERY_IMAGES,
+  FACILITY_GALLERY_SECTIONS,
+} from "@/content/facility";
 import {
   siteContainerClass,
   siteFloatingWidgetSafeClass,
@@ -22,7 +25,10 @@ export default function FacilityPage() {
           aria-label="시설 갤러리"
           className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} py-10 sm:py-12 lg:py-14`}
         >
-          <FacilityGallery images={FACILITY_GALLERY_IMAGES} />
+          <FacilityGallery
+            sections={FACILITY_GALLERY_SECTIONS}
+            images={FACILITY_GALLERY_IMAGES}
+          />
         </section>
       }
     />

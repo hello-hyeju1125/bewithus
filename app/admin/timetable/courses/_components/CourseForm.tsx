@@ -130,6 +130,10 @@ export default function CourseForm({
   const startDates = form.watch("start_dates");
 
   useEffect(() => {
+    form.reset(initialValues);
+  }, [initialValues, form]);
+
+  useEffect(() => {
     // 학교 변경 시 grade 자동 정정
     const grade = form.getValues("grade");
     const allowed = SCHOOL_GRADES[school];
@@ -175,8 +179,12 @@ export default function CourseForm({
         return;
       }
       toast.success(initial ? "수정되었습니다." : "등록되었습니다.");
-      router.push("/admin/timetable/courses");
-      router.refresh();
+      if (initial) {
+        router.refresh();
+      } else {
+        router.push("/admin/timetable/courses");
+        router.refresh();
+      }
     });
   };
 

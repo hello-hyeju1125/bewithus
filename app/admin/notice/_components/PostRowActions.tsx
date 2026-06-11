@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import {
@@ -31,6 +32,7 @@ type Props = {
 };
 
 export default function PostRowActions({ id, pinned, published }: Props) {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [optPinned, setOptPinned] = useState(pinned);
   const [optPublished, setOptPublished] = useState(published);
@@ -43,6 +45,8 @@ export default function PostRowActions({ id, pinned, published }: Props) {
       if (!res.ok) {
         toast.error("상태 변경 실패", { description: res.error });
         setOptPinned(!v);
+      } else {
+        router.refresh();
       }
     });
   }
@@ -54,6 +58,8 @@ export default function PostRowActions({ id, pinned, published }: Props) {
       if (!res.ok) {
         toast.error("상태 변경 실패", { description: res.error });
         setOptPublished(!v);
+      } else {
+        router.refresh();
       }
     });
   }
@@ -66,6 +72,7 @@ export default function PostRowActions({ id, pinned, published }: Props) {
       } else {
         toast.success("게시글이 삭제되었습니다.");
         setOpen(false);
+        router.refresh();
       }
     });
   }

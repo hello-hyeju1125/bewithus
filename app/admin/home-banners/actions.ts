@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { requireAdmin } from "@/lib/admin/auth";
+import { revalidateAdminRoutes } from "@/lib/admin/revalidate";
 import { homeBannerFormSchema } from "@/lib/admin/schemas";
 import {
   inferExtension,
@@ -128,6 +129,6 @@ export async function updateHomeHeroSlidesAction(
   }
 
   revalidatePath("/");
-  revalidatePath("/admin/home-banners");
+  revalidateAdminRoutes("/admin/home-banners");
   return { ok: true };
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import {
@@ -20,6 +21,7 @@ import { toast } from "@/components/ui/sonner";
 import { deleteInfoSessionAction } from "../actions";
 
 export default function InfoSessionRowActions({ id }: { id: string }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
@@ -31,6 +33,7 @@ export default function InfoSessionRowActions({ id }: { id: string }) {
       } else {
         toast.success("삭제되었습니다.");
         setOpen(false);
+        router.refresh();
       }
     });
   }

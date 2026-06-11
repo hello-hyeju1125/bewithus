@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Loader2 } from "lucide-react";
 
 import RichTextEditor from "@/components/admin/RichTextEditor";
@@ -27,6 +27,15 @@ export default function PostForm({ initial }: Props) {
   const [isPinned, setIsPinned] = useState(initial?.is_pinned ?? false);
   const [isPublished, setIsPublished] = useState(initial?.is_published ?? true);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!initial) return;
+    setTitle(initial.title);
+    setContent(initial.content);
+    setIsPinned(initial.is_pinned);
+    setIsPublished(initial.is_published);
+    setError(null);
+  }, [initial?.id, initial?.updated_at, initial]);
 
   function submit(publish: boolean) {
     setError(null);
@@ -56,8 +65,12 @@ export default function PostForm({ initial }: Props) {
       toast.success(
         publish ? "게시되었습니다." : "임시저장되었습니다.",
       );
-      router.push("/admin/notice");
-      router.refresh();
+      if (initial) {
+        router.refresh();
+      } else {
+        router.push("/admin/notice");
+        router.refresh();
+      }
     });
   }
 

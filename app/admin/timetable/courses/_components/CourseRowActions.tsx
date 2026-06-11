@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import {
@@ -29,6 +30,7 @@ type Props = {
 };
 
 export default function CourseRowActions({ id, isActive }: Props) {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [optimisticActive, setOptimisticActive] = useState(isActive);
   const [open, setOpen] = useState(false);
@@ -42,6 +44,7 @@ export default function CourseRowActions({ id, isActive }: Props) {
         setOptimisticActive(!next);
       } else {
         toast.success(next ? "활성화되었습니다." : "비활성화되었습니다.");
+        router.refresh();
       }
     });
   }
@@ -54,6 +57,7 @@ export default function CourseRowActions({ id, isActive }: Props) {
       } else {
         toast.success("강의를 삭제했습니다.");
         setOpen(false);
+        router.refresh();
       }
     });
   }

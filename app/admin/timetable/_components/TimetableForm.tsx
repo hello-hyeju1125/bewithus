@@ -100,6 +100,25 @@ export default function TimetableForm({ initial }: Props) {
     }
   }, [school, form]);
 
+  useEffect(() => {
+    if (!initial) return;
+    form.reset({
+      school: initial.school as School,
+      grade: initial.grade,
+      view_type: initial.view_type as ViewType,
+      year: initial.year,
+      semester: initial.semester,
+      description: initial.description ?? "",
+      image_urls: normalizeTimetableImageUrls(initial),
+      is_active: initial.is_active,
+    });
+    setKeptUrls(normalizeTimetableImageUrls(initial));
+    setPendingFiles((prev) => {
+      prev.forEach((p) => URL.revokeObjectURL(p.url));
+      return [];
+    });
+  }, [initial?.id, initial?.updated_at, initial, form]);
+
   function syncImageUrls(urls: string[]) {
     setKeptUrls(urls);
     form.setValue("image_urls", urls, { shouldValidate: true });
@@ -171,8 +190,12 @@ export default function TimetableForm({ initial }: Props) {
         return;
       }
       toast.success(initial ? "수정되었습니다." : "등록되었습니다.");
-      router.push("/admin/timetable");
-      router.refresh();
+      if (initial) {
+        router.refresh();
+      } else {
+        router.push("/admin/timetable");
+        router.refresh();
+      }
     });
   };
 

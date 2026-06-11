@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { getAdminAuthorId, requireAdminSession } from "@/lib/admin/auth";
+import { revalidateAdminRoutes } from "@/lib/admin/revalidate";
 import { postFormSchema } from "@/lib/admin/schemas";
 import { buildSafePostHtml } from "@/lib/admin/sanitize";
 import { adminGetPost } from "@/lib/admin/queries";
@@ -72,11 +73,15 @@ export async function createPostAction(
     .maybeSingle();
   if (error) return { ok: false, error: error.message };
 
+  const newId = (data as unknown as { id: string } | null)?.id ?? "";
   revalidatePath("/notice");
-  revalidatePath("/admin/notice");
+  revalidateAdminRoutes(
+    "/admin/notice",
+    newId ? `/admin/notice/${newId}` : undefined,
+  );
   return {
     ok: true,
-    data: { id: (data as unknown as { id: string } | null)?.id ?? "" },
+    data: { id: newId },
   };
 }
 
@@ -125,7 +130,7 @@ export async function updatePostAction(
 
   revalidatePath("/notice");
   revalidatePath(`/notice/${id}`);
-  revalidatePath("/admin/notice");
+  revalidateAdminRoutes("/admin/notice", `/admin/notice/${id}`);
   return { ok: true };
 }
 
@@ -161,7 +166,7 @@ export async function deletePostAction(id: string): Promise<ActionResult> {
   }
 
   revalidatePath("/notice");
-  revalidatePath("/admin/notice");
+  revalidateAdminRoutes("/admin/notice", `/admin/notice/${id}`);
   return { ok: true };
 }
 
@@ -183,7 +188,8 @@ export async function togglePostPublishedAction(
   if (error) return { ok: false, error: error.message };
 
   revalidatePath("/notice");
-  revalidatePath("/admin/notice");
+  revalidatePath(`/notice/${id}`);
+  revalidateAdminRoutes("/admin/notice", `/admin/notice/${id}`);
   return { ok: true };
 }
 
@@ -205,6 +211,7 @@ export async function togglePostPinnedAction(
   if (error) return { ok: false, error: error.message };
 
   revalidatePath("/notice");
-  revalidatePath("/admin/notice");
+  revalidatePath(`/notice/${id}`);
+  revalidateAdminRoutes("/admin/notice", `/admin/notice/${id}`);
   return { ok: true };
 }

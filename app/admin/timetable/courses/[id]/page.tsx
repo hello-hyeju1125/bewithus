@@ -28,6 +28,7 @@ export default async function EditCoursePage({ params }: EditCoursePageProps) {
         description={`${course.subject} · ${course.course_title}`}
       />
       <CourseForm
+        key={course.updated_at}
         initial={course}
         teachers={teachers}
         subjectSuggestions={subjects}

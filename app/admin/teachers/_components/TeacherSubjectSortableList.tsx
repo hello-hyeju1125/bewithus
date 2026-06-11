@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import {
   DndContext,
@@ -63,6 +64,7 @@ export default function TeacherSubjectSortableList({
 }: {
   subjects: string[];
 }) {
+  const router = useRouter();
   const [items, setItems] = useState(initialSubjects);
   const [, startTransition] = useTransition();
 
@@ -91,6 +93,7 @@ export default function TeacherSubjectSortableList({
         setItems(initialSubjects);
       } else {
         toast.success("과목 순서가 저장되었습니다.");
+        router.refresh();
       }
     });
   }

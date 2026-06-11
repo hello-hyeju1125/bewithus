@@ -12,7 +12,10 @@ export default async function AdminHomeBannersPage() {
         title="메인 배너"
         description="배너 이미지·링크는 공통이며, 메인 고정·팝업 노출을 슬롯별로 선택합니다."
       />
-      <HomeBannersForm slides={slides} />
+      <HomeBannersForm
+        key={slides.map((slide) => slide.updated_at).join("|")}
+        slides={slides}
+      />
     </div>
   );
 }

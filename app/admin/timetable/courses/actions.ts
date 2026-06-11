@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { requireAdmin } from "@/lib/admin/auth";
+import { revalidateAdminRoutes } from "@/lib/admin/revalidate";
 import { normalizeHexColor } from "@/lib/admin/hex-color";
 import {
   timetableCourseFormSchema,
@@ -88,11 +89,15 @@ export async function createTimetableCourseAction(
     .maybeSingle();
   if (error) return { ok: false, error: error.message };
 
-  revalidatePath("/admin/timetable/courses");
+  const newId = (data as unknown as { id: string } | null)?.id ?? "";
   revalidatePath(`/timetable/${payload.school}`);
+  revalidateAdminRoutes(
+    "/admin/timetable/courses",
+    newId ? `/admin/timetable/courses/${newId}` : undefined,
+  );
   return {
     ok: true,
-    data: { id: (data as unknown as { id: string } | null)?.id ?? "" },
+    data: { id: newId },
   };
 }
 
@@ -117,8 +122,8 @@ export async function updateTimetableCourseAction(
     .eq("id", id);
   if (error) return { ok: false, error: error.message };
 
-  revalidatePath("/admin/timetable/courses");
   revalidatePath(`/timetable/${payload.school}`);
+  revalidateAdminRoutes("/admin/timetable/courses", `/admin/timetable/courses/${id}`);
   return { ok: true };
 }
 
@@ -137,8 +142,8 @@ export async function deleteTimetableCourseAction(
   const { error } = await admin.from("timetable_courses").delete().eq("id", id);
   if (error) return { ok: false, error: error.message };
 
-  revalidatePath("/admin/timetable/courses");
   revalidatePath(`/timetable/${existing.school}`);
+  revalidateAdminRoutes("/admin/timetable/courses", `/admin/timetable/courses/${id}`);
   return { ok: true };
 }
 
@@ -157,6 +162,11 @@ export async function toggleCourseActiveAction(
     .update({ is_active: active } as never)
     .eq("id", id);
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/admin/timetable/courses");
+
+  const row = await adminGetTimetableCourse(id);
+  if (row) {
+    revalidatePath(`/timetable/${row.school}`);
+  }
+  revalidateAdminRoutes("/admin/timetable/courses", `/admin/timetable/courses/${id}`);
   return { ok: true };
 }

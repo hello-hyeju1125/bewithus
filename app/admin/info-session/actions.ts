@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { requireAdmin } from "@/lib/admin/auth";
+import { revalidateAdminRoutes } from "@/lib/admin/revalidate";
 import { infoSessionFormSchema } from "@/lib/admin/schemas";
 import { buildSafePostHtml } from "@/lib/admin/sanitize";
 import {
@@ -112,11 +113,15 @@ export async function createInfoSessionAction(
     .maybeSingle();
   if (error) return { ok: false, error: error.message };
 
+  const newId = (data as unknown as { id: string } | null)?.id ?? "";
   revalidatePath(`/info-session/${parsed.data.school}`);
-  revalidatePath("/admin/info-session");
+  revalidateAdminRoutes(
+    "/admin/info-session",
+    newId ? `/admin/info-session/${newId}` : undefined,
+  );
   return {
     ok: true,
-    data: { id: (data as unknown as { id: string } | null)?.id ?? "" },
+    data: { id: newId },
   };
 }
 
@@ -159,8 +164,7 @@ export async function updateInfoSessionAction(
   if (existing.school !== parsed.data.school) {
     revalidatePath(`/info-session/${existing.school}`);
   }
-  revalidatePath("/admin/info-session");
-  revalidatePath(`/admin/info-session/${id}`);
+  revalidateAdminRoutes("/admin/info-session", `/admin/info-session/${id}`);
   return { ok: true };
 }
 
@@ -180,6 +184,6 @@ export async function deleteInfoSessionAction(
   if (error) return { ok: false, error: error.message };
 
   revalidatePath(`/info-session/${existing.school}`);
-  revalidatePath("/admin/info-session");
+  revalidateAdminRoutes("/admin/info-session", `/admin/info-session/${id}`);
   return { ok: true };
 }

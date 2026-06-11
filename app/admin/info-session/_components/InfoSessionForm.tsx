@@ -93,11 +93,11 @@ export default function InfoSessionForm({ initial }: Props) {
       }
       toast.success(initial ? "수정되었습니다." : "등록되었습니다.");
       if (initial) {
-        router.push(`/admin/info-session/${initial.id}`);
+        router.refresh();
       } else {
         router.push("/admin/info-session");
+        router.refresh();
       }
-      router.refresh();
     });
   };
 

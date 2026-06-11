@@ -17,7 +17,7 @@ export default async function EditNoticePage({ params }: Props) {
         title="공지사항 편집"
         description={existing.title}
       />
-      <PostForm initial={existing} />
+      <PostForm key={existing.updated_at} initial={existing} />
     </div>
   );
 }

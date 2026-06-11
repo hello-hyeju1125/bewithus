@@ -1,7 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-
+import { revalidateAdminRoutes } from "@/lib/admin/revalidate";
 import { requireAdminSession } from "@/lib/admin/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { ConsultationStatus } from "@/types/database";
@@ -35,8 +34,7 @@ export async function updateConsultationStatusAction(
     return { ok: false, error: "상태 변경에 실패했습니다." };
   }
 
-  revalidatePath("/admin/consultations");
-  revalidatePath(`/admin/consultations/${id}`);
+  revalidateAdminRoutes("/admin/consultations", `/admin/consultations/${id}`);
   return { ok: true };
 }
 
@@ -60,6 +58,6 @@ export async function deleteConsultationAction(
     return { ok: false, error: "삭제에 실패했습니다." };
   }
 
-  revalidatePath("/admin/consultations");
+  revalidateAdminRoutes("/admin/consultations", `/admin/consultations/${id}`);
   return { ok: true };
 }

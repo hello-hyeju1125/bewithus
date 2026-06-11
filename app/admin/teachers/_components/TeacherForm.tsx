@@ -98,11 +98,11 @@ export default function TeacherForm({ initial }: Props) {
       }
       toast.success(initial ? "수정되었습니다." : "등록되었습니다.");
       if (initial) {
-        router.push(`/admin/teachers/${initial.id}`);
+        router.refresh();
       } else {
         router.push("/admin/teachers");
+        router.refresh();
       }
-      router.refresh();
     });
   };
 

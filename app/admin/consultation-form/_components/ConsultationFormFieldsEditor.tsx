@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { ChevronDown, ChevronUp, Loader2, Plus, Trash2 } from "lucide-react";
 
 import { saveConsultationFormFieldsAction } from "@/app/admin/consultation-form/actions";
@@ -67,6 +67,14 @@ export default function ConsultationFormFieldsEditor({
       ? initialFields.map(toDraft)
       : [newDraft()],
   );
+
+  useEffect(() => {
+    setFields(
+      initialFields.length > 0
+        ? initialFields.map(toDraft)
+        : [newDraft()],
+    );
+  }, [initialFields]);
 
   function patch(clientId: string, patch: Partial<DraftField>) {
     setFields((prev) =>

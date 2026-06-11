@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { requireAdmin } from "@/lib/admin/auth";
+import { revalidateAdminRoutes } from "@/lib/admin/revalidate";
 import {
   consultationFieldsSaveSchema,
   slugifyFieldKey,
@@ -117,7 +118,7 @@ export async function saveConsultationFormFieldsAction(
     if (error) return { ok: false, error: error.message };
   }
 
-  revalidatePath("/admin/consultation-form");
+  revalidateAdminRoutes("/admin/consultation-form");
   revalidatePath("/", "layout");
 
   return { ok: true };

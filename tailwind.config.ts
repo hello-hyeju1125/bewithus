@@ -125,6 +125,10 @@ const config: Config = {
           800: "#1A635C",
           900: "#124C47",
         },
+        // GNB(메뉴바) 배경. hex 변경 시 스케일 통째 갱신.
+        gnb: {
+          DEFAULT: "#FDFCF8",
+        },
         neutral: {
           0: "#FFFFFF",
           50: "#F7F8FA",

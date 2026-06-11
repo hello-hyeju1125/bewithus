@@ -19,7 +19,7 @@ export default async function EditTimetablePage({
         title="시간표 편집"
         description="기존 시간표의 메타데이터와 이미지를 수정합니다."
       />
-      <TimetableForm initial={existing} />
+      <TimetableForm key={existing.updated_at} initial={existing} />
     </div>
   );
 }
