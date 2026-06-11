@@ -5,13 +5,52 @@ import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
-import type { FacilityGalleryImage } from "@/content/facility";
+import type {
+  FacilityGalleryImage,
+  FacilityGallerySection,
+} from "@/content/facility";
 
 type FacilityGalleryProps = {
+  sections: readonly FacilityGallerySection[];
   images: readonly FacilityGalleryImage[];
 };
 
-export default function FacilityGallery({ images }: FacilityGalleryProps) {
+const pairRowClass =
+  "mb-3 grid grid-cols-2 gap-3 sm:mb-4 sm:gap-4 lg:mb-5 lg:gap-5";
+const masonryClass =
+  "columns-1 gap-3 sm:columns-2 sm:gap-4 lg:gap-5";
+const masonryItemClass = "mb-3 break-inside-avoid sm:mb-4 lg:mb-5";
+
+function GalleryImageButton({
+  image,
+  onOpen,
+}: {
+  image: FacilityGalleryImage;
+  onOpen: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      className="group relative block w-full overflow-hidden rounded-card bg-neutral-100 outline-none transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_rgba(34,41,93,0.12)] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+      aria-label={`${image.alt} 크게 보기`}
+    >
+      <Image
+        src={image.src}
+        alt={image.alt}
+        width={1600}
+        height={1200}
+        sizes="(min-width: 640px) 50vw, 100vw"
+        className="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+      />
+    </button>
+  );
+}
+
+export default function FacilityGallery({
+  sections,
+  images,
+}: FacilityGalleryProps) {
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
   const active = activeIdx !== null ? images[activeIdx] : null;
@@ -58,32 +97,49 @@ export default function FacilityGallery({ images }: FacilityGalleryProps) {
     );
   }
 
+  const imageIndexById = new Map(images.map((image, idx) => [image.id, idx]));
+
   return (
     <>
-      <ul
-        className="columns-1 gap-3 sm:columns-2 sm:gap-4 lg:gap-5"
-        role="list"
-      >
-        {images.map((image, idx) => (
-          <li key={image.id} className="mb-3 break-inside-avoid sm:mb-4 lg:mb-5">
-            <button
-              type="button"
-              onClick={() => setActiveIdx(idx)}
-              className="group relative block w-full overflow-hidden rounded-card bg-neutral-100 outline-none transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_rgba(34,41,93,0.12)] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-              aria-label={`${image.alt} 크게 보기`}
+      {sections.map((section, sectionIdx) => {
+        if (section.images.length === 0) return null;
+
+        if (section.layout === "pair") {
+          return (
+            <ul
+              key={`pair-${sectionIdx}`}
+              className={pairRowClass}
+              role="list"
             >
-              <Image
-                src={image.src}
-                alt={image.alt}
-                width={1600}
-                height={1200}
-                sizes="(min-width: 640px) 50vw, 100vw"
-                className="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-              />
-            </button>
-          </li>
-        ))}
-      </ul>
+              {section.images.map((image) => (
+                <li key={image.id}>
+                  <GalleryImageButton
+                    image={image}
+                    onOpen={() => setActiveIdx(imageIndexById.get(image.id)!)}
+                  />
+                </li>
+              ))}
+            </ul>
+          );
+        }
+
+        return (
+          <ul
+            key={`masonry-${sectionIdx}`}
+            className={masonryClass}
+            role="list"
+          >
+            {section.images.map((image) => (
+              <li key={image.id} className={masonryItemClass}>
+                <GalleryImageButton
+                  image={image}
+                  onOpen={() => setActiveIdx(imageIndexById.get(image.id)!)}
+                />
+              </li>
+            ))}
+          </ul>
+        );
+      })}
 
       {active && mounted
         ? createPortal(

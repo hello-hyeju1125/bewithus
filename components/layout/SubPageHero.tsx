@@ -36,11 +36,10 @@ export default function SubPageHero({
   descriptionClass,
 }: SubPageHeroProps) {
   return (
-    <section
-      aria-label={ariaLabel}
-      className={cn(surfaceClass ?? "bg-primary text-white")}
-    >
-      <div className="mx-auto flex max-w-[1400px] flex-col items-center gap-5 px-5 pb-12 pt-[120px] text-center sm:gap-6 sm:px-8 sm:pb-14 sm:pt-[128px] lg:gap-7 lg:px-10 lg:pb-16 lg:pt-[136px]">
+    <section aria-label={ariaLabel}>
+      <div className="h-12 bg-gnb lg:h-[72px]" aria-hidden="true" />
+      <div className={cn(surfaceClass ?? "bg-primary text-white")}>
+        <div className="mx-auto flex max-w-[1400px] flex-col items-center gap-5 px-5 pb-12 pt-[72px] text-center sm:gap-6 sm:px-8 sm:pb-14 sm:pt-20 lg:gap-7 lg:px-10 lg:pb-16 lg:pt-16">
         {eyebrow && Icon ? (
           <p
             className={cn(
@@ -81,6 +80,7 @@ export default function SubPageHero({
             {description}
           </p>
         ) : null}
+        </div>
       </div>
     </section>
   );

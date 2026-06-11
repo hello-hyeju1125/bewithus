@@ -17,19 +17,15 @@ import { ko } from "@/content/ko";
 import { headerBarTopClass } from "@/lib/layout/spacing";
 import { cn } from "@/lib/utils";
 
-const SCROLL_THRESHOLD = 80;
-
 /** 상단 메뉴·세부 메뉴 열 사이 간격 (값을 키울수록 메뉴 간 여백이 넓어짐) */
 const NAV_COLUMN_GAP = "min-w-0 flex-[0.22]";
 
 const ctaBaseClass =
-  "shrink-0 rounded-button bg-accent-500 font-bold leading-tight text-primary outline-none transition-colors duration-200 hover:bg-primary hover:text-accent-500 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-white";
+  "shrink-0 rounded-button bg-accent-500 font-bold leading-tight text-primary outline-none transition-colors duration-200 hover:bg-primary hover:text-accent-500 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-gnb";
 
 export default function Header() {
   const pathname = usePathname();
-  const isHomePage = pathname === "/";
 
-  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [hoverMenuOpen, setHoverMenuOpen] = useState(false);
   const [hoveredNavHref, setHoveredNavHref] = useState<string | null>(null);
@@ -49,15 +45,7 @@ export default function Header() {
   useLayoutEffect(() => {
     closeAllMenus();
     window.scrollTo(0, 0);
-    setScrolled(window.scrollY > SCROLL_THRESHOLD);
   }, [pathname, closeAllMenus]);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > SCROLL_THRESHOLD);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [pathname]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -80,35 +68,29 @@ export default function Header() {
     };
   }, [menuOpen]);
 
-  /** 홈 최상단만 티파니 GNB — 서브 페이지·스크롤·메가메뉴 시 흰 배경 */
-  const isHomeTopBar = isHomePage && !hoverMenuOpen && !scrolled;
-  const headerBg = isHomeTopBar ? "bg-tiffany" : "bg-white";
-
   return (
     <>
       <div
-        className="fixed inset-x-0 top-0 z-50"
+        className="fixed inset-x-0 top-0 z-50 bg-gnb"
         onMouseEnter={() => setHoverMenuOpen(true)}
         onMouseLeave={() => {
           setHoverMenuOpen(false);
           setHoveredNavHref(null);
         }}
       >
-        {/* 메가메뉴 배경: 전체 너비 흰 패널 + 상단 구분선 */}
+        {/* 메가메뉴 배경: 전체 너비 GNB 패널 + 상단 구분선 */}
         <div
-          className={`pointer-events-none absolute inset-x-0 ${headerBarTopClass} bottom-0 hidden border-t border-neutral-200 bg-white transition-opacity duration-200 lg:block ${
+          className={`pointer-events-none absolute inset-x-0 ${headerBarTopClass} bottom-0 hidden border-t border-neutral-200 bg-gnb transition-opacity duration-200 lg:block ${
             hoverMenuOpen ? "opacity-100" : "opacity-0"
           }`}
           aria-hidden="true"
         />
 
         <header
-          className={`relative z-10 transition-[background-color,border-color] duration-300 ${headerBg} ${
+          className={`relative z-10 bg-gnb transition-[background-color,border-color] duration-300 ${
             hoverMenuOpen
               ? ""
-              : isHomeTopBar
-                ? "border-b border-tiffany-600/25"
-                : "border-b border-neutral-200"
+              : "border-b border-neutral-200"
           }`}
         >
           <div
@@ -122,7 +104,7 @@ export default function Header() {
                 href="/"
                 aria-label={ko.brand.fullAria}
                 onClick={closeAllMenus}
-                className="group/logo inline-flex w-fit max-w-full shrink-0 rounded-button outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                className="group/logo inline-flex w-fit max-w-full shrink-0 rounded-button outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-gnb"
               >
                 <SiteLogo />
               </Link>
@@ -243,7 +225,7 @@ export default function Header() {
           role="dialog"
           aria-modal="true"
           aria-label={ko.nav.a11y.mobileDialogLabel}
-          className={`relative ml-auto flex h-full w-[300px] max-w-[82%] flex-col bg-white shadow-2xl transition-transform duration-300 ease-out ${
+          className={`relative ml-auto flex h-full w-[300px] max-w-[82%] flex-col bg-gnb shadow-2xl transition-transform duration-300 ease-out ${
             menuOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >

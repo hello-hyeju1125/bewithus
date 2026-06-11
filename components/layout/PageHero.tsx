@@ -21,16 +21,15 @@ export default function PageHero({
   extra,
   centered = false,
 }: PageHeroProps) {
-  const innerClass = centered
-    ? "mx-auto flex max-w-[1400px] flex-col items-center gap-4 px-5 pb-12 pt-[120px] text-center sm:px-8 sm:pb-14 sm:pt-[128px] lg:px-10 lg:pb-16 lg:pt-[136px]"
-    : "mx-auto flex max-w-[1400px] flex-col gap-3 px-5 pb-12 pt-[120px] sm:px-8 sm:pb-14 sm:pt-[128px] lg:px-10 lg:pb-16 lg:pt-[136px]";
+  const innerClassWithoutTopPad = centered
+    ? "mx-auto flex max-w-[1400px] flex-col items-center gap-4 px-5 pb-12 pt-[72px] text-center sm:px-8 sm:pb-14 sm:pt-20 lg:px-10 lg:pb-16 lg:pt-16"
+    : "mx-auto flex max-w-[1400px] flex-col gap-3 px-5 pb-12 pt-[72px] sm:px-8 sm:pb-14 sm:pt-20 lg:px-10 lg:pb-16 lg:pt-16";
 
   return (
-    <section
-      aria-label={`${title} 페이지 소개`}
-      className="bg-primary text-white"
-    >
-      <div className={innerClass}>
+    <section aria-label={`${title} 페이지 소개`}>
+      <div className="h-12 bg-gnb lg:h-[72px]" aria-hidden="true" />
+      <div className="bg-primary text-white">
+        <div className={innerClassWithoutTopPad}>
         {eyebrow ? (
           <p className="inline-flex w-fit rounded-leaf bg-accent-500 px-3 py-0.5 text-[14px] font-black leading-tight tracking-tight text-primary sm:text-[16px]">
             {eyebrow}
@@ -63,6 +62,7 @@ export default function PageHero({
             ) : null}
           </>
         )}
+        </div>
       </div>
     </section>
   );
