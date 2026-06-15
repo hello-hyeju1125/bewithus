@@ -27,6 +27,18 @@ export class UploadValidationError extends Error {
   }
 }
 
+/** 버킷별 Cache-Control (초). 덮어쓰기 업로드 후 빠른 반영을 위해 1시간(3600) 대신 단축. */
+const BUCKET_CACHE_CONTROL: Record<
+  "timetables" | "teachers" | "post-images" | "home-heroes" | "home-popups",
+  string
+> = {
+  timetables: "60",
+  teachers: "300",
+  "post-images": "300",
+  "home-heroes": "300",
+  "home-popups": "300",
+};
+
 /**
  * 업로드되는 파일이 이미지 정책을 충족하는지 검증.
  * 위반 시 `UploadValidationError` 를 던집니다.
@@ -63,6 +75,8 @@ export async function uploadToStorage(params: {
   path: string;
   file: File;
   upsert?: boolean;
+  /** 미지정 시 버킷 기본값 (timetables 60초, 그 외 300초) */
+  cacheControl?: string;
 }): Promise<{ path: string; publicUrl: string }> {
   assertImageFile(params.file);
 
@@ -71,7 +85,7 @@ export async function uploadToStorage(params: {
   const { error: uploadErr } = await supabase.storage
     .from(params.bucket)
     .upload(params.path, arrayBuffer, {
-      cacheControl: "3600",
+      cacheControl: params.cacheControl ?? BUCKET_CACHE_CONTROL[params.bucket],
       contentType: params.file.type,
       upsert: params.upsert ?? false,
     });

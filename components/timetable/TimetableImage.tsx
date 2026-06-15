@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { CalendarClock, ImageOff } from "lucide-react";
 
-import { normalizeTimetableImageUrls } from "@/lib/timetable/image-urls";
+import { timetableImageUrlsForDisplay } from "@/lib/timetable/image-urls";
 import type { Timetable } from "@/types/database";
 
 function formatDate(iso: string): string {
@@ -21,7 +21,7 @@ type TimetableImageProps = {
  * 요약 시간표 이미지 영역 (1장 이상).
  */
 export default function TimetableImage({ data, alt }: TimetableImageProps) {
-  const imageUrls = data ? normalizeTimetableImageUrls(data) : [];
+  const imageUrls = data ? timetableImageUrlsForDisplay(data) : [];
   const hasImage = imageUrls.length > 0;
 
   return (

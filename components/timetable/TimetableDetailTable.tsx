@@ -13,6 +13,7 @@ import {
   type TimetableSchoolTheme,
 } from "@/lib/layout/timetable-school-theme";
 import type { CourseSession } from "@/types/database";
+import { withCacheBust } from "@/lib/media/cache-bust";
 import type { TimetableCourseWithTeacher } from "@/lib/supabase/queries";
 
 type TimetableDetailTableProps = {
@@ -265,7 +266,9 @@ function TeacherCell({
 }) {
   const teacher = course.teacher;
   const name = teacher?.name ?? "";
-  const photo = teacher?.photo_url ?? null;
+  const photo = teacher?.photo_url
+    ? withCacheBust(teacher.photo_url, teacher.updated_at)
+    : null;
   return (
     <div className="flex flex-col items-center gap-2 text-center">
       <div className="relative h-14 w-14 overflow-hidden rounded-full border border-neutral-200 bg-neutral-100 md:h-24 md:w-24">
@@ -366,7 +369,10 @@ function CourseCard({
           <div className="relative h-[72px] w-[72px] overflow-hidden rounded-button border border-neutral-200 bg-neutral-100">
             {course.teacher?.photo_url ? (
               <Image
-                src={course.teacher.photo_url}
+                src={withCacheBust(
+                  course.teacher.photo_url,
+                  course.teacher.updated_at,
+                )}
                 alt={course.teacher.name}
                 fill
                 sizes="72px"

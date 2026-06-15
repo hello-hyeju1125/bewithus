@@ -8,6 +8,8 @@
 
 import type { SchoolType, ViewType } from "@/types/database";
 
+import type { HeroDescriptionInput } from "@/lib/layout/hero-description";
+
 export type { ViewType };
 
 export const SCHOOLS = [
@@ -35,12 +37,59 @@ export const SCHOOL_LABELS: Record<School, string> = {
 };
 
 /** Hero 등에서 사용하는 학교별 짧은 소개 문구 (DB description 의 fallback). */
-export const SCHOOL_DESCRIPTIONS: Record<School, string> = {
-  daewon: "대원외고 입시 전문, 합격률 1위의 노하우로 완성하는 외고 합격 로드맵.",
-  hanyoung: "한영외고 진학에 최적화된 커리큘럼과 전담 강사진이 함께합니다.",
-  general: "대입 전과정을 체계적으로 설계하는 고등관 통합 프로그램.",
-  middle:
-    "중1~중3 맞춤 커리큘럼으로 내신·수행평가와 고등 진학 기반을 함께 다집니다.",
+export const SCHOOL_DESCRIPTIONS: Record<School, HeroDescriptionInput> = {
+  daewon: {
+    lead: "대원외고 부동의 1위",
+    body: ["검증된 압도적 강사진이 내신부터 수능까지"],
+    closing: "대원외고 맞춤형 커리큘럼으로 최상의 결과를 만듭니다.",
+    mobile: {
+      closingLines: [
+        "대원외고 맞춤형 커리큘럼으로",
+        "최상의 결과를 만듭니다.",
+      ],
+    },
+    emphasis: ["부동의 1위", "맞춤형 커리큘럼"],
+  },
+  hanyoung: {
+    closingLines: [
+      "한영외고만의 까다로운 출제경향을",
+      "완벽분석한 맞춤 강사진의 빈틈없는 밀착관리로",
+      "압도적 결과를 만듭니다.",
+    ],
+    emphasis: ["까다로운 출제경향", "압도적 결과"],
+  },
+  general: {
+    closingLines: [
+      "철저한 학교별 분석과 빈틈없는 밀착관리로 상위권 내신을 선점,",
+      "내신부터 수능까지 입체적인 커리큘럼으로 최상의 결과를 만듭니다.",
+    ],
+    mobile: {
+      closingLines: [
+        "철저한 학교별 분석과 빈틈없는",
+        "밀착관리로 상위권 내신을 선점,",
+        "내신부터 수능까지 입체적인 커리큘럼으로",
+        "최상의 결과를 만듭니다.",
+      ],
+    },
+    emphasis: ["상위권 내신", "최상의 결과"],
+  },
+  middle: {
+    closingLines: [
+      "빈틈없는 학교별 맞춤분석과 꼼꼼한 밀착 관리로",
+      "중학 내신 최상위권 안착은 물론, 특목,자사 입시까지!",
+      "흔들리지 않는 탄탄한 실력으로 고등 최상위권까지 선점하는 완벽한 로드맵!",
+    ],
+    mobile: {
+      closingLines: [
+        "빈틈없는 학교별 맞춤분석과 꼼꼼한 밀착 관리로",
+        "중학 내신 최상위권 안착은 물론,",
+        "특목,자사 입시까지!",
+        "흔들리지 않는 탄탄한 실력으로 고등 최상위권까지",
+        "선점하는 완벽한 로드맵!",
+      ],
+    },
+    emphasis: ["중학 내신 최상위권", "완벽한 로드맵"],
+  },
   private: "1:1 맞춤 또는 소수 팀 단위로 진행되는 프리미엄 개인 수업.",
 };
 

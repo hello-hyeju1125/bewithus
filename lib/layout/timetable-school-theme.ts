@@ -46,12 +46,15 @@ export type TimetableSchoolTheme = {
 const TIFFANY_ACTIVE =
   "border-tiffany bg-tiffany text-primary";
 
+/** 강사진·설명회·공지사항 세부 페이지 등 SubPageHero 티파니 변형 */
+export const subPageTiffanyHero = {
+  section: "bg-tiffany text-primary",
+  title: "text-primary",
+  description: "text-primary/80",
+} as const;
+
 const TIMETABLE_THEME: TimetableSchoolTheme = {
-  hero: {
-    section: "bg-tiffany text-primary",
-    title: "text-primary",
-    description: "text-primary/80",
-  },
+  hero: subPageTiffanyHero,
   grade: {
     active: TIFFANY_ACTIVE,
     inactive:

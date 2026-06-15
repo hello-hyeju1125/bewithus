@@ -11,6 +11,7 @@ import {
   shouldShowHomeBannerPopup,
 } from "@/lib/home/banner-popup-storage";
 import type { PublicPopupBanner } from "@/lib/home/hero-slides";
+import { withCacheBust } from "@/lib/media/cache-bust";
 import { cn } from "@/lib/utils";
 
 type HomeBannerPopupProps = {
@@ -33,7 +34,7 @@ function PopupBannerCard({
     >
       {slide.backgroundImageUrl ? (
         <Image
-          src={slide.backgroundImageUrl}
+          src={withCacheBust(slide.backgroundImageUrl, slide.imageVersion)}
           alt=""
           fill
           className="object-cover"

@@ -11,6 +11,7 @@ import {
   isStoredBannerImageUrl,
   type PublicMainBanner,
 } from "@/lib/home/hero-slides";
+import { withCacheBust } from "@/lib/media/cache-bust";
 
 const AUTOPLAY_DELAY_MS = 5000;
 const CTA_LABEL = ko.home.hero.ctaLabel;
@@ -113,7 +114,10 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                 >
                   {hasImage ? (
                     <Image
-                      src={slide.backgroundImageUrl!}
+                      src={withCacheBust(
+                        slide.backgroundImageUrl!,
+                        slide.imageVersion,
+                      )}
                       alt=""
                       fill
                       className="object-cover"

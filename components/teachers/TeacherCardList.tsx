@@ -8,6 +8,7 @@ import SubjectFilterChips, {
   ALL_SUBJECT,
 } from "@/components/filters/SubjectFilterChips";
 import { sectionBodyClass } from "@/lib/layout/section-theme";
+import { withCacheBust } from "@/lib/media/cache-bust";
 import { resolveTeacherPhotoFrame } from "@/lib/teachers/photo-overrides";
 import { subjectsForTeacherList } from "@/lib/teachers/subject-order";
 import type { Teacher } from "@/types/database";
@@ -215,7 +216,9 @@ function TeacherCardMobile({ teacher: t }: { teacher: Teacher }) {
       <div className="w-[72px] shrink-0 overflow-hidden rounded-button bg-neutral-100">
         <TeacherPhotoFrame
           teacherName={t.name}
-          photoUrl={t.photo_url}
+          photoUrl={
+            t.photo_url ? withCacheBust(t.photo_url, t.updated_at) : null
+          }
           sizes="72px"
           placeholderIconClass="h-9 w-9"
         />
@@ -264,7 +267,9 @@ function TeacherCardDesktop({ teacher: t }: { teacher: Teacher }) {
         >
           <TeacherPhotoFrame
             teacherName={t.name}
-            photoUrl={t.photo_url}
+            photoUrl={
+            t.photo_url ? withCacheBust(t.photo_url, t.updated_at) : null
+          }
             sizes="(min-width: 1024px) 18vw, (min-width: 768px) 26vw, 72px"
             placeholderIconClass="h-10 w-10 sm:h-11 sm:w-11"
           />

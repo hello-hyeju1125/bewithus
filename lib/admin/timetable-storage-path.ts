@@ -25,9 +25,15 @@ export function buildTimetableImageStoragePath(params: {
   ext: string;
   /** 다중 이미지 업로드 시 파일 인덱스 */
   index?: number;
+  /** 업로드마다 고유 경로 — 동일 키 덮어쓰기 시 CDN 캐시 회피 */
+  version?: number | string;
 }): string {
   const semesterSlug = semesterToStorageSlug(params.semester);
   const indexSuffix =
     params.index != null && params.index > 0 ? `_${params.index}` : "";
-  return `${params.school}/${params.grade}/${params.view_type}_${params.year}_${semesterSlug}${indexSuffix}.${params.ext}`;
+  const versionSuffix =
+    params.version != null && String(params.version).length > 0
+      ? `_v${params.version}`
+      : "";
+  return `${params.school}/${params.grade}/${params.view_type}_${params.year}_${semesterSlug}${versionSuffix}${indexSuffix}.${params.ext}`;
 }

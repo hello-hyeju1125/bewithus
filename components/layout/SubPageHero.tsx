@@ -1,5 +1,8 @@
 import type { LucideIcon } from "lucide-react";
 
+import type { HeroDescriptionInput } from "@/lib/layout/hero-description";
+
+import HeroDescription from "@/components/layout/HeroDescription";
 import {
   sectionHeroEyebrowClass,
   type PublicSection,
@@ -14,7 +17,7 @@ type SubPageHeroProps = {
   title: string;
   /** sm 미만 뷰포트용 짧은 제목 (미지정 시 title 사용) */
   mobileTitle?: string;
-  description?: string;
+  description?: HeroDescriptionInput;
   /** Hero eyebrow·본문 액센트 구분 (배경은 기본 네이비, surfaceClass 로 덮어쓸 수 있음) */
   section?: PublicSection;
   /** 섹션 래퍼 (예: 대원외고 시간표 라이트 스카이블루 Hero) */
@@ -35,6 +38,8 @@ export default function SubPageHero({
   titleClass,
   descriptionClass,
 }: SubPageHeroProps) {
+  const heroVariant = surfaceClass?.includes("bg-tiffany") ? "tiffany" : "navy";
+
   return (
     <section aria-label={ariaLabel}>
       <div className="h-12 bg-gnb lg:h-[72px]" aria-hidden="true" />
@@ -71,14 +76,11 @@ export default function SubPageHero({
           )}
         </h1>
         {description ? (
-          <p
-            className={cn(
-              "max-w-2xl text-[17px] leading-relaxed sm:text-[19px] lg:text-[22px]",
-              descriptionClass ?? "text-white/85",
-            )}
-          >
-            {description}
-          </p>
+          <HeroDescription
+            content={description}
+            variant={heroVariant}
+            descriptionClass={descriptionClass ?? undefined}
+          />
         ) : null}
         </div>
       </div>

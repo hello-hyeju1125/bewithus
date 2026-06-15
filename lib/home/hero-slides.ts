@@ -1,4 +1,5 @@
 import { ko } from "@/content/ko";
+import { cacheBustVersion } from "@/lib/media/cache-bust";
 import type { HomeHeroSlide } from "@/types/database";
 
 export const HOME_BANNER_SLOTS = [1, 2, 3] as const;
@@ -15,6 +16,8 @@ export type PublicMainBanner = {
   slot: HomeBannerSlot;
   href: string;
   backgroundImageUrl?: string;
+  /** Storage 이미지 캐시 버스터 (slide.updated_at) */
+  imageVersion?: string;
   tagline?: string;
   mainHeadline?: string;
   subtitle?: string;
@@ -24,6 +27,7 @@ export type PublicPopupBanner = {
   slot: HomeBannerSlot;
   href: string;
   backgroundImageUrl?: string;
+  imageVersion?: string;
 };
 
 export const FALLBACK_HERO_SETTINGS_VERSION = "static-fallback";
@@ -85,6 +89,7 @@ export function mapHomeHeroSlideRow(row: HomeHeroSlide): PublicMainBanner {
     slot: row.slot,
     href: row.href,
     backgroundImageUrl: row.background_image_url ?? undefined,
+    imageVersion: cacheBustVersion(row.updated_at),
     tagline: row.tagline?.trim() || undefined,
     mainHeadline: row.main_headline?.trim() || undefined,
     subtitle: row.subtitle?.trim() || undefined,
@@ -96,6 +101,7 @@ export function toPopupBanner(slide: PublicMainBanner): PublicPopupBanner {
     slot: slide.slot,
     href: slide.href,
     backgroundImageUrl: slide.backgroundImageUrl,
+    imageVersion: slide.imageVersion,
   };
 }
 

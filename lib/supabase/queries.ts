@@ -45,7 +45,7 @@ import {
 const PRIVATE_MIDDLE_GRADES = ["middle-1", "middle-2", "middle-3"] as const;
 
 export type TimetableCourseWithTeacher = TimetableCourse & {
-  teacher: Pick<Teacher, "id" | "name" | "photo_url" | "subject"> | null;
+  teacher: Pick<Teacher, "id" | "name" | "photo_url" | "subject" | "updated_at"> | null;
 };
 
 function hasSupabaseEnv(): boolean {
@@ -149,7 +149,7 @@ export const listTimetableCourses = cache(
         const { data, error } = await supabase
           .from("timetable_courses")
           .select(
-            "*, teacher:teachers(id, name, photo_url, subject)",
+            "*, teacher:teachers(id, name, photo_url, subject, updated_at)",
           )
           .eq("school", school)
           .eq("grade", gradeKey)

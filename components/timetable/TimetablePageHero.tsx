@@ -1,11 +1,12 @@
 import SubPageHero from "@/components/layout/SubPageHero";
 import type { School } from "@/lib/constants";
+import type { HeroDescriptionInput } from "@/lib/layout/hero-description";
 import { getTimetableSchoolTheme } from "@/lib/layout/timetable-school-theme";
 
 type TimetablePageHeroProps = {
   school: School;
   schoolLabel: string;
-  description: string;
+  description: HeroDescriptionInput;
 };
 
 export default function TimetablePageHero({
