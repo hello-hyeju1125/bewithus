@@ -15,6 +15,7 @@ import {
   SCHOOL_LABELS,
   TIMETABLE_VIEW_TYPE_LABELS,
 } from "@/lib/constants";
+import { heroDescriptionToPlainText } from "@/lib/layout/hero-description";
 import {
   siteContainerClass,
   siteFloatingWidgetCenterOffsetClass,
@@ -35,7 +36,7 @@ export function generateMetadata({ params }: TimetablePageProps) {
   if (!isSchool(params.school)) return { title: "시간표 | W대치위더스" };
   return {
     title: `${SCHOOL_LABELS[params.school]} 시간표 | W대치위더스`,
-    description: SCHOOL_DESCRIPTIONS[params.school],
+    description: heroDescriptionToPlainText(SCHOOL_DESCRIPTIONS[params.school]),
   };
 }
 

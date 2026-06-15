@@ -10,6 +10,7 @@ import {
 } from "@/lib/layout/spacing";
 import { getPost, incrementPostViewCount } from "@/lib/supabase/queries";
 import { sanitizePostHtmlAsync } from "@/lib/html-sanitize";
+import { bustSupabaseImagesInHtml } from "@/lib/media/cache-bust";
 
 type NoticeDetailPageProps = {
   params: { id: string };
@@ -41,12 +42,15 @@ export default async function NoticeDetailPage({
   void incrementPostViewCount(result.post.id);
 
   const { post, prev, next } = result;
-  const safeHtml = await sanitizePostHtmlAsync(post.content_html);
+  const safeHtml = bustSupabaseImagesInHtml(
+    await sanitizePostHtmlAsync(post.content_html),
+    post.updated_at,
+  );
 
   return (
     <StaggeredPageShell
       pageKey={post.id}
-      hero={<NoticePageHero title={post.title} />}
+      hero={<NoticePageHero title={post.title} tiffanyHero />}
       content={
         <article
           className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} py-10 sm:py-12 lg:py-14`}

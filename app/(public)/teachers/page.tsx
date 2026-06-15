@@ -25,7 +25,11 @@ export default async function AllTeachersPage() {
     <StaggeredPageShell
       pageKey="all"
       hero={
-        <TeachersPageHero title={copy.title} description={copy.description} />
+        <TeachersPageHero
+          title={copy.title}
+          description={copy.description}
+          tiffanyHero
+        />
       }
       content={
         <section

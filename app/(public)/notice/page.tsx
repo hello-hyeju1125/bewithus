@@ -43,6 +43,7 @@ export default async function NoticeListPage({
         <NoticePageHero
           title="대치위더스 소식"
           description="학원 운영과 입시 일정에 대한 공식 안내를 가장 빠르게 전해드립니다."
+          tiffanyHero
         />
       }
       content={

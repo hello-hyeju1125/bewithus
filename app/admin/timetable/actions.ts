@@ -69,6 +69,7 @@ async function uploadTimetableImages(
     .filter((f): f is File => f instanceof File && f.size > 0);
 
   const urls = [...keptUrls];
+  const uploadVersion = Date.now();
 
   try {
     for (let i = 0; i < files.length; i++) {
@@ -82,6 +83,7 @@ async function uploadTimetableImages(
         semester: values.semester,
         ext,
         index: urls.length + i,
+        version: uploadVersion,
       });
       const { publicUrl } = await uploadToStorage({
         bucket: "timetables",

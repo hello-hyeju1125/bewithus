@@ -15,7 +15,7 @@ export default function LocationPage() {
   return (
     <StaggeredPageShell
       pageKey="location"
-      hero={<LocationPageHero />}
+      hero={<LocationPageHero tiffanyHero />}
       content={
         <section
           aria-label="관별 위치 및 지도"

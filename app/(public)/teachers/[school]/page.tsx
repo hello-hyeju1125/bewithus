@@ -42,6 +42,7 @@ export default async function TeachersPage({ params }: TeachersPageProps) {
         <TeachersPageHero
           schoolLabel={SCHOOL_LABELS[school]}
           description={SCHOOL_DESCRIPTIONS[school]}
+          tiffanyHero
         />
       }
       content={

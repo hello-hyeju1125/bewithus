@@ -109,6 +109,7 @@ export default async function InfoSessionPage({ params }: InfoSessionPageProps) 
           schoolLabel={SCHOOL_LABELS[school]}
           description="다가오는 설명회 일정을 확인하고 신청해 보세요."
           showEyebrow={false}
+          tiffanyHero
         />
       }
       content={

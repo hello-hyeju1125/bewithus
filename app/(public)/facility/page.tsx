@@ -19,7 +19,7 @@ export default function FacilityPage() {
   return (
     <StaggeredPageShell
       pageKey="facility"
-      hero={<FacilityPageHero />}
+      hero={<FacilityPageHero tiffanyHero />}
       content={
         <section
           aria-label="시설 갤러리"
