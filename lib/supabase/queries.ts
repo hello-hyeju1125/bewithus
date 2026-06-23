@@ -458,6 +458,59 @@ export const listPosts = cache(
   },
 );
 
+export type PublishedPostSeoRow = Pick<
+  Post,
+  "id" | "title" | "content_html" | "created_at" | "updated_at"
+>;
+
+export const listPublishedPostsForSitemap = cache(
+  async (): Promise<Pick<Post, "id" | "updated_at">[]> => {
+    if (!hasSupabaseEnv()) return [];
+
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("posts")
+        .select("id, updated_at")
+        .eq("is_published", true)
+        .order("created_at", { ascending: false });
+      if (error) {
+        console.error("[listPublishedPostsForSitemap]", error);
+        return [];
+      }
+      return (data as Pick<Post, "id" | "updated_at">[] | null) ?? [];
+    } catch (e) {
+      console.error("[listPublishedPostsForSitemap]", e);
+      return [];
+    }
+  },
+);
+
+export const listPublishedPostsForFeed = cache(
+  async (limit = 50): Promise<PublishedPostSeoRow[]> => {
+    if (!hasSupabaseEnv()) return [];
+
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("posts")
+        .select("id, title, content_html, created_at, updated_at")
+        .eq("is_published", true)
+        .order("is_pinned", { ascending: false })
+        .order("created_at", { ascending: false })
+        .limit(limit);
+      if (error) {
+        console.error("[listPublishedPostsForFeed]", error);
+        return [];
+      }
+      return (data as PublishedPostSeoRow[] | null) ?? [];
+    } catch (e) {
+      console.error("[listPublishedPostsForFeed]", e);
+      return [];
+    }
+  },
+);
+
 export type PostWithSiblings = {
   post: Post;
   prev: { id: string; title: string } | null;
