@@ -209,7 +209,8 @@ export const ko = {
         "(주)대치위더스에듀 (사업자등록번호 584-87-02545)",
         "대치위더스 엠(M)관 학원 (사업자등록번호 620-99-51030)",
       ],
-      academyNumber: "학원설립·운영 등록번호: 제10388호",
+      academyNumber:
+        "학원설립·운영 등록번호: 프리미엄관(제12945호), M관(제13258호), 입시관(제10388호), S관 (제 15255호)",
       reportingAuthority: "신고기관명: 서울시 강남서초교육지원청",
       copyright: "Copyright(c) 대치위더스학원 All right Reserved.",
     },
