@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-
 import {
   Dialog,
   DialogContent,
@@ -18,26 +16,25 @@ type TuitionModalProps = {
 export default function TuitionModal({ open, onOpenChange }: TuitionModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[min(90vh,900px)] overflow-y-auto sm:max-w-[720px]">
+      <DialogContent className="max-h-[min(90vh,900px)] overflow-y-auto sm:max-w-[800px]">
         <DialogHeader>
           <DialogTitle>{tuition.title}</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 pr-1">
-          {tuition.images.map((image) => (
-            <figure
-              key={image.src}
-              className="overflow-hidden rounded-card border border-neutral-200 bg-neutral-50"
-            >
-              <Image
-                src={image.src}
-                alt={image.alt}
-                width={794}
-                height={1123}
-                sizes="(min-width: 640px) 672px, 100vw"
-                className="block h-auto w-full"
-              />
-            </figure>
+        <div className="space-y-6 pr-1">
+          {tuition.documents.map((document) => (
+            <section key={document.src} className="space-y-2.5">
+              <h3 className="text-[14px] font-bold text-primary">
+                {document.title}
+              </h3>
+              <div className="overflow-hidden rounded-card border border-neutral-200 bg-neutral-50">
+                <iframe
+                  src={document.src}
+                  title={document.title}
+                  className="block h-[min(70vh,560px)] w-full"
+                />
+              </div>
+            </section>
           ))}
         </div>
       </DialogContent>

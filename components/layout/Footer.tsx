@@ -91,7 +91,9 @@ export default function Footer() {
         <div className="mt-5 border-t border-white/15 pt-4 text-[12.5px] leading-relaxed text-white">
           <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
             <ul className="flex flex-wrap gap-x-4 gap-y-1">
-              <li>{legal.businessNumber}</li>
+              {legal.businessEntities.map((entity) => (
+                <li key={entity}>{entity}</li>
+              ))}
               <li>{legal.academyNumber}</li>
               <li>{legal.reportingAuthority}</li>
             </ul>

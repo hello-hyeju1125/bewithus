@@ -1,17 +1,21 @@
 export const tuition = {
   title: "교습비",
-  images: [
+  documents: [
     {
-      src: "/tuition/tuition-1.png",
-      alt: "교습비등 게시표 — (주)대치위더스학원",
+      title: "P관 교습비",
+      src: "/tuition/P_price.pdf",
     },
     {
-      src: "/tuition/tuition-2.png",
-      alt: "교습비등 게시표 — 김인영",
+      title: "S관 교습비",
+      src: "/tuition/S_price.pdf",
     },
     {
-      src: "/tuition/tuition-3.png",
-      alt: "교습비등 게시표 — (주)대치위더스에듀학원",
+      title: "M관 교습비",
+      src: "/tuition/M_price.pdf",
+    },
+    {
+      title: "입시관 교습비",
+      src: "/tuition/A_price.pdf",
     },
   ],
 } as const;
