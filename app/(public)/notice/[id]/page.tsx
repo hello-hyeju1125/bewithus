@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, Eye, ListOrdered } from "lucide-react";
+import { ArrowLeft, ArrowRight, ListOrdered } from "lucide-react";
 
 import StaggeredPageShell from "@/components/layout/StaggeredPageShell";
 import NoticePageHero from "@/components/notice/NoticePageHero";
@@ -57,16 +57,12 @@ export default async function NoticeDetailPage({
           className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} py-10 sm:py-12 lg:py-14`}
         >
           <div className="mx-auto w-full max-w-[960px]">
-            <header className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-200 pb-5">
+            <header className="border-b border-neutral-200 pb-5">
               <p className="text-[14px] text-neutral-500">
                 등록일{" "}
                 <span className="font-semibold text-neutral-700">
                   {formatDate(post.created_at)}
                 </span>
-              </p>
-              <p className="inline-flex items-center gap-1.5 text-[13px] text-neutral-500">
-                <Eye className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
-                조회 {post.view_count.toLocaleString()}
               </p>
             </header>
 

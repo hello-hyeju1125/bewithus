@@ -79,9 +79,6 @@ export default async function NoticeListPage({
                     <th scope="col" className="w-32 py-3 text-center font-semibold">
                       작성일
                     </th>
-                    <th scope="col" className="w-20 py-3 text-center font-semibold">
-                      조회수
-                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -117,9 +114,6 @@ export default async function NoticeListPage({
                         <td className="py-3.5 text-center text-neutral-500">
                           {formatDate(p.created_at)}
                         </td>
-                        <td className="py-3.5 text-center text-neutral-500">
-                          {p.view_count.toLocaleString()}
-                        </td>
                       </tr>
                     );
                   })}
@@ -145,9 +139,8 @@ export default async function NoticeListPage({
                           {p.title}
                         </h3>
                       </div>
-                      <div className="mt-2 flex justify-between text-[12px] text-neutral-500">
+                      <div className="mt-2 text-[12px] text-neutral-500">
                         <span>{formatDate(p.created_at)}</span>
-                        <span>조회 {p.view_count.toLocaleString()}</span>
                       </div>
                     </Link>
                   </li>
