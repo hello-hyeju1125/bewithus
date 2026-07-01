@@ -76,8 +76,7 @@ export default async function InfoSessionDetailPage({
       hero={
         <InfoSessionPageHero
           schoolLabel={SCHOOL_LABELS[school]}
-          title={session.title}
-          description=""
+          description="설명회 일정을 확인하고 상세 내용을 살펴보세요."
           showEyebrow={false}
           tiffanyHero
         />
@@ -87,7 +86,10 @@ export default async function InfoSessionDetailPage({
           className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} py-10 sm:py-12 lg:py-14`}
         >
           <div className="mx-auto w-full max-w-[960px]">
-            <header className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-200 pb-5">
+            <h1 className="text-balance whitespace-pre-line text-[22px] font-black leading-snug tracking-tight text-primary sm:text-[26px] lg:text-[28px]">
+              {session.title}
+            </h1>
+            <header className="mt-5 flex flex-wrap items-center justify-between gap-3 border-b border-neutral-200 pb-5">
               <p className="inline-flex items-center gap-1.5 text-[14px] text-neutral-500">
                 <Calendar className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
                 <span className="font-semibold text-neutral-700">

@@ -51,13 +51,22 @@ export default async function NoticeDetailPage({
   return (
     <StaggeredPageShell
       pageKey={post.id}
-      hero={<NoticePageHero title={post.title} tiffanyHero />}
+      hero={
+        <NoticePageHero
+          title="대치위더스 소식"
+          description="학원 운영과 입시 일정에 대한 공식 안내를 가장 빠르게 전해드립니다."
+          tiffanyHero
+        />
+      }
       content={
         <article
           className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} py-10 sm:py-12 lg:py-14`}
         >
           <div className="mx-auto w-full max-w-[960px]">
-            <header className="border-b border-neutral-200 pb-5">
+            <h1 className="text-balance whitespace-pre-line text-[22px] font-black leading-snug tracking-tight text-primary sm:text-[26px] lg:text-[28px]">
+              {post.title}
+            </h1>
+            <header className="mt-5 border-b border-neutral-200 pb-5">
               <p className="text-[14px] text-neutral-500">
                 등록일{" "}
                 <span className="font-semibold text-neutral-700">

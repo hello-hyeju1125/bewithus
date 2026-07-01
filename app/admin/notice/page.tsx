@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Eye, Pin, Plus } from "lucide-react";
+import { Pin, Plus } from "lucide-react";
 
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
@@ -44,14 +44,13 @@ export default async function AdminNoticePage() {
               <TableHead className="w-12"></TableHead>
               <TableHead>제목</TableHead>
               <TableHead className="w-28">작성일</TableHead>
-              <TableHead className="w-20 text-center">조회</TableHead>
               <TableHead className="w-72 text-right">고정/발행/액션</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {posts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="py-12 text-center text-neutral-500">
+                <TableCell colSpan={4} className="py-12 text-center text-neutral-500">
                   작성된 공지사항이 없습니다.
                 </TableCell>
               </TableRow>
@@ -79,12 +78,6 @@ export default async function AdminNoticePage() {
                     ) : null}
                   </TableCell>
                   <TableCell>{formatDate(p.created_at)}</TableCell>
-                  <TableCell className="text-center">
-                    <span className="inline-flex items-center gap-1 text-neutral-500">
-                      <Eye className="h-3.5 w-3.5" aria-hidden="true" />
-                      {p.view_count.toLocaleString()}
-                    </span>
-                  </TableCell>
                   <TableCell className="text-right">
                     <PostRowActions
                       id={p.id}
