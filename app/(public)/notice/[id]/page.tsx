@@ -10,7 +10,7 @@ import {
 } from "@/lib/layout/spacing";
 import { getPost, incrementPostViewCount } from "@/lib/supabase/queries";
 import { resolvePostHtml } from "@/lib/admin/sanitize";
-import { sanitizePostHtmlAsync } from "@/lib/html-sanitize";
+import { sanitizePostHtmlForDisplay } from "@/lib/html-sanitize";
 import { bustSupabaseImagesInHtml } from "@/lib/media/cache-bust";
 
 type NoticeDetailPageProps = {
@@ -44,7 +44,7 @@ export default async function NoticeDetailPage({
 
   const { post, prev, next } = result;
   const safeHtml = bustSupabaseImagesInHtml(
-    await sanitizePostHtmlAsync(resolvePostHtml(post)),
+    await sanitizePostHtmlForDisplay(resolvePostHtml(post)),
     post.updated_at,
   );
 

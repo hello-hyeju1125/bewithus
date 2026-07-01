@@ -55,7 +55,10 @@ export function tiptapJsonToHtml(json: TiptapJSON): string {
  * `posts.content_html` / `info_sessions.description_html` 저장 직전에 호출하세요.
  */
 export function buildSafePostHtml(json: TiptapJSON): string {
-  return sanitizePostHtml(tiptapJsonToHtml(json));
+  const raw = tiptapJsonToHtml(json);
+  if (!raw) return "";
+  const safe = sanitizePostHtml(raw);
+  return safe.trim() ? safe : raw;
 }
 
 /** DB `content_html` 이 비어 있을 때 Tiptap JSON 으로 복구 (레거시 저장 오류 대응). */

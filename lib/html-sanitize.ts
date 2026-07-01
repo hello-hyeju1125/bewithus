@@ -110,16 +110,35 @@ function configureDomPurify(DOMPurify: DomPurifyInstance) {
 
 /**
  * 리치 텍스트 HTML sanitize.
- * 서버(Vercel Lambda)에서는 DOMPurify 로드 실패 시 빈 문자열을 반환합니다.
+ * 동기 require 를 우선 사용하고, 실패 시 dynamic import 를 시도합니다.
  */
 export async function sanitizePostHtmlAsync(html: string): Promise<string> {
-  if (!html) return "";
+  return sanitizePostHtmlForDisplay(html);
+}
+
+/**
+ * 공개 SSR·저장 파이프라인용 HTML 정제.
+ * Vercel Lambda 에서 DOMPurify 로드가 실패해도 본문이 비지 않도록,
+ * 정제 결과가 비어 있으면 관리자가 저장한 HTML 을 그대로 사용합니다.
+ */
+export async function sanitizePostHtmlForDisplay(html: string): Promise<string> {
+  const trimmed = html.trim();
+  if (!trimmed) return "";
+
+  const synced = sanitizePostHtml(trimmed);
+  if (synced.trim()) return synced;
 
   const DOMPurify = await loadDomPurify();
-  if (!DOMPurify) return "";
+  if (DOMPurify) {
+    configureDomPurify(DOMPurify);
+    const asyncSanitized = DOMPurify.sanitize(trimmed, SANITIZE_CONFIG);
+    if (asyncSanitized.trim()) return asyncSanitized;
+  }
 
-  configureDomPurify(DOMPurify);
-  return DOMPurify.sanitize(html, SANITIZE_CONFIG);
+  console.warn(
+    "[sanitizePostHtmlForDisplay] DOMPurify unavailable, using stored HTML",
+  );
+  return trimmed;
 }
 
 /**

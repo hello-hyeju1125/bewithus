@@ -7,7 +7,7 @@ import StaggeredPageShell from "@/components/layout/StaggeredPageShell";
 import InfoSessionPageHero from "@/components/info-session/InfoSessionPageHero";
 import { resolveInfoSessionHtml } from "@/lib/admin/sanitize";
 import { isStaffSchool, SCHOOL_LABELS } from "@/lib/constants";
-import { sanitizePostHtmlAsync } from "@/lib/html-sanitize";
+import { sanitizePostHtmlForDisplay } from "@/lib/html-sanitize";
 import {
   formatSessionDateTime,
   isSessionUpcoming,
@@ -53,7 +53,7 @@ export default async function InfoSessionDetailPage({
   const { session, prev, next } = result;
   const upcoming = isSessionUpcoming(session.session_date);
   const rawHtml = resolveInfoSessionHtml(session);
-  const safeHtml = rawHtml ? await sanitizePostHtmlAsync(rawHtml) : "";
+  const safeHtml = rawHtml ? await sanitizePostHtmlForDisplay(rawHtml) : "";
 
   const cta = upcoming ? (
     session.registration_url ? (
