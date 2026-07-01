@@ -1,0 +1,52 @@
+---
+description: W대치위더스 디자인 토큰 norm — 컬러/라운드/폰트의 단일 진실원 및 사용 규칙
+alwaysApply: true
+---
+
+# 디자인 토큰 (Norm)
+
+이 프로젝트의 디자인 토큰은 `tailwind.config.ts` 의 `theme.extend` 에서만 정의·수정한다.
+컴포넌트/CSS 안에 hex 코드를 직접 박지 않는다.
+
+## 컬러 Norm
+
+| 토큰 | Hex | 용도 |
+|---|---|---|
+| `primary` (=`primary-600`) | **`#22295D`** | **메인 네이비 (norm)**. 로고 박스, Hero/Footer 배경, 제목·링크 텍스트 |
+| `accent` (=`accent-500`) | **`#FFF33B`** | **포인트 컬러 (norm)**. 강조 라벨, 액티브 도트, 버튼 hover 배경 |
+| `neutral-0` ~ `neutral-900` | white ~ #0F1218 | 배경/구분선/보조 텍스트 |
+
+**`#22295D` 는 프로젝트의 단일 메인 네이비다.** 다른 네이비 hex (`#182958`, `#1A2B5F` 등) 를 새로 도입하지 말 것. 변경이 필요하면 `tailwind.config.ts` 의 `primary` 스케일을 통째로 갱신한다.
+
+**`#FFF33B` 는 프로젝트의 단일 포인트 컬러다.** 다른 옐로우 hex (`#FCF361`, `#FCD12A`, `#FFF56C`, `#FFD60A` 등) 를 새로 도입하지 말 것. 변경이 필요하면 `tailwind.config.ts` 의 `accent` 스케일을 통째로 갱신한다.
+
+### accent 스케일 사용 규칙
+
+`#FFF33B` 는 흰 배경 대비비가 약 1.3:1 로 본문 텍스트로 쓸 수 없다. 용도별로 다음 단계를 사용한다.
+
+- **네이비/어두운 배경 위 텍스트·도트·아이콘**: `accent` / `accent-500` (#FFF33B). 예: Hero(`bg-primary`) 위의 `text-accent`, 액티브 페이지네이션 도트.
+- **흰 배경 위 hover/포커스 텍스트**: `accent` / `accent-500` (#FFF33B). GNB·드로어 메뉴 등 링크 hover에 사용.
+- **흰 배경 위 강조 배경**: `accent-500` 가능 (배경엔 대비비 제약 약함). 위에 얹는 텍스트는 `primary` 계열 사용.
+- **2px 언더라인/하이라이트 라인**: `accent-500` 사용 가능 (그래픽 요소는 대비비 4.5:1 룰 미적용).
+
+## Border Radius Norm
+
+- `rounded-button` = `8px` — 버튼·아이콘 박스·드로어 메뉴 항목
+- `rounded-card` = `12px` — 일반 카드 (CardGrid 등)
+- `rounded-hero` = `16px` — 큰 비주얼 영역 (Hero 슬라이더)
+
+## Font Norm
+
+- `font-pretendard` / `font-sans` — Pretendard Variable (CDN `@import` via `app/globals.css`)
+- `font-logo` — Noto Serif KR (로고 워드마크 `대치위더스` 전용). 본문과 분리해 브랜드 식별성 확보.
+- 한글 본문은 항상 Pretendard 계열만 사용한다. Geist/Inter 등 영문 전용 폰트 추가 금지.
+
+## 절대 금지
+
+- 그라데이션, 네온, 과한 그림자, 이모지 (프로젝트 룰)
+- **브랜드 컬러를 hex 로 직접 입력**: `bg-[#FFF33B]`, `text-[#22295D]`, `text-yellow-500` 등 모두 금지. 반드시 `accent` / `primary` 토큰을 거친다.
+- `text-yellow-*`, `text-blue-*` 등 Tailwind 기본 컬러 팔레트로 브랜드 색을 대체하지 말 것.
+
+## 예외
+
+`#F5F5F0` (카드 표면), `#EDEDE5` (카드 hover 표면) 처럼 한 영역에만 쓰이는 표면 색은 명세에 명시된 경우 인라인 `bg-[#...]` 사용을 허용한다. 두 곳 이상에서 반복 사용되기 시작하면 `neutral` 또는 `surface` 토큰으로 승격할 것.

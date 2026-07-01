@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 300">
+  <defs>
+    <linearGradient id="bg4" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#dce7f7"/>
+      <stop offset="50%" style="stop-color:#dde8fd"/>
+      <stop offset="100%" style="stop-color:#b9c3db"/>
+    </linearGradient>
+    <linearGradient id="shape4a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#377845;stop-opacity:0.25"/>
+      <stop offset="100%" style="stop-color:#63b980;stop-opacity:0.15"/>
+    </linearGradient>
+    <linearGradient id="shape4b" x1="100%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#110835;stop-opacity:0.08"/>
+      <stop offset="100%" style="stop-color:#7985ac;stop-opacity:0.12"/>
+    </linearGradient>
+  </defs>
+  <rect width="740" height="300" fill="url(#bg4)"/>
+  <path d="M0 300 Q200 120 400 180 T740 100 L740 300 Z" fill="url(#shape4a)"/>
+  <path d="M740 0 Q540 200 300 140 T0 220 L0 0 Z" fill="url(#shape4b)"/>
+  <ellipse cx="120" cy="150" rx="100" ry="80" fill="#fff29e" opacity="0.2"/>
+  <ellipse cx="620" cy="200" rx="120" ry="70" fill="#ec7269" opacity="0.12"/>
+</svg>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 300">
+  <defs>
+    <linearGradient id="bg5" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" style="stop-color:#dde8fd"/>
+      <stop offset="30%" style="stop-color:#dce7f7"/>
+      <stop offset="70%" style="stop-color:#cbd5e3"/>
+      <stop offset="100%" style="stop-color:#b9c3db"/>
+    </linearGradient>
+    <linearGradient id="shape5a" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#3069bd;stop-opacity:0.2"/>
+      <stop offset="100%" style="stop-color:#3e78dc;stop-opacity:0.05"/>
+    </linearGradient>
+    <linearGradient id="shape5b" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f6ce61;stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:#f1d4ae;stop-opacity:0.2"/>
+    </linearGradient>
+  </defs>
+  <rect width="740" height="300" fill="url(#bg5)"/>
+  <rect x="0" y="80" width="300" height="140" rx="80" fill="url(#shape5a)" transform="rotate(-8 150 150)"/>
+  <rect x="440" y="60" width="320" height="180" rx="90" fill="url(#shape5b)" transform="rotate(5 600 150)"/>
+  <circle cx="370" cy="150" r="90" fill="#110835" opacity="0.04"/>
+  <ellipse cx="700" cy="80" rx="50" ry="40" fill="#63b980" opacity="0.18"/>
+</svg>
