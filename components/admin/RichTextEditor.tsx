@@ -41,11 +41,11 @@ import { cn } from "@/lib/utils";
 import { toast } from "@/components/ui/sonner";
 import type { TiptapJSON } from "@/types/database";
 
-const FONT_SIZES = [
-  { label: "작게", value: "12px" },
-  { label: "보통", value: "16px" },
-  { label: "크게", value: "22px" },
-] as const;
+/** 10pt ~ 100pt, 2pt 단위 */
+const FONT_SIZE_OPTIONS = Array.from(
+  { length: (100 - 10) / 2 + 1 },
+  (_, i) => 10 + i * 2,
+);
 
 const IMAGE_WIDTHS = [
   { label: "S", value: "25%" },
@@ -67,7 +67,7 @@ type RichTextEditorProps = {
  * 관리자 게시판에서 사용하는 Tiptap 기반 리치 에디터.
  *
  * 기능
- *  - 글자 크기 (작게/보통/크게) · 글자 색 · 굵게/기울임/밑줄/취소선
+ *  - 글자 크기 (10pt~100pt, 2pt 단위) · 글자 색 · 굵게/기울임/밑줄/취소선
  *  - 정렬 (좌/중/우/양쪽) · 순서/비순서 목록 · 인용구
  *  - 링크 · 이미지 (업로드 + DnD) · 이미지 크기 조정 · 표
  *  - Undo / Redo
@@ -313,6 +313,10 @@ function Toolbar({
     (editor.getAttributes("textStyle") as { fontSize?: string }).fontSize ??
     null;
 
+  const hasLegacyFontSize =
+    !!currentFontSize &&
+    !FONT_SIZE_OPTIONS.some((pt) => `${pt}pt` === currentFontSize);
+
   function setLink() {
     const previous = editor.getAttributes("link").href as string | undefined;
     const input = window.prompt("링크 URL", previous ?? "https://");
@@ -367,14 +371,20 @@ function Toolbar({
             editor.chain().focus().setFontSize(v).run();
           }
         }}
-        className="h-8 rounded-[6px] border border-neutral-200 bg-white px-2 text-[12px] font-semibold text-neutral-700 outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        className="h-8 max-w-[88px] rounded-[6px] border border-neutral-200 bg-white px-2 text-[12px] font-semibold text-neutral-700 outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
         <option value="">크기</option>
-        {FONT_SIZES.map((s) => (
-          <option key={s.value} value={s.value}>
-            {s.label} ({s.value})
-          </option>
-        ))}
+        {hasLegacyFontSize ? (
+          <option value={currentFontSize!}>{currentFontSize} (기존)</option>
+        ) : null}
+        {FONT_SIZE_OPTIONS.map((pt) => {
+          const value = `${pt}pt`;
+          return (
+            <option key={value} value={value}>
+              {value}
+            </option>
+          );
+        })}
       </select>
 
       <label className="ml-1 inline-flex h-8 items-center gap-1 rounded-[6px] border border-neutral-200 bg-white px-2 text-[12px] font-semibold text-neutral-700">
