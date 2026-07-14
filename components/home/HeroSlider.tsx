@@ -81,7 +81,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
       aria-roledescription="carousel"
       tabIndex={0}
       onKeyDown={onKeyDown}
-      className="relative h-full min-h-[200px] overflow-hidden rounded-hero bg-primary outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[440px] lg:min-h-[600px]"
+      className="relative h-full min-h-[320px] overflow-hidden rounded-hero bg-primary outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[440px] lg:min-h-[600px]"
     >
       <div ref={emblaRef} className="h-full">
         <div className="flex h-full">
@@ -120,7 +120,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                       )}
                       alt=""
                       fill
-                      className="object-cover"
+                      className="object-cover object-center"
                       sizes="(max-width: 1024px) 100vw, 45vw"
                       priority={idx === 0}
                     />
