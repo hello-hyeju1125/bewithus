@@ -50,9 +50,7 @@ export function fallbackMainBanners(): PublicMainBanner[] {
     return {
       slot,
       href: slide.href,
-      tagline: slide.tagline ?? ko.home.hero.tagline,
-      mainHeadline: slide.mainHeadline,
-      subtitle: slide.subtitle,
+      // 풀 배너 이미지 — 텍스트 오버레이 없음 (admin 이미지 배너와 동일)
       backgroundImageUrl: FALLBACK_MAIN_IMAGES[slot],
     };
   });
@@ -85,14 +83,20 @@ export function hasBannerAsset(row: HomeHeroSlide): boolean {
 }
 
 export function mapHomeHeroSlideRow(row: HomeHeroSlide): PublicMainBanner {
+  const backgroundImageUrl = row.background_image_url ?? undefined;
+  const hasImage = isStoredBannerImageUrl(backgroundImageUrl);
+
   return {
     slot: row.slot,
     href: row.href,
-    backgroundImageUrl: row.background_image_url ?? undefined,
+    backgroundImageUrl,
     imageVersion: cacheBustVersion(row.updated_at),
-    tagline: row.tagline?.trim() || undefined,
-    mainHeadline: row.main_headline?.trim() || undefined,
-    subtitle: row.subtitle?.trim() || undefined,
+    // 이미지가 있으면 완성된 배너로 취급 — 시드/레거시 카피는 올리지 않음
+    tagline: hasImage ? undefined : row.tagline?.trim() || undefined,
+    mainHeadline: hasImage
+      ? undefined
+      : row.main_headline?.trim() || undefined,
+    subtitle: hasImage ? undefined : row.subtitle?.trim() || undefined,
   };
 }
 
@@ -105,7 +109,7 @@ export function toPopupBanner(slide: PublicMainBanner): PublicPopupBanner {
   };
 }
 
-/** 메인 고정 슬라이더 — `show_in_main` 이 켜진 배너 */
+/** 메인 고정 슬라이더 — `show_in_main` 이 켜진 배너만. DB에 행이 있으면 fallback 정적 배너는 쓰지 않음. */
 export function resolveMainBanners(rows: HomeHeroSlide[]): PublicMainBanner[] {
   const main = rows
     .filter((r) => r.show_in_main && hasBannerAsset(r))
@@ -117,6 +121,7 @@ export function resolveMainBanners(rows: HomeHeroSlide[]): PublicMainBanner[] {
   if (withImage.length > 0) return withImage;
   if (main.length > 0) return main;
 
+  // 배치 플래그 이전 데이터 — 이미지 + is_active
   const legacy = rows
     .filter(
       (r) =>
@@ -126,13 +131,8 @@ export function resolveMainBanners(rows: HomeHeroSlide[]): PublicMainBanner[] {
     .map(mapHomeHeroSlideRow);
   if (legacy.length > 0) return legacy;
 
-  const withCopy = rows
-    .filter((r) => hasBannerAsset(r))
-    .map(mapHomeHeroSlideRow)
-    .filter((s) => s.mainHeadline || s.tagline);
-  if (withCopy.length > 0) return withCopy;
-
-  return fallbackMainBanners();
+  // admin에 슬롯이 있으면 정적 `/asset/banner_*.svg` 로 되돌리지 않음
+  return [];
 }
 
 /** 팝업 — `show_in_popup` 이 켜진 배너 (동일 이미지·링크) */

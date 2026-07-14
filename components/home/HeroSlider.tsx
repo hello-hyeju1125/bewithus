@@ -87,7 +87,9 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
         <div className="flex h-full">
           {slides.map((slide, idx) => {
             const hasImage = isStoredBannerImageUrl(slide.backgroundImageUrl);
-            const hasCopy = Boolean(slide.mainHeadline || slide.tagline);
+            // 이미지가 있으면 완성 배너 — 레거시 텍스트/CTA 오버레이 금지
+            const hasCopy =
+              !hasImage && Boolean(slide.mainHeadline || slide.tagline);
             const linkLabel =
               slide.mainHeadline?.replace(/\n/g, " ") ?? `배너 ${slide.slot}`;
 
@@ -105,11 +107,9 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                   tabIndex={selectedIndex === idx ? 0 : -1}
                   aria-label={`${linkLabel} — ${CTA_LABEL}`}
                   className={`relative flex h-full w-full flex-col outline-none transition-opacity duration-200 hover:opacity-[0.98] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-500 ${
-                    hasCopy && !hasImage
+                    hasCopy
                       ? "items-center justify-start px-7 pb-10 pt-4 text-center sm:px-10 sm:pb-28 sm:pt-14 lg:px-12 lg:pb-32 lg:pt-[4.5rem]"
-                      : hasCopy
-                        ? "items-center justify-end px-7 pb-10 pt-4 text-center sm:px-10 sm:pb-28 sm:pt-14"
-                        : "block"
+                      : "block"
                   }`}
                 >
                   {hasImage ? (
@@ -130,13 +130,6 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                       aria-hidden="true"
                     />
                   )}
-
-                  {hasImage && hasCopy ? (
-                    <span
-                      className="absolute inset-0 bg-primary/55"
-                      aria-hidden="true"
-                    />
-                  ) : null}
 
                   {hasCopy ? (
                     <span className="relative z-10 flex flex-col">

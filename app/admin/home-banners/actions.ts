@@ -87,27 +87,16 @@ export async function updateHomeHeroSlidesAction(
     const hasImage = Boolean(backgroundUrl);
     const href = values.href.trim() || "/";
 
-    const { data: existing } = await admin
-      .from("home_hero_slides")
-      .select("tagline, main_headline, subtitle")
-      .eq("slot", slot)
-      .maybeSingle();
-
-    const prev = existing as {
-      tagline?: string;
-      main_headline?: string;
-      subtitle?: string | null;
-    } | null;
-
+    // admin 배너는 이미지+링크만 사용. 시드/레거시 텍스트 카피는 비움.
     const payload = {
       href,
       background_image_url: backgroundUrl,
       is_active: hasImage,
       show_in_main: hasImage ? values.show_in_main : false,
       show_in_popup: hasImage ? values.show_in_popup : false,
-      tagline: prev?.tagline ?? "",
-      main_headline: prev?.main_headline ?? "",
-      subtitle: prev?.subtitle ?? null,
+      tagline: "",
+      main_headline: "",
+      subtitle: null,
     };
 
     const { error } = await admin
