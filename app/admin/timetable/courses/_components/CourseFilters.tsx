@@ -11,10 +11,34 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { SCHOOLS, SCHOOL_LABELS, GRADE_LABELS } from "@/lib/constants";
+import {
+  GRADE_LABELS,
+  isSchool,
+  SCHOOL_GRADES,
+  SCHOOL_LABELS,
+  SCHOOLS,
+  type School,
+} from "@/lib/constants";
 
-const ALL_GRADES = ["high-1", "high-2", "high-3", "all"] as const;
 const ALL = "__all__";
+
+/** 학교 미선택 시 필터에 노출할 학년 (중등 → 고등 순) */
+const ALL_SCHOOLS_GRADES = [
+  "middle-1",
+  "middle-2",
+  "middle-3",
+  "high-1",
+  "high-2",
+  "high-3",
+  "all",
+] as const;
+
+function gradeOptionsForSchool(school?: string): readonly string[] {
+  if (school && isSchool(school)) {
+    return [...SCHOOL_GRADES[school], "all"];
+  }
+  return ALL_SCHOOLS_GRADES;
+}
 
 export default function CourseFilters({
   initial,
@@ -26,11 +50,23 @@ export default function CourseFilters({
   const router = useRouter();
   const params = useSearchParams();
 
+  const school = initial.school;
+  const gradeOptions = gradeOptionsForSchool(school);
+
   const update = useCallback(
     (key: "school" | "grade" | "subject", value: string) => {
       const next = new URLSearchParams(params.toString());
       if (!value || value === ALL) next.delete(key);
       else next.set(key, value);
+
+      if (key === "school") {
+        const grade = next.get("grade");
+        if (grade && value !== ALL && isSchool(value)) {
+          const allowed = [...SCHOOL_GRADES[value as School], "all"];
+          if (!allowed.includes(grade)) next.delete("grade");
+        }
+      }
+
       const qs = next.toString();
       router.replace(
         qs ? `/admin/timetable/courses?${qs}` : "/admin/timetable/courses",
@@ -71,7 +107,7 @@ export default function CourseFilters({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value={ALL}>학년 전체</SelectItem>
-          {ALL_GRADES.map((g) => (
+          {gradeOptions.map((g) => (
             <SelectItem key={g} value={g}>
               {GRADE_LABELS[g] ?? g}
             </SelectItem>

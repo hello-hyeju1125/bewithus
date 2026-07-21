@@ -11,10 +11,33 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { SCHOOLS, SCHOOL_LABELS, GRADE_LABELS } from "@/lib/constants";
-const ALL_GRADES = ["middle-1", "middle-2", "middle-3", "high-1", "high-2", "high-3", "all"];
+import {
+  GRADE_LABELS,
+  isSchool,
+  SCHOOL_GRADES,
+  SCHOOL_LABELS,
+  SCHOOLS,
+  type School,
+} from "@/lib/constants";
+
+const ALL_SCHOOLS_GRADES = [
+  "middle-1",
+  "middle-2",
+  "middle-3",
+  "high-1",
+  "high-2",
+  "high-3",
+  "all",
+] as const;
 
 const ALL = "__all__";
+
+function gradeOptionsForSchool(school?: string): readonly string[] {
+  if (school && isSchool(school)) {
+    return [...SCHOOL_GRADES[school], "all"];
+  }
+  return ALL_SCHOOLS_GRADES;
+}
 
 export default function TimetableFilters({
   initial,
@@ -24,11 +47,22 @@ export default function TimetableFilters({
   const router = useRouter();
   const params = useSearchParams();
 
+  const gradeOptions = gradeOptionsForSchool(initial.school);
+
   const update = useCallback(
     (key: "school" | "grade" | "semester", value: string) => {
       const next = new URLSearchParams(params.toString());
       if (!value || value === ALL) next.delete(key);
       else next.set(key, value);
+
+      if (key === "school") {
+        const grade = next.get("grade");
+        if (grade && value !== ALL && isSchool(value)) {
+          const allowed = [...SCHOOL_GRADES[value as School], "all"];
+          if (!allowed.includes(grade)) next.delete("grade");
+        }
+      }
+
       const qs = next.toString();
       router.replace(qs ? `/admin/timetable?${qs}` : "/admin/timetable");
     },
@@ -67,7 +101,7 @@ export default function TimetableFilters({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value={ALL}>학년 전체</SelectItem>
-          {ALL_GRADES.map((g) => (
+          {gradeOptions.map((g) => (
             <SelectItem key={g} value={g}>
               {GRADE_LABELS[g] ?? g}
             </SelectItem>
