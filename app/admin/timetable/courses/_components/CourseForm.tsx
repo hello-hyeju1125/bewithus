@@ -24,6 +24,7 @@ import {
   SCHOOLS,
   SCHOOL_GRADES,
   SCHOOL_LABELS,
+  teachersEligibleForTimetableSchool,
   type School,
 } from "@/lib/constants";
 import {
@@ -141,19 +142,17 @@ export default function CourseForm({
       form.setValue("grade", allowed[0], { shouldValidate: true });
     }
     // 강사 목록 필터링 시 현재 강사가 학교에 안 맞으면 초기화
-    const t = teachers.find(
-      (x) => x.id === form.getValues("teacher_id"),
-    );
-    if (t && t.school !== school && school !== "private") {
+    const eligible = teachersEligibleForTimetableSchool(school, teachers);
+    const t = teachers.find((x) => x.id === form.getValues("teacher_id"));
+    if (t && !eligible.some((e) => e.id === t.id)) {
       form.setValue("teacher_id", "", { shouldValidate: false });
     }
   }, [school, teachers, form]);
 
-  const eligibleTeachers = useMemo(() => {
-    if (school === "private")
-      return teachers.filter((t) => t.is_active);
-    return teachers.filter((t) => t.is_active && t.school === school);
-  }, [school, teachers]);
+  const eligibleTeachers = useMemo(
+    () => teachersEligibleForTimetableSchool(school, teachers),
+    [school, teachers],
+  );
 
   function addStartDate(raw: string) {
     const value = raw.trim();

@@ -6,7 +6,7 @@
  * - DB 의 `school_type` enum 과 1:1 대응합니다.
  */
 
-import type { SchoolType, ViewType } from "@/types/database";
+import type { SchoolType, ViewType, Teacher } from "@/types/database";
 
 import type { HeroDescriptionInput } from "@/lib/layout/hero-description";
 
@@ -188,6 +188,20 @@ export function resolveGradeForSchool(
   const mapped = legacyMap[gradeParam];
   if (mapped && isGradeOfSchool(school, mapped)) return mapped;
   return defaultGrade;
+}
+
+/**
+ * 상세 시간표 등록 시 학교별 강사 선택 목록.
+ * 중등관·개인 수업은 강사진 DB school(daewon/hanyoung/general)과 timetable school 이 달라
+ * 활성 강사 전원을 노출합니다.
+ */
+export function teachersEligibleForTimetableSchool(
+  school: School,
+  teachers: Teacher[],
+): Teacher[] {
+  const active = teachers.filter((t) => t.is_active);
+  if (school === "private" || school === "middle") return active;
+  return active.filter((t) => t.school === school);
 }
 
 /** DB enum 으로 그대로 캐스트 가능한 타입 가드. */
