@@ -19,9 +19,9 @@ type TeachersPageProps = {
 };
 
 export function generateMetadata({ params }: TeachersPageProps) {
-  if (!isStaffSchool(params.school)) return { title: "강사진 | W대치위더스" };
+  if (!isStaffSchool(params.school)) return { title: "강사진 | 대치위더스" };
   return {
-    title: `${SCHOOL_LABELS[params.school]} 강사진 | W대치위더스`,
+    title: `${SCHOOL_LABELS[params.school]} 강사진 | 대치위더스`,
     description: `${SCHOOL_LABELS[params.school]} 전담 강사진을 소개합니다.`,
   };
 }

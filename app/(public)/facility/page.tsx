@@ -11,7 +11,7 @@ import {
 } from "@/lib/layout/spacing";
 
 export const metadata = {
-  title: "시설 안내 | W대치위더스",
+  title: "시설 안내 | 대치위더스",
   description: "강의실, 자습실, 상담실 등 대치위더스의 시설을 소개합니다.",
 };
 

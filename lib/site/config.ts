@@ -5,10 +5,10 @@
  * 예: https://www.example.com (끝 슬래시 없이)
  */
 
-export const SITE_NAME = "W대치위더스";
+export const SITE_NAME = "대치위더스";
 export const SITE_SHORT_NAME = "대치위더스";
 export const SITE_DESCRIPTION =
-  "W대치위더스는 대치동에서 결과로 증명하는 프리미엄 입시 전문 학원입니다. 대원외고·한영외고·일반고·중등 맞춤 시간표와 강사진, 설명회 안내.";
+  "대치위더스는 대치동에서 결과로 증명하는 프리미엄 입시 전문 학원입니다. 대원외고·한영외고·일반고·중등 맞춤 시간표와 강사진, 설명회 안내.";
 export const SITE_KEYWORDS = [
   "대치위더스",
   "대치동 학원",

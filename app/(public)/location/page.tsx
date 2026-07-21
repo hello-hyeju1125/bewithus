@@ -7,7 +7,7 @@ import {
 } from "@/lib/layout/spacing";
 
 export const metadata = {
-  title: "오시는 길 | W대치위더스",
+  title: "오시는 길 | 대치위더스",
   description: "대치위더스 학원 관별 위치와 연락처 안내.",
 };
 

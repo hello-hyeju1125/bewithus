@@ -4,7 +4,7 @@ import {
 } from "@/lib/constants";
 
 /**
- * W대치위더스 (bewithus) 한국어 카피 모음
+ * 대치위더스 (bewithus) 한국어 카피 모음
  *
  * - 모든 화면 텍스트는 이 파일을 통해 노출합니다. 컴포넌트 내 하드코딩 금지.
  * - 키 네이밍: `<영역>.<요소>` (예: `home.hero.title`)
@@ -14,7 +14,6 @@ import {
 export const ko = {
   brand: {
     short: "대치위더스",
-    mark: "W",
     fullAria: "대치위더스 홈으로 이동",
   },
   nav: {
@@ -154,7 +153,7 @@ export const ko = {
       title: "강사진",
       description:
         "대원외고·한영외고·일반고 전문 강사진을 한곳에서 확인하실 수 있습니다.",
-      metaTitle: "강사진 | W대치위더스",
+      metaTitle: "강사진 | 대치위더스",
       metaDescription:
         "대원외고·한영외고·일반고 전문 강사진을 소개합니다.",
     },
@@ -177,7 +176,7 @@ export const ko = {
   },
   footer: {
     brand: {
-      name: "W대치위더스",
+      name: "대치위더스",
       tagline: "대치동에서 결과로 증명하는 프리미엄 입시 전문 학원",
     },
     quickLinks: {

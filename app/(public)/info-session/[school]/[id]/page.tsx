@@ -30,10 +30,10 @@ const sessionCtaClass = cn(
 );
 
 export async function generateMetadata({ params }: InfoSessionDetailPageProps) {
-  if (!isStaffSchool(params.school)) return { title: "설명회 | W대치위더스" };
+  if (!isStaffSchool(params.school)) return { title: "설명회 | 대치위더스" };
   const result = await getInfoSession(params.school, params.id);
   if (!result) {
-    return { title: `${SCHOOL_LABELS[params.school]} 설명회 | W대치위더스` };
+    return { title: `${SCHOOL_LABELS[params.school]} 설명회 | 대치위더스` };
   }
   return {
     title: `${result.session.title} | ${SCHOOL_LABELS[params.school]} 설명회`,

@@ -33,9 +33,9 @@ type TimetablePageProps = {
 };
 
 export function generateMetadata({ params }: TimetablePageProps) {
-  if (!isSchool(params.school)) return { title: "시간표 | W대치위더스" };
+  if (!isSchool(params.school)) return { title: "시간표 | 대치위더스" };
   return {
-    title: `${SCHOOL_LABELS[params.school]} 시간표 | W대치위더스`,
+    title: `${SCHOOL_LABELS[params.school]} 시간표 | 대치위더스`,
     description: heroDescriptionToPlainText(SCHOOL_DESCRIPTIONS[params.school]),
   };
 }

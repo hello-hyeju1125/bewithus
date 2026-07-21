@@ -16,7 +16,7 @@ type NoticeListPageProps = {
 };
 
 export const metadata = {
-  title: "공지사항 | W대치위더스",
+  title: "공지사항 | 대치위더스",
   description: "대치위더스 학원의 공지사항을 확인하세요.",
 };
 

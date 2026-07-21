@@ -27,7 +27,7 @@ function formatDate(iso: string): string {
 
 export async function generateMetadata({ params }: NoticeDetailPageProps) {
   const result = await getPost(params.id);
-  if (!result) return { title: "공지사항 | W대치위더스" };
+  if (!result) return { title: "공지사항 | 대치위더스" };
   return {
     title: `${result.post.title} | 공지사항`,
     description: result.post.title,

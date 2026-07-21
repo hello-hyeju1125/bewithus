@@ -20,9 +20,9 @@ type InfoSessionListPageProps = {
 };
 
 export function generateMetadata({ params }: InfoSessionListPageProps) {
-  if (!isStaffSchool(params.school)) return { title: "설명회 | W대치위더스" };
+  if (!isStaffSchool(params.school)) return { title: "설명회 | 대치위더스" };
   return {
-    title: `${SCHOOL_LABELS[params.school]} 설명회 | W대치위더스`,
+    title: `${SCHOOL_LABELS[params.school]} 설명회 | 대치위더스`,
     description: `${SCHOOL_LABELS[params.school]} 입학 설명회 일정을 확인하세요.`,
   };
 }

@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { loginAdminAction } from "../actions";
+import SiteLogo from "@/components/layout/SiteLogo";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -37,12 +38,7 @@ export default function LoginForm() {
   return (
     <div className="w-full max-w-md rounded-card border border-neutral-200 bg-white p-8 shadow-[0_12px_36px_-16px_rgba(34,41,93,0.18)]">
       <div className="mb-6 flex flex-col items-center gap-2 text-center">
-        <span
-          aria-hidden="true"
-          className="flex h-11 w-11 items-center justify-center rounded-button bg-primary text-[20px] font-bold text-accent"
-        >
-          W
-        </span>
+        <SiteLogo className="h-9" />
         <h1 className="text-[22px] font-black tracking-tight text-primary">
           관리자 로그인
         </h1>

@@ -17,6 +17,7 @@ import {
 import { useCallback } from "react";
 
 import { logoutAdminAction } from "@/app/admin/login/actions";
+import SiteLogo from "@/components/layout/SiteLogo";
 import { Toaster } from "@/components/ui/sonner";
 
 type AdminNavItem = {
@@ -74,12 +75,7 @@ export default function AdminShell({
         className="hidden w-[240px] shrink-0 flex-col border-r border-neutral-200 bg-white lg:flex"
       >
         <div className="flex h-[64px] items-center gap-2 border-b border-neutral-200 px-5">
-          <span
-            aria-hidden="true"
-            className="flex h-9 w-9 items-center justify-center rounded-button bg-primary font-bold text-accent"
-          >
-            W
-          </span>
+          <SiteLogo className="h-8" />
           <span className="font-logo text-[18px] font-bold tracking-[-0.03em] text-primary">
             Admin
           </span>
