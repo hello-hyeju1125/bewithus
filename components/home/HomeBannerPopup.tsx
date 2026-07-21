@@ -99,7 +99,7 @@ export default function HomeBannerPopup({
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[90] bg-black/85 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
         <Dialog.Content
-          className="fixed inset-0 z-[100] border-0 bg-transparent p-0 shadow-none outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95"
+          className="fixed inset-0 z-[100] overflow-y-auto overscroll-y-contain border-0 bg-transparent p-0 shadow-none outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95"
           onInteractOutside={closePopup}
           onPointerDownOutside={closePopup}
         >
@@ -112,29 +112,27 @@ export default function HomeBannerPopup({
             type="button"
             tabIndex={-1}
             aria-hidden="true"
-            className="absolute inset-0 z-0 cursor-default"
+            className="fixed inset-0 z-0 cursor-default"
             onClick={closePopup}
           />
 
-          <div className="pointer-events-none relative z-10 flex min-h-full items-center justify-center p-4 sm:p-6">
-            <div className="pointer-events-auto relative w-full max-w-[1080px]">
-              <Dialog.Close
-                type="button"
-                className="absolute -top-1 right-0 z-10 flex h-10 w-10 items-center justify-center rounded-button bg-white/95 text-primary outline-none transition-colors hover:bg-white focus-visible:ring-2 focus-visible:ring-accent-500 sm:-right-2 sm:-top-2"
-                aria-label="배너 팝업 닫기"
-              >
-                <X className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
-              </Dialog.Close>
+          <div className="relative z-10 mx-auto w-full max-w-[1080px] px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(3.5rem,env(safe-area-inset-top))] sm:px-6 sm:py-8 sm:pt-10">
+            <Dialog.Close
+              type="button"
+              className="fixed right-4 top-[max(1rem,env(safe-area-inset-top))] z-[110] flex h-10 w-10 items-center justify-center rounded-button bg-white/95 text-primary outline-none transition-colors hover:bg-white focus-visible:ring-2 focus-visible:ring-accent-500 sm:absolute sm:-right-2 sm:-top-2"
+              aria-label="배너 팝업 닫기"
+            >
+              <X className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
+            </Dialog.Close>
 
-              <div className={cn("grid gap-3 sm:gap-5", popupGridClass(count))}>
-                {slides.map((slide) => (
-                  <PopupBannerCard
-                    key={slide.slot}
-                    slide={slide}
-                    onNavigate={handleNavigate}
-                  />
-                ))}
-              </div>
+            <div className={cn("grid gap-3 sm:gap-5", popupGridClass(count))}>
+              {slides.map((slide) => (
+                <PopupBannerCard
+                  key={slide.slot}
+                  slide={slide}
+                  onNavigate={handleNavigate}
+                />
+              ))}
             </div>
           </div>
         </Dialog.Content>
