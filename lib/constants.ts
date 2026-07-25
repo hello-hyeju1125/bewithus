@@ -191,17 +191,15 @@ export function resolveGradeForSchool(
 }
 
 /**
- * 상세 시간표 등록 시 학교별 강사 선택 목록.
- * 중등관·개인 수업은 강사진 DB school(daewon/hanyoung/general)과 timetable school 이 달라
- * 활성 강사 전원을 노출합니다.
+ * 상세 시간표 등록 시 강사 선택 목록.
+ * 강사진 DB school과 시간표 school이 항상 일치하지 않으므로
+ * 학교와 무관하게 활성 강사 전원을 노출합니다.
  */
 export function teachersEligibleForTimetableSchool(
-  school: School,
+  _school: School,
   teachers: Teacher[],
 ): Teacher[] {
-  const active = teachers.filter((t) => t.is_active);
-  if (school === "private" || school === "middle") return active;
-  return active.filter((t) => t.school === school);
+  return teachers.filter((t) => t.is_active);
 }
 
 /** DB enum 으로 그대로 캐스트 가능한 타입 가드. */
