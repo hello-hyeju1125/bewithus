@@ -607,7 +607,7 @@ export default function CourseForm({
             {...form.register("order_index", { valueAsNumber: true })}
           />
           <p className="text-[11px] text-neutral-500">
-            같은 과목 안에서 작은 숫자가 먼저 표시됩니다.
+            작은 숫자가 먼저 표시됩니다. 과목 칩·표 섹션 순서에도 반영됩니다.
           </p>
         </div>
 

@@ -95,7 +95,7 @@ export default function TimetableDetailTable({
                     <th className="w-[168px] px-5 py-4 text-center">강사</th>
                     <th className="px-5 py-4 text-center">강의</th>
                     <th className="w-[260px] px-5 py-4 text-center">요일 / 시간</th>
-                    <th className="w-[140px] px-5 py-4 text-center">개강</th>
+                    <th className="w-[180px] px-5 py-4 text-center">개강</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -345,7 +345,7 @@ function CourseRow({
       <td className="px-5 py-5">
         <SessionList sessions={course.sessions} />
       </td>
-      <td className="px-5 py-5">
+      <td className="w-[180px] px-5 py-5">
         <StartDateList dates={course.start_dates} />
       </td>
     </tr>

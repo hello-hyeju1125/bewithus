@@ -154,8 +154,8 @@ export const listTimetableCourses = cache(
           .eq("school", school)
           .eq("grade", gradeKey)
           .eq("is_active", true)
-          .order("subject", { ascending: true })
-          .order("order_index", { ascending: true });
+          .order("order_index", { ascending: true })
+          .order("subject", { ascending: true });
         if (error) {
           console.error("[listTimetableCourses]", error);
           return [];

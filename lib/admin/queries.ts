@@ -116,8 +116,8 @@ export const adminListTimetableCourses = cache(
         .select("*, teacher:teachers(id, name, school)")
         .order("school", { ascending: true })
         .order("grade", { ascending: true })
-        .order("subject", { ascending: true })
-        .order("order_index", { ascending: true });
+        .order("order_index", { ascending: true })
+        .order("subject", { ascending: true });
       if (filters?.school) q = q.eq("school", filters.school);
       if (filters?.grade) q = q.eq("grade", filters.grade);
       if (filters?.subject) q = q.eq("subject", filters.subject);
