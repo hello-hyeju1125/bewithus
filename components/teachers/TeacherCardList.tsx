@@ -195,7 +195,7 @@ export default function TeacherCardList({
           선택한 과목에 등록된 강사가 없습니다.
         </p>
       ) : (
-        <ul className="grid grid-cols-1 gap-x-5 gap-y-12 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-14 md:grid-cols-3 md:gap-x-7 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
+        <ul className="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-14 md:grid-cols-3 md:gap-x-7 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
           {visibleTeachers.map((t) => (
             <TeacherCard key={t.id} teacher={t} />
           ))}
@@ -211,32 +211,19 @@ function TeacherCardMobile({ teacher: t }: { teacher: Teacher }) {
 
   return (
     <article
-      className="flex gap-3 rounded-card border border-neutral-200 bg-white p-3 md:hidden"
+      className="rounded-card border border-neutral-200 bg-white px-4 py-4 md:hidden"
       aria-label={teacherAriaLabel(t.subject, display)}
     >
-      <div className="w-[88px] shrink-0 overflow-hidden rounded-none bg-neutral-100">
-        <TeacherPhotoFrame
-          teacherName={t.name}
-          photoUrl={
-            t.photo_url ? withCacheBust(t.photo_url, t.updated_at) : null
-          }
-          sizes="88px"
-          placeholderIconClass="h-9 w-9"
-        />
-      </div>
-
-      <div className="min-w-0 flex-1">
-        <TeacherSubjectTag subject={t.subject} className="mb-1.5" />
-        <TeacherNameDisplay
-          display={display}
-          className="text-left"
-          nameClassName="text-[26px]"
-          suffixClassName="text-[18px] font-semibold"
-        />
-        <p className="mt-1.5 whitespace-pre-line text-[14px] font-normal leading-[1.65] text-neutral-800">
-          {bio || "소개가 준비 중입니다."}
-        </p>
-      </div>
+      <TeacherSubjectTag subject={t.subject} />
+      <TeacherNameDisplay
+        display={display}
+        className="mt-3 text-left"
+        nameClassName="text-[26px]"
+        suffixClassName="text-[17px] font-semibold"
+      />
+      <p className="mt-2.5 whitespace-pre-line text-[15px] font-medium leading-[1.7] text-neutral-700">
+        {bio || "소개가 준비 중입니다."}
+      </p>
     </article>
   );
 }

@@ -91,7 +91,7 @@ function SubjectChip({
       aria-selected={active}
       onClick={onClick}
       className={cn(
-        "inline-flex min-h-11 w-full items-center justify-center rounded-full border px-2.5 py-2 text-center text-[13px] font-black leading-snug transition-colors sm:h-12 sm:px-4 sm:text-[16px] lg:px-5 lg:text-[18px]",
+        "inline-flex min-h-12 w-full items-center justify-center rounded-full border px-3 py-2.5 text-center text-[16px] font-black leading-snug transition-colors sm:min-h-[3.25rem] sm:px-4 sm:text-[18px] lg:px-5 lg:text-[20px]",
         active ? activeClass : inactiveClass,
       )}
     >
