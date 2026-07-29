@@ -75,7 +75,7 @@ export default function TimetableDetailTable({
           <section key={subject} aria-labelledby={`subject-${subject}`}>
             <h2
               id={`subject-${subject}`}
-              className="mb-4 text-[24px] font-black tracking-tight text-primary sm:text-[28px]"
+              className="mb-4 text-[28px] font-black tracking-tight text-primary sm:text-[44px]"
             >
               {subject}
             </h2>
@@ -89,13 +89,13 @@ export default function TimetableDetailTable({
 
             {/* md 이상 — 표 */}
             <div className="hidden border-y border-neutral-900 bg-white md:block">
-              <table className="w-full border-collapse text-left text-[16px]">
-                <thead className="text-[15px] font-bold text-neutral-900">
+              <table className="w-full table-fixed border-collapse text-left text-[20px]">
+                <thead className="text-[20px] font-bold text-neutral-900">
                   <tr className="border-b border-neutral-900 bg-tiffany/70">
-                    <th className="w-[168px] px-5 py-4 text-center">강사</th>
+                    <th className="w-[260px] px-5 py-4 text-center">강사</th>
                     <th className="px-5 py-4 text-center">강의</th>
-                    <th className="w-[260px] px-5 py-4 text-center">요일 / 시간</th>
-                    <th className="w-[180px] px-5 py-4 text-center">개강</th>
+                    <th className="w-[360px] px-5 py-4 text-center">요일 / 시간</th>
+                    <th className="w-[240px] px-5 py-4 text-center">개강</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -137,8 +137,8 @@ function CourseTag({
       style={customStyle}
       className={
         customStyle
-          ? "inline-flex w-fit max-w-full items-center justify-center rounded-[3px] px-1.5 py-0.5 text-[10px] font-black leading-tight tracking-tight md:px-2 md:py-1 md:text-[11px] md:tracking-wider"
-          : `inline-flex w-fit max-w-full items-center justify-center rounded-[3px] bg-accent-500 px-1.5 py-0.5 text-[10px] font-black leading-tight tracking-tight md:px-2 md:py-1 md:text-[11px] md:tracking-wider ${theme.body.tagText}`
+          ? "inline-flex w-fit max-w-full items-center justify-center rounded-[3px] px-2 py-0.5 text-[12px] font-black leading-tight tracking-tight md:px-2.5 md:py-1 md:text-[14px] md:tracking-wider"
+          : `inline-flex w-fit max-w-full items-center justify-center rounded-[3px] bg-accent-500 px-2 py-0.5 text-[12px] font-black leading-tight tracking-tight md:px-2.5 md:py-1 md:text-[14px] md:tracking-wider ${theme.body.tagText}`
       }
     >
       {tag}
@@ -162,8 +162,8 @@ function CourseTagMobile({
       style={customStyle}
       className={
         customStyle
-          ? "inline-flex w-fit max-w-full shrink-0 items-center justify-center rounded-button border-2 border-transparent px-2.5 py-1 text-[12px] font-black leading-none tracking-wide"
-          : `inline-flex w-fit max-w-full shrink-0 items-center justify-center rounded-button border-2 bg-accent-500 px-2.5 py-1 text-[12px] font-black leading-none tracking-wide ${theme.body.tagBorder} ${theme.body.tagText}`
+          ? "inline-flex w-fit max-w-full shrink-0 items-center justify-center rounded-button border-2 border-transparent px-2.5 py-1 text-[14px] font-black leading-none tracking-wide"
+          : `inline-flex w-fit max-w-full shrink-0 items-center justify-center rounded-button border-2 bg-accent-500 px-2.5 py-1 text-[14px] font-black leading-none tracking-wide ${theme.body.tagBorder} ${theme.body.tagText}`
       }
     >
       {tag}
@@ -186,8 +186,8 @@ function SessionList({
           key={i}
           className={
             emphasized
-              ? "flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[17px] font-black leading-snug text-neutral-900"
-              : "flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] leading-snug text-neutral-700 md:text-[16px]"
+              ? "flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[17px] font-black leading-snug text-neutral-900 sm:text-[21px]"
+              : "flex flex-wrap items-center gap-x-2 gap-y-1 text-[15px] leading-snug text-neutral-700 md:text-[21px]"
           }
         >
           <span className="min-w-0 break-words">{s.day_time}</span>
@@ -195,8 +195,8 @@ function SessionList({
             <span
               className={
                 emphasized
-                  ? "inline-flex w-fit shrink-0 items-center justify-center rounded-button border border-red-200 bg-red-50 px-2 py-0.5 text-[11px] font-black text-red-600"
-                  : "inline-flex w-fit shrink-0 items-center justify-center rounded-[3px] bg-red-50 px-1.5 py-0.5 text-[10px] font-black leading-tight text-red-600 md:px-2 md:text-[11px] md:tracking-wider"
+                  ? "inline-flex w-fit shrink-0 items-center justify-center rounded-button border border-red-200 bg-red-50 px-2 py-0.5 text-[13px] font-black text-red-600"
+                  : "inline-flex w-fit shrink-0 items-center justify-center rounded-[3px] bg-red-50 px-1.5 py-0.5 text-[12px] font-black leading-tight text-red-600 md:px-2 md:text-[14px] md:tracking-wider"
               }
             >
               마감
@@ -217,7 +217,7 @@ function StartDateList({
 }) {
   if (dates.length === 0) {
     return (
-      <span className={emphasized ? "text-[17px] font-bold text-neutral-400" : "text-neutral-400"}>
+      <span className={emphasized ? "text-[17px] font-bold text-neutral-400 sm:text-[21px]" : "text-neutral-400"}>
         —
       </span>
     );
@@ -229,8 +229,8 @@ function StartDateList({
           key={`${d}-${i}`}
           className={
             emphasized
-              ? "text-[17px] font-black leading-snug text-neutral-900"
-              : "text-[13px] text-neutral-700 md:text-[16px]"
+              ? "text-[17px] font-black leading-snug text-neutral-900 sm:text-[21px]"
+              : "text-[15px] text-neutral-700 md:text-[21px]"
           }
         >
           {d}
@@ -246,12 +246,12 @@ function DetailVideoLink({ url }: { url: string }) {
       href={url}
       target="_blank"
       rel="noreferrer noopener"
-      className="inline-flex w-fit max-w-full items-center justify-center rounded-button bg-accent-500 px-3 py-2.5 text-[11px] font-black leading-tight tracking-tight text-primary transition-colors duration-200 hover:bg-primary hover:text-accent sm:text-[12px] md:px-3.5 md:py-3 md:text-[13px]"
+      className="inline-flex w-fit max-w-full items-center justify-center rounded-button bg-accent-500 px-3.5 py-2.5 text-[14px] font-black leading-tight tracking-tight text-primary transition-colors duration-200 hover:bg-primary hover:text-accent sm:text-[15px] md:px-4 md:py-3 md:text-[16px]"
     >
       <span className="inline-flex items-center justify-center gap-1">
         <span className="text-center">설명회 영상 보기</span>
         <ArrowUpRight
-          className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5"
+          className="h-4 w-4 shrink-0"
           aria-hidden="true"
         />
       </span>
@@ -270,28 +270,25 @@ function TeacherCell({
     ? withCacheBust(teacher.photo_url, teacher.updated_at)
     : null;
   return (
-    <div className="flex flex-col items-center gap-2 text-center">
-      <div className="relative h-14 w-14 overflow-hidden rounded-full border border-neutral-200 bg-neutral-100 md:h-24 md:w-24">
+    <div className="flex flex-col items-center gap-2.5 text-center">
+      <div className="relative h-[150px] w-[114px] overflow-hidden bg-neutral-100 md:h-[190px] md:w-[144px]">
         {photo ? (
           <Image
             src={photo}
             alt={name}
             fill
-            sizes="96px"
+            sizes="144px"
             className="object-cover"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-[12px] font-black text-neutral-400 md:text-[16px]">
+          <div className="flex h-full w-full items-center justify-center text-[18px] font-black text-neutral-400 md:text-[24px]">
             {name.slice(0, 1)}
           </div>
         )}
       </div>
-      <span className="text-[14px] font-black text-neutral-900 md:text-[18px]">{name}</span>
-      {course.detail_url ? (
-        <div className="mt-1">
-          <DetailVideoLink url={course.detail_url} />
-        </div>
-      ) : null}
+      <span className="text-[22px] font-black text-neutral-900 md:text-[32px]">
+        {name}
+      </span>
     </div>
   );
 }
@@ -306,7 +303,7 @@ function CourseTitleCell({
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
-        <p className="min-w-0 text-[17px] font-black leading-snug text-neutral-900 md:text-[18px]">
+        <p className="min-w-0 text-[22px] font-black leading-snug text-neutral-900 md:text-[28px]">
           {course.course_title}
         </p>
         {course.tag ? (
@@ -314,12 +311,12 @@ function CourseTitleCell({
         ) : null}
       </div>
       {course.course_subtitle ? (
-        <p className="text-[15px] font-bold text-neutral-900 sm:text-[16px]">
+        <p className="text-[20px] font-bold text-neutral-900 sm:text-[22px]">
           {course.course_subtitle}
         </p>
       ) : null}
       {course.course_note ? (
-        <p className="whitespace-pre-line text-[14px] font-normal leading-[1.85] text-neutral-900 sm:text-[15px] sm:leading-[1.9]">
+        <p className="whitespace-pre-line text-[18px] font-normal leading-[1.85] text-neutral-900 sm:text-[20px] sm:leading-[1.9]">
           {course.course_note}
         </p>
       ) : null}
@@ -343,9 +340,14 @@ function CourseRow({
         <CourseTitleCell course={course} theme={theme} />
       </td>
       <td className="px-5 py-5">
-        <SessionList sessions={course.sessions} />
+        <div className="space-y-3">
+          <SessionList sessions={course.sessions} />
+          {course.detail_url ? (
+            <DetailVideoLink url={course.detail_url} />
+          ) : null}
+        </div>
       </td>
-      <td className="w-[180px] px-5 py-5">
+      <td className="w-[240px] px-5 py-5">
         <StartDateList dates={course.start_dates} />
       </td>
     </tr>
@@ -365,8 +367,8 @@ function CourseCard({
   return (
     <li className="bg-white py-4 first:pt-0">
       <div className="flex items-start gap-3.5">
-        <div className="flex w-[76px] shrink-0 flex-col items-center gap-1.5">
-          <div className="relative h-[72px] w-[72px] overflow-hidden rounded-button border border-neutral-200 bg-neutral-100">
+        <div className="flex w-[100px] shrink-0 flex-col items-center gap-1.5">
+          <div className="relative h-[128px] w-[96px] overflow-hidden bg-neutral-100">
             {course.teacher?.photo_url ? (
               <Image
                 src={withCacheBust(
@@ -375,27 +377,22 @@ function CourseCard({
                 )}
                 alt={course.teacher.name}
                 fill
-                sizes="72px"
+                sizes="96px"
                 className="object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-[14px] font-black text-neutral-400">
+              <div className="flex h-full w-full items-center justify-center text-[18px] font-black text-neutral-400">
                 {course.teacher?.name?.slice(0, 1) ?? ""}
               </div>
             )}
           </div>
-          <p className="w-full text-center text-[12px] font-black leading-tight text-neutral-900">
+          <p className="w-full text-center text-[18px] font-black leading-tight text-neutral-900">
             {course.teacher?.name ?? ""}
           </p>
-          {course.detail_url ? (
-            <div className="mt-1.5 w-full">
-              <DetailVideoLink url={course.detail_url} />
-            </div>
-          ) : null}
         </div>
         <div className="min-w-0 flex-1 pt-0.5">
           <div className="flex flex-wrap items-start gap-x-2 gap-y-2">
-            <p className="min-w-0 flex-1 basis-full text-[20px] font-black leading-[1.25] tracking-tight text-neutral-900">
+            <p className="min-w-0 flex-1 basis-full text-[20px] font-black leading-[1.25] tracking-tight text-neutral-900 sm:text-[26px]">
               {course.course_title}
             </p>
             {course.tag ? (
@@ -411,21 +408,24 @@ function CourseCard({
       >
         <div>
           <p
-            className={`text-[13px] font-black tracking-tight ${theme.body.cardLabel}`}
+            className={`text-[16px] font-black tracking-tight ${theme.body.cardLabel}`}
           >
             요일 · 시간
           </p>
-          <div className="mt-2">
+          <div className="mt-2 space-y-3">
             {course.sessions.length > 0 ? (
               <SessionList sessions={course.sessions} emphasized />
             ) : (
-              <span className="text-[17px] font-bold text-neutral-400">—</span>
+              <span className="text-[17px] font-bold text-neutral-400 sm:text-[21px]">—</span>
             )}
+            {course.detail_url ? (
+              <DetailVideoLink url={course.detail_url} />
+            ) : null}
           </div>
         </div>
         <div className={`border-t-2 pt-3.5 ${theme.body.cardDivider}`}>
           <p
-            className={`text-[13px] font-black tracking-tight ${theme.body.cardLabel}`}
+            className={`text-[16px] font-black tracking-tight ${theme.body.cardLabel}`}
           >
             개강
           </p>
@@ -441,9 +441,9 @@ function CourseCard({
             type="button"
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
-            className={`mt-3 flex w-full items-center justify-center gap-1 rounded-button border border-neutral-300 bg-white py-2.5 text-[14px] font-black ${theme.body.expandBtn}`}
+            className={`mt-3 flex w-full items-center justify-center gap-1 rounded-button border border-neutral-300 bg-white py-2.5 text-[17px] font-black ${theme.body.expandBtn}`}
           >
-            {expanded ? "접기" : "더보기"}
+            {expanded ? "접기" : "상세보기"}
             <ChevronDown
               className={`h-4 w-4 shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`}
               aria-hidden="true"
@@ -453,12 +453,12 @@ function CourseCard({
           {expanded ? (
             <div className="mt-3 space-y-2.5 border-t border-neutral-100 pt-3">
               {course.course_subtitle ? (
-                <p className="text-[15px] font-bold leading-snug text-neutral-900">
+                <p className="text-[20px] font-bold leading-snug text-neutral-900">
                   {course.course_subtitle}
                 </p>
               ) : null}
               {course.course_note ? (
-                <p className="whitespace-pre-line text-[14px] font-normal leading-[1.85] text-neutral-800">
+                <p className="whitespace-pre-line text-[18px] font-normal leading-[1.85] text-neutral-800">
                   {course.course_note}
                 </p>
               ) : null}

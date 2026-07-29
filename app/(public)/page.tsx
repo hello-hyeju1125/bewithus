@@ -4,6 +4,7 @@ import HeroSlider from "@/components/home/HeroSlider";
 import SideWidget from "@/components/layout/SideWidget";
 import {
   siteMainBelowHeaderClass,
+  siteMainGridColsClass,
   siteSideWidgetColumnClass,
 } from "@/lib/layout/spacing";
 import { getHomeHeroContent } from "@/lib/supabase/queries";
@@ -17,8 +18,10 @@ export default async function Home() {
         slides={heroContent.popupSlides}
         settingsUpdatedAt={heroContent.settingsUpdatedAt}
       />
-      <section className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-10">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[45fr_55fr_100px] lg:gap-8 lg:items-stretch">
+      <section className="mx-auto w-full px-5 sm:px-8 lg:px-8">
+        <div
+          className={`grid grid-cols-1 gap-8 lg:items-stretch lg:gap-10 ${siteMainGridColsClass}`}
+        >
           <HeroSlider slides={heroContent.mainSlides} />
           <CardGrid />
           <div className={siteSideWidgetColumnClass}>

@@ -6,9 +6,27 @@ type PaginationProps = {
   basePath: string;
 };
 
+/** 현재 페이지 주변 번호만 노출 (양끝 + 윈도우). */
+function buildPageItems(page: number, totalPages: number): Array<number | "ellipsis"> {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  const items: Array<number | "ellipsis"> = [];
+  const windowStart = Math.max(2, page - 1);
+  const windowEnd = Math.min(totalPages - 1, page + 1);
+
+  items.push(1);
+  if (windowStart > 2) items.push("ellipsis");
+  for (let p = windowStart; p <= windowEnd; p += 1) items.push(p);
+  if (windowEnd < totalPages - 1) items.push("ellipsis");
+  items.push(totalPages);
+
+  return items;
+}
+
 /**
- * 간단한 페이지네이션 (1~totalPages 모두 노출 + 이전/다음).
- * 게시판이 커지면 윈도우(...) 처리를 추가합니다.
+ * 페이지네이션 (이전/다음 + 윈도우 번호).
  */
 export default function Pagination({
   page,
@@ -21,12 +39,14 @@ export default function Pagination({
     p === 1 ? basePath : `${basePath}?page=${p}`;
 
   const baseLink =
-    "inline-flex h-9 min-w-9 items-center justify-center rounded-button px-3 text-[14px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary";
+    "inline-flex h-10 min-w-10 items-center justify-center rounded-button px-2.5 text-[15px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary sm:h-12 sm:min-w-12 sm:px-3.5 sm:text-[18px]";
+
+  const pages = buildPageItems(page, totalPages);
 
   return (
     <nav
       aria-label="페이지 네비게이션"
-      className="mt-8 flex items-center justify-center gap-1.5"
+      className="mt-8 flex flex-wrap items-center justify-center gap-1.5"
     >
       <Link
         aria-disabled={page <= 1}
@@ -40,13 +60,24 @@ export default function Pagination({
         이전
       </Link>
 
-      {Array.from({ length: totalPages }).map((_, idx) => {
-        const p = idx + 1;
-        const isActive = p === page;
+      {pages.map((item, idx) => {
+        if (item === "ellipsis") {
+          return (
+            <span
+              key={`ellipsis-${idx}`}
+              className="inline-flex h-10 min-w-8 items-center justify-center text-[15px] text-neutral-400 sm:h-12 sm:text-[18px]"
+              aria-hidden="true"
+            >
+              …
+            </span>
+          );
+        }
+
+        const isActive = item === page;
         return (
           <Link
-            key={p}
-            href={buildHref(p)}
+            key={item}
+            href={buildHref(item)}
             aria-current={isActive ? "page" : undefined}
             className={`${baseLink} ${
               isActive
@@ -54,7 +85,7 @@ export default function Pagination({
                 : "border border-neutral-200 text-neutral-700 hover:border-primary hover:text-primary"
             }`}
           >
-            {p}
+            {item}
           </Link>
         );
       })}

@@ -4,8 +4,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ImagePlus, Loader2, User } from "lucide-react";
+import { Crop, ImagePlus, Loader2, User } from "lucide-react";
 
+import TeacherPhotoCropDialog from "./TeacherPhotoCropDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -47,6 +48,8 @@ export default function TeacherForm({ initial }: Props) {
   const [photoPreview, setPhotoPreview] = useState<string | null>(
     initial?.photo_url ?? null,
   );
+  const [cropSource, setCropSource] = useState<string | null>(null);
+  const [cropOpen, setCropOpen] = useState(false);
 
   const form = useForm<TeacherFormValues>({
     resolver: zodResolver(teacherFormSchema),
@@ -60,10 +63,13 @@ export default function TeacherForm({ initial }: Props) {
     form.reset(toFormValues(initial));
     setPhotoFile(null);
     setPhotoPreview(initial?.photo_url ?? null);
+    setCropSource(null);
+    setCropOpen(false);
   }, [initial?.id, initial?.updated_at, initial, form]);
 
   function onPhoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
     if (!file.type.startsWith("image/")) {
       toast.error("이미지 파일만 업로드할 수 있습니다.");
@@ -73,8 +79,21 @@ export default function TeacherForm({ initial }: Props) {
       toast.error("10MB 이하의 이미지만 업로드할 수 있습니다.");
       return;
     }
+    const url = URL.createObjectURL(file);
+    setCropSource(url);
+    setCropOpen(true);
+  }
+
+  function openRecrop() {
+    if (!photoPreview) return;
+    setCropSource(photoPreview);
+    setCropOpen(true);
+  }
+
+  function onCropComplete(file: File, previewUrl: string) {
     setPhotoFile(file);
-    setPhotoPreview(URL.createObjectURL(file));
+    setPhotoPreview(previewUrl);
+    form.setValue("photo_url", "");
   }
 
   const submit: SubmitHandler<TeacherFormValues> = (values) => {
@@ -211,23 +230,58 @@ export default function TeacherForm({ initial }: Props) {
       <aside className="space-y-4">
         <div className="rounded-card border border-neutral-200 bg-white p-6">
           <Label>프로필 사진</Label>
-          <label className="mt-2 flex aspect-[4/5] max-w-[240px] cursor-pointer items-center justify-center overflow-hidden rounded-card border-2 border-dashed border-neutral-300 bg-neutral-50 text-neutral-500 transition-colors hover:border-primary">
-            {photoPreview ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={photoPreview}
-                alt="프로필 미리보기"
-                className="h-full w-full object-cover object-[center_18%]"
-              />
-            ) : (
-              <div className="flex flex-col items-center gap-1 px-3 text-center text-[12px]">
-                <User className="h-8 w-8" strokeWidth={1.25} aria-hidden="true" />
-                <ImagePlus className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
-                클릭하여 사진 선택
-              </div>
-            )}
+          <p className="mt-1 text-[12px] text-neutral-500">
+            선택 후 확대·축소·크롭할 수 있습니다. 미리보기는 공개 카드와 같은 4:5
+            비율입니다.
+          </p>
+          <label className="mt-2 block max-w-[280px] cursor-pointer outline-none focus-within:ring-2 focus-within:ring-primary">
+            <span className="relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden rounded-none border-2 border-dashed border-neutral-300 bg-neutral-100 text-neutral-500 transition-colors hover:border-primary">
+              {photoPreview ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={photoPreview}
+                  alt="강사진 카드 미리보기"
+                  className="absolute inset-0 h-full w-full object-cover object-bottom"
+                />
+              ) : (
+                <span className="flex flex-col items-center gap-1 px-3 text-center text-[12px]">
+                  <User className="h-8 w-8" strokeWidth={1.25} aria-hidden="true" />
+                  <ImagePlus className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
+                  클릭하여 사진 선택
+                </span>
+              )}
+            </span>
             <input type="file" accept="image/*" className="hidden" onChange={onPhoto} />
           </label>
+
+          <div className="mt-3 flex max-w-[280px] flex-col gap-2">
+            {photoPreview ? (
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={openRecrop}
+                >
+                  <Crop className="h-4 w-4" aria-hidden="true" />
+                  확대·축소 / 크롭
+                </Button>
+                <label className="block">
+                  <span className="inline-flex h-8 w-full cursor-pointer items-center justify-center gap-2 rounded-button border border-neutral-200 bg-white px-3 text-[13px] font-bold text-neutral-800 transition-colors hover:border-primary hover:text-primary">
+                    <ImagePlus className="h-4 w-4" aria-hidden="true" />
+                    다른 사진 선택
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={onPhoto}
+                  />
+                </label>
+              </>
+            ) : null}
+          </div>
         </div>
 
         <div
@@ -250,6 +304,13 @@ export default function TeacherForm({ initial }: Props) {
           </ul>
         </div>
       </aside>
+
+      <TeacherPhotoCropDialog
+        open={cropOpen}
+        imageSrc={cropSource}
+        onOpenChange={setCropOpen}
+        onComplete={onCropComplete}
+      />
     </form>
   );
 }

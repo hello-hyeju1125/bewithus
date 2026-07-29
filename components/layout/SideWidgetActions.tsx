@@ -32,8 +32,8 @@ export default function SideWidgetActions() {
             href={href}
             className={sideWidgetButtonAction}
           >
-            <Icon className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-            <span className="whitespace-pre-line text-[12px] font-bold leading-tight tracking-tight">
+            <Icon className="h-9 w-9" strokeWidth={1.75} aria-hidden="true" />
+            <span className="whitespace-pre-line text-[17px] font-bold leading-snug tracking-tight">
               {action.label}
             </span>
           </WidgetActionLink>

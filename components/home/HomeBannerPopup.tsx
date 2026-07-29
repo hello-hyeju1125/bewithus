@@ -30,7 +30,7 @@ function PopupBannerCard({
     <Link
       href={slide.href}
       onClick={onNavigate}
-      className="group relative block aspect-[4/5] min-h-[200px] overflow-hidden rounded-hero outline-none transition-opacity hover:opacity-[0.98] focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent sm:min-h-[280px] lg:min-h-[360px]"
+      className="group relative block aspect-[4/5] min-h-[240px] overflow-hidden rounded-hero outline-none transition-opacity hover:opacity-[0.98] focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent sm:min-h-[440px] lg:min-h-[640px]"
     >
       {slide.backgroundImageUrl ? (
         <Image
@@ -38,7 +38,7 @@ function PopupBannerCard({
           alt=""
           fill
           className="object-cover"
-          sizes="(max-width: 640px) 90vw, 360px"
+          sizes="(max-width: 640px) 94vw, (max-width: 1024px) 50vw, 600px"
         />
       ) : (
         <div className="absolute inset-0 bg-primary" aria-hidden="true" />
@@ -49,7 +49,7 @@ function PopupBannerCard({
 
 function popupGridClass(count: number): string {
   if (count === 1) {
-    return "mx-auto max-w-[520px] grid-cols-1";
+    return "mx-auto w-full max-w-[720px] grid-cols-1 lg:max-w-[880px]";
   }
   if (count === 2) {
     return "grid-cols-1 sm:grid-cols-2";
@@ -116,16 +116,21 @@ export default function HomeBannerPopup({
             onClick={closePopup}
           />
 
-          <div className="relative z-10 mx-auto w-full max-w-[1080px] px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(3.5rem,env(safe-area-inset-top))] sm:px-6 sm:py-8 sm:pt-10">
+          <div className="relative z-10 mx-auto flex min-h-full w-full max-w-[1280px] flex-col justify-start px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(3.5rem,env(safe-area-inset-top))] sm:px-6 sm:py-8 sm:pt-10 lg:max-w-[1760px] lg:items-center lg:justify-center lg:px-8 lg:py-10 lg:pt-10">
             <Dialog.Close
               type="button"
-              className="fixed right-4 top-[max(1rem,env(safe-area-inset-top))] z-[110] flex h-10 w-10 items-center justify-center rounded-button bg-white/95 text-primary outline-none transition-colors hover:bg-white focus-visible:ring-2 focus-visible:ring-accent-500 sm:absolute sm:-right-2 sm:-top-2"
+              className="fixed right-4 top-[max(1rem,env(safe-area-inset-top))] z-[110] flex h-10 w-10 items-center justify-center rounded-button bg-white/95 text-primary outline-none transition-colors hover:bg-white focus-visible:ring-2 focus-visible:ring-accent-500 sm:absolute sm:-right-2 sm:-top-2 lg:right-0 lg:top-0"
               aria-label="배너 팝업 닫기"
             >
               <X className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
             </Dialog.Close>
 
-            <div className={cn("grid gap-3 sm:gap-5", popupGridClass(count))}>
+            <div
+              className={cn(
+                "grid w-full gap-3 sm:gap-5 lg:gap-7",
+                popupGridClass(count),
+              )}
+            >
               {slides.map((slide) => (
                 <PopupBannerCard
                   key={slide.slot}

@@ -14,14 +14,14 @@ import { Menu, X } from "lucide-react";
 import ConsultationTrigger from "@/components/consultation/ConsultationTrigger";
 import SiteLogo from "@/components/layout/SiteLogo";
 import { ko } from "@/content/ko";
-import { headerBarTopClass } from "@/lib/layout/spacing";
+import { headerBarTopClass, siteMainGridColsClass } from "@/lib/layout/spacing";
 import { cn } from "@/lib/utils";
 
 /** 상단 메뉴·세부 메뉴 열 사이 간격 (값을 키울수록 메뉴 간 여백이 넓어짐) */
 const NAV_COLUMN_GAP = "min-w-0 flex-[0.22]";
 
 const ctaBaseClass =
-  "shrink-0 rounded-button bg-accent-500 font-bold leading-tight text-primary outline-none transition-colors duration-200 hover:bg-primary hover:text-accent-500 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-gnb";
+  "shrink-0 rounded-button bg-accent-500 font-black leading-tight text-primary outline-none transition-colors duration-200 hover:bg-primary hover:text-accent-500 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-gnb";
 
 export default function Header() {
   const pathname = usePathname();
@@ -95,8 +95,9 @@ export default function Header() {
         >
           <div
             className={cn(
-              "mx-auto flex h-12 max-w-[1400px] items-center justify-between gap-3 px-5 sm:px-8",
-              "lg:grid lg:h-auto lg:grid-cols-[45fr_55fr_100px] lg:items-start lg:gap-8 lg:px-10",
+              "mx-auto flex h-12 w-full items-center justify-between gap-3 px-5 sm:px-8",
+              "lg:grid lg:h-auto lg:items-start lg:gap-8 lg:px-6",
+              siteMainGridColsClass,
             )}
           >
             <div className="flex min-w-0 items-center lg:h-[72px]">
@@ -130,10 +131,10 @@ export default function Header() {
                           <Link
                             href={item.href}
                             onClick={closeAllMenus}
-                            className={`group relative inline-flex items-center py-2 text-[20px] leading-none outline-none transition-all duration-200 focus-visible:text-primary ${
+                            className={`group relative inline-flex items-center py-2 text-[26px] leading-none outline-none transition-all duration-200 focus-visible:text-primary ${
                               isHovered
                                 ? "font-black text-primary"
-                                : "font-semibold text-neutral-700"
+                                : "font-bold text-neutral-800"
                             }`}
                           >
                             {item.label}
@@ -160,7 +161,7 @@ export default function Header() {
                                 <Link
                                   href={child.href}
                                   onClick={closeAllMenus}
-                                  className="group/sub relative inline-flex whitespace-nowrap py-1 text-[16px] font-normal leading-snug text-neutral-700 outline-none transition-[color,font-weight] duration-300 ease-out hover:font-black hover:text-primary focus-visible:font-black focus-visible:text-primary"
+                                  className="group/sub relative inline-flex whitespace-nowrap py-1 text-[19px] font-semibold leading-snug text-neutral-700 outline-none transition-[color,font-weight] duration-300 ease-out hover:font-black hover:text-primary focus-visible:font-black focus-visible:text-primary"
                                 >
                                   {child.label}
                                   <span
@@ -183,7 +184,7 @@ export default function Header() {
               <ConsultationTrigger
                 className={cn(
                   ctaBaseClass,
-                  "hidden px-3 py-2.5 text-[14px] lg:inline-flex lg:w-full lg:items-center lg:justify-center lg:px-2 lg:text-[13px]",
+                  "hidden px-4 py-3 text-[16px] lg:inline-flex lg:w-full lg:items-center lg:justify-center lg:px-3 lg:py-3.5 lg:text-[19px]",
                 )}
               >
                 {ko.nav.cta.label}
@@ -254,7 +255,7 @@ export default function Header() {
                     href={item.href}
                     onClick={closeAllMenus}
                     tabIndex={menuOpen ? 0 : -1}
-                    className="block rounded-button px-3.5 py-2.5 text-[15px] font-semibold leading-snug text-neutral-800 outline-none transition-colors hover:bg-neutral-50 hover:text-primary focus-visible:text-primary focus-visible:ring-2 focus-visible:ring-primary"
+                    className="block rounded-button px-3.5 py-2.5 text-[18px] font-bold leading-snug text-neutral-800 outline-none transition-colors hover:bg-neutral-50 hover:text-primary focus-visible:text-primary focus-visible:ring-2 focus-visible:ring-primary"
                   >
                     {item.label}
                   </Link>
@@ -266,7 +267,7 @@ export default function Header() {
                             href={child.href}
                             onClick={closeAllMenus}
                             tabIndex={menuOpen ? 0 : -1}
-                            className="block rounded-button px-3.5 py-1.5 text-[14px] leading-snug text-neutral-600 outline-none transition-colors hover:bg-neutral-50 hover:text-primary focus-visible:text-primary focus-visible:ring-2 focus-visible:ring-primary"
+                            className="block rounded-button px-3.5 py-2.5 text-[16px] font-semibold leading-snug text-neutral-600 outline-none transition-colors hover:bg-neutral-50 hover:text-primary focus-visible:text-primary focus-visible:ring-2 focus-visible:ring-primary"
                           >
                             {child.label}
                           </Link>
@@ -278,6 +279,18 @@ export default function Header() {
               ))}
             </ul>
           </nav>
+
+          <div className="shrink-0 border-t border-neutral-100 p-4">
+            <ConsultationTrigger
+              className={cn(
+                ctaBaseClass,
+                "inline-flex w-full items-center justify-center px-4 py-3.5 text-[17px]",
+              )}
+              onAfterOpen={closeAllMenus}
+            >
+              {ko.nav.cta.label}
+            </ConsultationTrigger>
+          </div>
         </aside>
       </div>
     </>

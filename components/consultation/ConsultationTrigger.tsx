@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 type ConsultationTriggerProps = {
   children: React.ReactNode;
   className?: string;
-  /** 기본값 button — 카드처럼 링크 스타일일 때는 `div` + role=button 대신 button 권장 */
-  asChild?: boolean;
+  /** 모달을 연 뒤 추가 동작 (예: 모바일 메뉴 닫기) */
+  onAfterOpen?: () => void;
 };
 
 /**
@@ -16,13 +16,17 @@ type ConsultationTriggerProps = {
 export default function ConsultationTrigger({
   children,
   className,
+  onAfterOpen,
 }: ConsultationTriggerProps) {
   const { open } = useConsultation();
 
   return (
     <button
       type="button"
-      onClick={open}
+      onClick={() => {
+        open();
+        onAfterOpen?.();
+      }}
       className={cn("text-left", className)}
     >
       {children}

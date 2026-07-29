@@ -35,9 +35,9 @@ function overlapsFooter(widget: DOMRect) {
 /**
  * 메인 페이지가 아닌 공개 페이지에서 우측에 고정 노출되는 SideWidget.
  *
- * 메인 페이지의 grid 3열(100px)·하단 inset을 그대로 따라가도록,
+ * 메인 페이지의 grid 3열(172px)·하단 inset을 그대로 따라가도록,
  * fixed + `siteSideWidgetBottomClass` 로 화면 하단에 맞추고
- * `siteContainerClass`(1400px) 안에서 `ml-auto` 로 우측 정렬한다.
+ * `siteContainerClass` 안에서 `ml-auto` 로 우측 정렬한다.
  * 본문은 `siteFloatingWidgetSafeClass` 로 겹침을 방지하고,
  * 푸터와 겹칠 때만 fade out 처리한다.
  */
@@ -91,7 +91,7 @@ export default function FloatingSideWidget() {
           aria-label={a11y.label}
           aria-hidden={obscured}
           className={cn(
-            "pointer-events-auto ml-auto flex flex-col gap-2.5",
+            "pointer-events-auto ml-auto flex flex-col gap-4",
             "transition-opacity duration-200 ease-out",
             obscured && "pointer-events-none opacity-0",
             siteFloatingWidgetWidthClass,
@@ -99,12 +99,12 @@ export default function FloatingSideWidget() {
         >
           <SideWidgetActions />
 
-          <ul className="flex flex-col gap-2.5">
+          <ul className="flex flex-col gap-4">
             {phones.map((phone) => (
               <li key={phone.tel}>
                 <a href={`tel:${phone.tel}`} className={sideWidgetButtonPhone}>
                   <SideWidgetPhoneName name={phone.name} />
-                  <span className="whitespace-nowrap text-[12px] font-black tracking-tight">
+                  <span className="whitespace-nowrap text-[16px] font-black tracking-tight">
                     {phone.display}
                   </span>
                 </a>

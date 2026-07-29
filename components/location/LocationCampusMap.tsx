@@ -19,40 +19,46 @@ function CampusCard({
     : "rounded-card border-2 border-neutral-200 bg-white text-neutral-800";
 
   const btnBase =
-    "inline-flex flex-1 items-center justify-center rounded-button px-2 py-2 text-center text-[12px] font-bold transition-colors duration-150 sm:px-3 sm:text-[13px]";
+    "inline-flex w-full items-center justify-center rounded-button px-3 py-2.5 text-center text-[17px] font-bold leading-snug transition-colors duration-150 sm:text-[18px] lg:py-3 lg:text-[19px]";
   const btnOnYellow = `${btnBase} bg-primary text-white hover:bg-primary-700`;
   const btnOnWhite = `${btnBase} bg-neutral-100 text-neutral-800 hover:bg-neutral-200`;
 
   return (
     <article
-      className={`${shell} flex h-full w-full flex-col px-3.5 py-3 lg:px-3 lg:py-2.5`}
+      className={`${shell} flex h-full w-full flex-col justify-center gap-2.5 px-4 py-3.5 lg:gap-2 lg:px-4 lg:py-3`}
     >
       <button
         type="button"
         onClick={onSelect}
         aria-pressed={isActive}
         aria-label={`${campus.name} 위치 선택`}
-        className="flex min-h-0 flex-1 items-center justify-center px-1 text-center outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+        className="shrink-0 px-1 text-center outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
       >
-        <h3 className="text-[22px] font-black leading-tight tracking-tight text-primary sm:text-[24px] lg:text-[26px]">
+        <h3 className="text-[26px] font-black leading-tight tracking-tight text-primary sm:text-[28px] lg:text-[30px]">
           {campus.name}
         </h3>
+        <p className="mt-1.5 text-[15px] font-semibold leading-snug text-neutral-700 sm:text-[16px] lg:text-[17px]">
+          {campus.address}
+        </p>
+        <p className="mt-1 text-[16px] font-bold tabular-nums text-primary sm:text-[17px] lg:text-[18px]">
+          {campus.phone.display}
+        </p>
       </button>
 
-      <div className="mt-2 flex shrink-0 gap-1.5 sm:gap-2 lg:mt-1.5 lg:gap-1.5">
+      <div className="flex shrink-0 flex-col gap-2">
+        <a
+          href={`tel:${campus.phone.tel}`}
+          className={isActive ? btnOnYellow : btnOnWhite}
+        >
+          전화걸기
+        </a>
         <a
           href={campus.naverMapUrl}
           target="_blank"
           rel="noopener noreferrer"
           className={isActive ? btnOnYellow : btnOnWhite}
         >
-          네이버 지도에서 보기
-        </a>
-        <a
-          href={`tel:${campus.phone.tel}`}
-          className={isActive ? btnOnYellow : btnOnWhite}
-        >
-          전화 걸기
+          네이버 지도로 보기
         </a>
       </div>
     </article>
@@ -92,9 +98,9 @@ export default function LocationCampusMap() {
   }, [active.id]);
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,340px)_1fr] lg:items-start lg:gap-6">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,420px)_1fr] lg:items-start lg:gap-6">
       <ul
-        className="flex flex-col gap-3 lg:gap-2"
+        className="flex flex-col gap-3 lg:gap-2.5"
         style={mapHeight != null ? { height: mapHeight } : undefined}
         role="list"
       >

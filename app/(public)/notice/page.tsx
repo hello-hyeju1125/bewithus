@@ -42,7 +42,12 @@ export default async function NoticeListPage({
       hero={
         <NoticePageHero
           title="대치위더스 소식"
-          description="학원 운영과 입시 일정에 대한 공식 안내를 가장 빠르게 전해드립니다."
+          description={{
+            closingLines: [
+              "학원 운영과 입시 일정에 대한",
+              "공식 안내를 전해드립니다.",
+            ],
+          }}
           tiffanyHero
         />
       }
@@ -53,30 +58,30 @@ export default async function NoticeListPage({
         >
           {posts.length === 0 ? (
             <div
-              className={`mx-auto w-full max-w-[960px] ${siteFloatingWidgetCenterOffsetClass}`}
+              className={`mx-auto w-full max-w-[1680px] ${siteFloatingWidgetCenterOffsetClass}`}
             >
-              <p className="rounded-card border border-neutral-200 bg-neutral-50 px-6 py-12 text-center text-[15px] text-neutral-500">
+              <p className="rounded-card border border-neutral-200 bg-neutral-50 px-6 py-12 text-center text-[20px] text-neutral-500">
                 등록된 공지가 없습니다.
               </p>
             </div>
           ) : (
             <div
-              className={`mx-auto w-full max-w-[960px] ${siteFloatingWidgetCenterOffsetClass}`}
+              className={`mx-auto w-full max-w-[1680px] ${siteFloatingWidgetCenterOffsetClass}`}
             >
               {/* PC: 테이블 */}
-              <table className="hidden w-full table-fixed border-t-2 border-primary text-[14px] sm:table">
+              <table className="hidden w-full table-fixed border-t-2 border-primary text-[20px] sm:table">
                 <caption className="sr-only">
                   전체 {total}건의 공지사항 (페이지 {safePage}/{totalPages})
                 </caption>
                 <thead>
                   <tr className="border-b border-neutral-200 text-neutral-500">
-                    <th scope="col" className="w-20 py-3 text-center font-semibold">
+                    <th scope="col" className="w-36 py-5 text-center font-semibold">
                       번호
                     </th>
-                    <th scope="col" className="py-3 text-left font-semibold">
+                    <th scope="col" className="py-5 text-left font-semibold">
                       제목
                     </th>
-                    <th scope="col" className="w-32 py-3 text-center font-semibold">
+                    <th scope="col" className="w-44 py-5 text-center font-semibold">
                       작성일
                     </th>
                   </tr>
@@ -91,27 +96,27 @@ export default async function NoticeListPage({
                         key={p.id}
                         className="border-b border-neutral-100 transition-colors hover:bg-neutral-50"
                       >
-                        <td className="py-3.5 text-center text-neutral-500">
+                        <td className="py-5 text-center text-neutral-500">
                           {p.is_pinned ? (
                             <span
                               aria-label="고정 공지"
-                              className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-accent-500 text-primary"
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent-500 text-primary"
                             >
-                              <Pin className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden="true" />
+                              <Pin className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
                             </span>
                           ) : (
                             number
                           )}
                         </td>
-                        <td className="py-3.5 pr-4">
+                        <td className="py-5 pr-4">
                           <Link
                             href={`/notice/${p.id}`}
-                            className="block truncate text-[15px] font-semibold text-neutral-800 outline-none transition-colors hover:text-primary focus-visible:text-primary"
+                            className="block truncate text-[22px] font-semibold text-neutral-800 outline-none transition-colors hover:text-primary focus-visible:text-primary"
                           >
                             {p.title}
                           </Link>
                         </td>
-                        <td className="py-3.5 text-center text-neutral-500">
+                        <td className="py-5 text-center text-neutral-500">
                           {formatDate(p.created_at)}
                         </td>
                       </tr>
@@ -130,16 +135,16 @@ export default async function NoticeListPage({
                     >
                       <div className="flex items-center gap-2">
                         {p.is_pinned ? (
-                          <span className="inline-flex items-center gap-1 rounded-[3px] bg-accent-500 px-1.5 py-0.5 text-[11px] font-bold text-primary">
-                            <Pin className="h-3 w-3" strokeWidth={2.5} aria-hidden="true" />
+                          <span className="inline-flex items-center gap-1 rounded-[3px] bg-accent-500 px-1.5 py-0.5 text-[13px] font-bold text-primary">
+                            <Pin className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden="true" />
                             고정
                           </span>
                         ) : null}
-                        <h3 className="line-clamp-2 text-[15px] font-bold text-neutral-800">
+                        <h3 className="line-clamp-2 text-[20px] font-bold text-neutral-800">
                           {p.title}
                         </h3>
                       </div>
-                      <div className="mt-2 text-[12px] text-neutral-500">
+                      <div className="mt-2 text-[16px] text-neutral-500">
                         <span>{formatDate(p.created_at)}</span>
                       </div>
                     </Link>

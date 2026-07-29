@@ -37,7 +37,7 @@ export const LOCATION_CAMPUSES: readonly LocationCampus[] = [
     id: "foreign-s",
     name: "외고 S관",
     footerName: "S관",
-    address: "강남구 대치동 929-11",
+    address: "대치동 929-11, 대치빌딩 1층",
     phone: { display: "02-562-8787", tel: "02-562-8787" },
     naverMapUrl: "https://naver.me/5jXXy38l",
     mapImageSrc: "/location/map-foreign-s.png",

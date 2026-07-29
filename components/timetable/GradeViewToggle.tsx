@@ -28,7 +28,7 @@ function buildHref(
 }
 
 const gradeLinkBase =
-  "inline-flex min-w-[80px] items-center justify-center rounded-full border-[3px] px-4 py-2.5 text-[16px] font-black transition-colors duration-150 sm:min-w-[120px] sm:px-9 sm:py-4 sm:text-[19px]";
+  "inline-flex min-w-[68px] items-center justify-center rounded-full border-[3px] px-3 py-2 text-[14px] font-black transition-colors duration-150 sm:min-w-[120px] sm:px-9 sm:py-4 sm:text-[19px]";
 
 const viewLinkBase =
   "relative z-10 flex min-w-0 flex-1 items-center justify-center rounded-full border-[3px] px-2 py-2.5 text-center text-[14px] font-black transition-colors duration-150 sm:px-3 sm:py-3 sm:text-[16px]";
@@ -87,7 +87,7 @@ export default function GradeViewToggle({
         {showGradeTabs ? (
           <div className="inline-flex w-fit max-w-full flex-col items-stretch gap-6">
             <ul
-              className="relative z-10 flex flex-nowrap items-center justify-center gap-3 sm:gap-6"
+              className="relative z-10 flex max-w-full flex-wrap items-center justify-center gap-2 sm:flex-nowrap sm:gap-6"
               aria-label="학년 탭"
             >
               {visibleGrades.map((g) => {

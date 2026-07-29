@@ -44,16 +44,16 @@ export default function SubPageHero({
     <section aria-label={ariaLabel}>
       <div className="h-12 bg-gnb lg:h-[72px]" aria-hidden="true" />
       <div className={cn(surfaceClass ?? "bg-primary text-white")}>
-        <div className="mx-auto flex max-w-[1400px] flex-col items-center gap-5 px-5 pb-12 pt-[72px] text-center sm:gap-6 sm:px-8 sm:pb-14 sm:pt-20 lg:gap-7 lg:px-10 lg:pb-16 lg:pt-16">
+        <div className="mx-auto flex w-full flex-col items-center gap-4 px-5 pb-10 pt-12 text-center sm:gap-6 sm:px-8 sm:pb-14 sm:pt-20 lg:gap-7 lg:px-6 lg:pb-16 lg:pt-16">
         {eyebrow && Icon ? (
           <p
             className={cn(
-              "inline-flex items-center gap-3 text-[18px] font-black leading-none tracking-tight sm:gap-3.5 sm:text-[20px] lg:text-[24px]",
+              "inline-flex items-center gap-3 text-[16px] font-black leading-none tracking-tight sm:gap-3.5 sm:text-[20px] lg:text-[24px]",
               sectionHeroEyebrowClass[section],
             )}
           >
             <Icon
-              className="h-7 w-7 shrink-0 sm:h-8 sm:w-8 lg:h-9 lg:w-9"
+              className="h-6 w-6 shrink-0 sm:h-8 sm:w-8 lg:h-9 lg:w-9"
               strokeWidth={2.25}
               aria-hidden="true"
             />
@@ -62,7 +62,7 @@ export default function SubPageHero({
         ) : null}
         <h1
           className={cn(
-            "max-w-4xl text-balance text-[42px] font-black leading-[1.08] tracking-tight sm:text-[52px] lg:text-[64px]",
+            "max-w-5xl text-balance text-[36px] font-black leading-[1.1] tracking-tight sm:text-[68px] lg:text-[84px]",
             titleClass ?? "text-white",
           )}
         >

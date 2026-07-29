@@ -96,7 +96,11 @@ export default async function TimetablePage({
               aria-label="상세 시간표"
               className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} pb-10 pt-8 sm:pb-12 sm:pt-10 lg:pb-14 lg:pt-12`}
             >
-              <TimetableDetailTable school={school} courses={courses} />
+              <div
+                className={`mx-auto w-full max-w-[1680px] ${siteFloatingWidgetCenterOffsetClass}`}
+              >
+                <TimetableDetailTable school={school} courses={courses} />
+              </div>
             </section>
           ) : (
             <section
@@ -104,7 +108,7 @@ export default async function TimetablePage({
               className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} pb-10 pt-8 sm:pb-12 sm:pt-10 lg:pb-14 lg:pt-12`}
             >
               <div
-                className={`mx-auto w-full max-w-[960px] ${siteFloatingWidgetCenterOffsetClass}`}
+                className={`mx-auto w-full max-w-[1680px] ${siteFloatingWidgetCenterOffsetClass}`}
               >
                 <TimetableImage
                   data={timetable}
@@ -152,7 +156,11 @@ export default async function TimetablePage({
             aria-label="상세 시간표"
             className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} pb-10 pt-8 sm:pb-12 sm:pt-10 lg:pb-14 lg:pt-12`}
           >
-            <TimetableDetailTable school={school} courses={courses} />
+            <div
+              className={`mx-auto w-full max-w-[1680px] ${siteFloatingWidgetCenterOffsetClass}`}
+            >
+              <TimetableDetailTable school={school} courses={courses} />
+            </div>
           </section>
         ) : (
           <section
@@ -160,7 +168,7 @@ export default async function TimetablePage({
             className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} pb-10 pt-8 sm:pb-12 sm:pt-10 lg:pb-14 lg:pt-12`}
           >
             <div
-              className={`mx-auto w-full max-w-[960px] ${siteFloatingWidgetCenterOffsetClass}`}
+              className={`mx-auto w-full max-w-[1680px] ${siteFloatingWidgetCenterOffsetClass}`}
             >
               <TimetableImage
                 data={timetable}

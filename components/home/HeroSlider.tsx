@@ -81,7 +81,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
       aria-roledescription="carousel"
       tabIndex={0}
       onKeyDown={onKeyDown}
-      className="relative h-full min-h-[320px] overflow-hidden rounded-hero bg-primary outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[440px] lg:min-h-[600px]"
+      className="relative w-full min-h-[380px] overflow-hidden rounded-hero bg-primary outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[440px] lg:aspect-[13/15] lg:h-auto lg:min-h-0"
     >
       <div ref={emblaRef} className="h-full">
         <div className="flex h-full">
@@ -139,17 +139,17 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                         </span>
                       ) : null}
                       {slide.mainHeadline ? (
-                        <span className="whitespace-pre-line text-[38px] font-black leading-[1.05] tracking-tight text-white sm:text-[60px] lg:text-[80px]">
+                        <span className="whitespace-pre-line text-[32px] font-black leading-[1.05] tracking-tight text-white sm:text-[60px] lg:text-[80px]">
                           {slide.mainHeadline}
                         </span>
                       ) : null}
                       {slide.subtitle ? (
-                        <span className="mt-2 text-[20px] font-medium leading-[1.15] tracking-tight text-white/85 sm:mt-5 sm:text-[32px] sm:leading-[1.2] lg:mt-6 lg:text-[40px]">
+                        <span className="mt-2 text-[18px] font-medium leading-[1.15] tracking-tight text-white/85 sm:mt-5 sm:text-[32px] sm:leading-[1.2] lg:mt-6 lg:text-[40px]">
                           {slide.subtitle}
                         </span>
                       ) : null}
                       <span
-                        className={`group inline-flex min-h-[28px] items-center gap-2.5 text-[28px] font-black leading-none text-accent sm:min-h-0 sm:gap-4 sm:text-[38px] lg:text-[44px] ${
+                        className={`group inline-flex min-h-[28px] items-center gap-2.5 text-[22px] font-black leading-none text-accent sm:min-h-0 sm:gap-4 sm:text-[34px] lg:text-[40px] ${
                           slide.subtitle
                             ? "mt-2.5 sm:mt-8 lg:mt-9"
                             : "mt-2.5 sm:mt-6 lg:mt-7"
@@ -157,7 +157,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                       >
                         {CTA_LABEL}
                         <ArrowRight
-                          className="h-6 w-6 shrink-0 transition-transform duration-200 group-hover:translate-x-1 sm:h-10 sm:w-10 lg:h-12 lg:w-12"
+                          className="h-5 w-5 shrink-0 transition-transform duration-200 group-hover:translate-x-1 sm:h-9 sm:w-9 lg:h-11 lg:w-11"
                           aria-hidden="true"
                         />
                       </span>

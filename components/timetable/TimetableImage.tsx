@@ -35,7 +35,7 @@ export default function TimetableImage({ data, alt }: TimetableImageProps) {
                 alt={imageUrls.length > 1 ? `${alt} ${index + 1}` : alt}
                 width={1600}
                 height={2200}
-                sizes="(min-width: 1024px) 960px, (min-width: 640px) 90vw, 100vw"
+                sizes="(min-width: 1024px) 1680px, (min-width: 640px) 92vw, 100vw"
                 className="block h-auto w-full"
               />
             </div>

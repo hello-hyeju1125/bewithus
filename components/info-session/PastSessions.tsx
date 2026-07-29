@@ -33,14 +33,14 @@ export default function PastSessions({ sessions }: PastSessionsProps) {
       aria-label="지난 설명회"
       className="border-t border-neutral-200 bg-neutral-50"
     >
-      <div className="mx-auto max-w-[1400px] px-5 py-8 sm:px-8 lg:px-10">
+      <div className="mx-auto w-full px-5 py-8 sm:px-8 lg:px-6">
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           className="flex w-full items-center justify-between gap-3 rounded-button border border-neutral-200 bg-white px-5 py-4 text-left outline-none transition-colors hover:border-primary focus-visible:ring-2 focus-visible:ring-primary"
         >
-          <span className="flex items-baseline gap-2">
+          <span className="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2">
             <span className="text-[16px] font-bold text-primary">
               지난 설명회 ({sessions.length})
             </span>

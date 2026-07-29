@@ -121,7 +121,7 @@ export default function HeroDescription({
     return (
       <p
         className={cn(
-          "max-w-2xl text-[17px] leading-relaxed sm:text-[19px] lg:text-[22px]",
+          "max-w-3xl text-[17px] font-semibold leading-relaxed sm:text-[26px] lg:text-[30px]",
           descriptionClass ?? palette.body,
         )}
       >
@@ -135,14 +135,14 @@ export default function HeroDescription({
   }
 
   const closingLineClass = cn(
-    "text-[17px] font-semibold leading-relaxed sm:text-[18px] lg:text-[20px]",
+    "text-[17px] font-semibold leading-relaxed sm:text-[24px] lg:text-[28px]",
     palette.closing,
   );
 
   if (normalized.closingLines?.length) {
     const mobileClosingLines = normalized.mobile?.closingLines;
     return (
-      <div className="flex max-w-2xl flex-col gap-2 text-center sm:gap-2.5">
+      <div className="flex max-w-3xl flex-col gap-2.5 text-center sm:gap-3">
         {mobileClosingLines?.length ? (
           <div className="contents sm:hidden">
             <ClosingLines
@@ -170,11 +170,11 @@ export default function HeroDescription({
   }
 
   return (
-    <div className="flex max-w-2xl flex-col gap-2 text-center sm:gap-2.5">
+    <div className="flex max-w-3xl flex-col gap-2.5 text-center sm:gap-3">
       {normalized.lead ? (
         <p
           className={cn(
-            "text-[19px] font-black leading-snug tracking-tight sm:text-[21px] lg:text-[24px]",
+            "text-[22px] font-black leading-snug tracking-tight sm:text-[36px] lg:text-[44px]",
             palette.lead,
           )}
         >
@@ -189,7 +189,7 @@ export default function HeroDescription({
         <p
           key={line}
           className={cn(
-            "text-[16px] font-medium leading-relaxed sm:text-[17px] lg:text-[19px]",
+            "text-[16px] font-medium leading-relaxed sm:text-[22px] lg:text-[26px]",
             palette.body,
           )}
         >

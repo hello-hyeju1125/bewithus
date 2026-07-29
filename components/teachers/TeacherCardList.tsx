@@ -45,14 +45,11 @@ function teacherAriaLabel(subject: string, display: TeacherDisplayName): string 
   return `${subject} ${fullName}`;
 }
 
-/** 데스크톱 — 회색 영역 안 사진 비율 (카드는 그리드 칸 전체 너비) */
-const TEACHER_CARD_PHOTO_WRAPPER_CLASS =
-  "mx-auto w-[58%] max-w-[148px] sm:max-w-[156px] lg:max-w-[168px]";
+/** 데스크톱 — 카드 가로를 가득 채워 사진↔카드 여백 최소화 */
+const TEACHER_CARD_PHOTO_WRAPPER_CLASS = "w-full";
 
 const TEACHER_PHOTO_FRAME_CLASS =
-  "relative w-full shrink-0 overflow-hidden aspect-[4/5]";
-
-const TEACHER_PHOTO_IMAGE_CLASS = "object-cover";
+  "relative w-full shrink-0 overflow-hidden rounded-none aspect-[4/5]";
 
 type TeacherPhotoFrameProps = {
   teacherName: string;
@@ -74,10 +71,12 @@ function TeacherPhotoFrame({
       {photoUrl ? (
         <div className="absolute inset-0 overflow-hidden">
           <div
-            className="absolute inset-x-0"
+            className="absolute"
             style={{
               top: `${frame.topPercent}%`,
               height: `${frame.scalePercent}%`,
+              left: `${frame.insetXPercent}%`,
+              right: `${frame.insetXPercent}%`,
             }}
           >
             <Image
@@ -85,7 +84,9 @@ function TeacherPhotoFrame({
               alt=""
               fill
               sizes={sizes}
-              className={TEACHER_PHOTO_IMAGE_CLASS}
+              className={
+                frame.objectFit === "contain" ? "object-contain" : "object-cover"
+              }
               style={{ objectPosition: frame.objectPosition }}
             />
           </div>
@@ -117,8 +118,8 @@ function TeacherSubjectTag({
         className,
       )}
     >
-      <span className="w-1.5 shrink-0 bg-primary sm:w-2" aria-hidden="true" />
-      <span className="px-3 py-1.5 text-[15px] font-semibold leading-none text-primary sm:px-4 sm:py-2 sm:text-[16px]">
+      <span className="w-2 shrink-0 bg-primary sm:w-2.5" aria-hidden="true" />
+      <span className="px-4 py-2 text-[17px] font-semibold leading-none text-primary sm:px-5 sm:py-2.5 sm:text-[18px] lg:text-[19px]">
         {subject}
       </span>
     </span>
@@ -194,7 +195,7 @@ export default function TeacherCardList({
           선택한 과목에 등록된 강사가 없습니다.
         </p>
       ) : (
-        <ul className="grid grid-cols-1 gap-x-5 gap-y-10 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-11 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-7 lg:gap-y-12">
+        <ul className="grid grid-cols-1 gap-x-5 gap-y-12 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-14 md:grid-cols-3 md:gap-x-7 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
           {visibleTeachers.map((t) => (
             <TeacherCard key={t.id} teacher={t} />
           ))}
@@ -213,13 +214,13 @@ function TeacherCardMobile({ teacher: t }: { teacher: Teacher }) {
       className="flex gap-3 rounded-card border border-neutral-200 bg-white p-3 md:hidden"
       aria-label={teacherAriaLabel(t.subject, display)}
     >
-      <div className="w-[72px] shrink-0 overflow-hidden rounded-button bg-neutral-100">
+      <div className="w-[88px] shrink-0 overflow-hidden rounded-none bg-neutral-100">
         <TeacherPhotoFrame
           teacherName={t.name}
           photoUrl={
             t.photo_url ? withCacheBust(t.photo_url, t.updated_at) : null
           }
-          sizes="72px"
+          sizes="88px"
           placeholderIconClass="h-9 w-9"
         />
       </div>
@@ -229,8 +230,8 @@ function TeacherCardMobile({ teacher: t }: { teacher: Teacher }) {
         <TeacherNameDisplay
           display={display}
           className="text-left"
-          nameClassName="text-[17px]"
-          suffixClassName="text-[14px]"
+          nameClassName="text-[26px]"
+          suffixClassName="text-[18px] font-semibold"
         />
         <p className="mt-1.5 whitespace-pre-line text-[14px] font-normal leading-[1.65] text-neutral-800">
           {bio || "소개가 준비 중입니다."}
@@ -254,7 +255,7 @@ function TeacherCardDesktop({ teacher: t }: { teacher: Teacher }) {
       )}
       aria-label={teacherAriaLabel(t.subject, display)}
     >
-      <div className="relative flex w-full shrink-0 flex-col justify-end bg-neutral-100 pr-3 pt-6 pb-0 transition-colors duration-200 group-hover:bg-primary group-focus-within:bg-primary sm:pr-4 sm:pt-7">
+      <div className="relative flex w-full shrink-0 flex-col justify-end bg-neutral-100 transition-colors duration-200 group-hover:bg-primary group-focus-within:bg-primary">
         <div className="absolute left-0 top-2.5 z-10 transition-opacity duration-200 group-hover:opacity-0 group-focus-within:opacity-0 sm:top-3">
           <TeacherSubjectTag subject={t.subject} />
         </div>
@@ -268,9 +269,9 @@ function TeacherCardDesktop({ teacher: t }: { teacher: Teacher }) {
           <TeacherPhotoFrame
             teacherName={t.name}
             photoUrl={
-            t.photo_url ? withCacheBust(t.photo_url, t.updated_at) : null
-          }
-            sizes="(min-width: 1024px) 18vw, (min-width: 768px) 26vw, 72px"
+              t.photo_url ? withCacheBust(t.photo_url, t.updated_at) : null
+            }
+            sizes="(min-width: 1024px) 22vw, (min-width: 768px) 30vw, 88px"
             placeholderIconClass="h-10 w-10 sm:h-11 sm:w-11"
           />
         </div>
@@ -279,7 +280,7 @@ function TeacherCardDesktop({ teacher: t }: { teacher: Teacher }) {
           className="pointer-events-none absolute inset-0 z-[1] flex flex-col justify-start overflow-y-auto p-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 sm:p-3.5"
           aria-hidden="true"
         >
-          <p className="whitespace-pre-line text-left text-[13px] font-medium leading-[1.6] text-white sm:text-[14px] sm:leading-[1.65]">
+          <p className="whitespace-pre-line text-left text-[16px] font-semibold leading-[1.65] text-white sm:text-[18px] sm:leading-[1.7] lg:text-[19px] lg:leading-[1.75]">
             {bio || "소개가 준비 중입니다."}
           </p>
         </div>
@@ -287,12 +288,12 @@ function TeacherCardDesktop({ teacher: t }: { teacher: Teacher }) {
         {bio ? <p className="sr-only">{bio}</p> : null}
       </div>
 
-      <div className="flex shrink-0 items-center justify-center bg-white px-3 py-2.5 sm:py-3">
+      <div className="flex shrink-0 items-center justify-center bg-white px-3 py-4 sm:py-5 lg:py-6">
         <TeacherNameDisplay
           display={display}
           className="text-center"
-          nameClassName="text-[16px] sm:text-[17px]"
-          suffixClassName="text-[13px] sm:text-[14px]"
+          nameClassName="text-[28px] sm:text-[32px] lg:text-[34px]"
+          suffixClassName="text-[18px] font-semibold sm:text-[20px] lg:text-[21px]"
         />
       </div>
     </article>

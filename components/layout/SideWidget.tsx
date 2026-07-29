@@ -9,16 +9,16 @@ export default function SideWidget() {
   return (
     <aside
       aria-label={a11y.label}
-      className="hidden lg:flex lg:flex-col lg:items-stretch lg:gap-2.5 lg:border-l lg:border-neutral-200 lg:pl-4"
+      className="hidden lg:flex lg:flex-col lg:items-stretch lg:gap-4 lg:border-l lg:border-neutral-200 lg:pl-4"
     >
       <SideWidgetActions />
 
-      <ul className="flex flex-col gap-2.5">
+      <ul className="flex flex-col gap-4">
         {phones.map((phone) => (
           <li key={phone.tel}>
             <a href={`tel:${phone.tel}`} className={sideWidgetButtonPhone}>
               <SideWidgetPhoneName name={phone.name} />
-              <span className="whitespace-nowrap text-[12px] font-black tracking-tight">
+              <span className="whitespace-nowrap text-[16px] font-black tracking-tight">
                 {phone.display}
               </span>
             </a>

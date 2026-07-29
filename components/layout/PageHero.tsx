@@ -22,8 +22,8 @@ export default function PageHero({
   centered = false,
 }: PageHeroProps) {
   const innerClassWithoutTopPad = centered
-    ? "mx-auto flex max-w-[1400px] flex-col items-center gap-4 px-5 pb-12 pt-[72px] text-center sm:px-8 sm:pb-14 sm:pt-20 lg:px-10 lg:pb-16 lg:pt-16"
-    : "mx-auto flex max-w-[1400px] flex-col gap-3 px-5 pb-12 pt-[72px] sm:px-8 sm:pb-14 sm:pt-20 lg:px-10 lg:pb-16 lg:pt-16";
+    ? "mx-auto flex w-full flex-col items-center gap-4 px-5 pb-12 pt-[72px] text-center sm:px-8 sm:pb-14 sm:pt-20 lg:px-6 lg:pb-16 lg:pt-16"
+    : "mx-auto flex w-full flex-col gap-3 px-5 pb-12 pt-[72px] sm:px-8 sm:pb-14 sm:pt-20 lg:px-6 lg:pb-16 lg:pt-16";
 
   return (
     <section aria-label={`${title} 페이지 소개`}>

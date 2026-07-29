@@ -39,7 +39,7 @@ export const SCHOOL_LABELS: Record<School, string> = {
 /** Hero 등에서 사용하는 학교별 짧은 소개 문구 (DB description 의 fallback). */
 export const SCHOOL_DESCRIPTIONS: Record<School, HeroDescriptionInput> = {
   daewon: {
-    lead: "대원외고 부동의 1위",
+    lead: "부동의 1위",
     body: ["검증된 압도적 강사진이 내신부터 수능까지"],
     closing: "대원외고 맞춤형 커리큘럼으로 최상의 결과를 만듭니다.",
     mobile: {

@@ -19,8 +19,8 @@ export default function SiteLogo({ className }: SiteLogoProps) {
     >
       <span
         className={cn(
-          "inline-flex max-w-full items-center rounded-logo-inner bg-accent-500 px-2.5 py-1 font-sans text-primary shadow-logo-plate",
-          "h-8 text-[19px] lg:h-9 lg:px-3 lg:py-1 lg:text-[24px]",
+          "inline-flex max-w-full items-center rounded-logo-inner bg-accent-500 px-2.5 pt-1 pb-1.5 font-sans text-primary shadow-logo-plate",
+          "min-h-8 text-[19px] lg:min-h-10 lg:px-3.5 lg:pt-1.5 lg:pb-2.5 lg:text-[28px]",
         )}
       >
         <span className="truncate font-black leading-none tracking-[-0.04em]">
