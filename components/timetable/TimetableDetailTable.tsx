@@ -112,7 +112,7 @@ export default function TimetableDetailTable({
                 </thead>
                 <tbody>
                   {rows.map((c) => (
-                    <CourseRow key={c.id} course={c} theme={theme} />
+                    <CourseRow key={c.id} course={c} />
                   ))}
                 </tbody>
               </table>
@@ -341,10 +341,8 @@ function CourseTitleCell({
 
 function CourseRow({
   course,
-  theme,
 }: {
   course: TimetableCourseWithTeacher;
-  theme: TimetableSchoolTheme;
 }) {
   return (
     <tr className="border-b border-neutral-900 align-top last:border-b-0">
