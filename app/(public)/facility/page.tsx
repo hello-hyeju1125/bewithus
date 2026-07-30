@@ -7,7 +7,6 @@ import {
 } from "@/content/facility";
 import {
   siteContainerClass,
-  siteFloatingWidgetSafeClass,
 } from "@/lib/layout/spacing";
 
 export const metadata = {
@@ -23,7 +22,7 @@ export default function FacilityPage() {
       content={
         <section
           aria-label="시설 갤러리"
-          className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} py-10 sm:py-12 lg:py-14`}
+          className={`${siteContainerClass} py-10 sm:py-12 lg:py-14`}
         >
           <FacilityGallery
             sections={FACILITY_GALLERY_SECTIONS}

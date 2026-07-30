@@ -10,8 +10,6 @@ import {
 } from "@/lib/constants";
 import {
   siteContainerClass,
-  siteFloatingWidgetCenterOffsetClass,
-  siteFloatingWidgetSafeClass,
 } from "@/lib/layout/spacing";
 import { listTeacherSubjectOrder, listTeachers } from "@/lib/supabase/queries";
 
@@ -49,10 +47,10 @@ export default async function TeachersPage({ params }: TeachersPageProps) {
       content={
         <section
           aria-label="강사 카드 그리드"
-          className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} py-10 sm:py-12 lg:py-14`}
+          className={`${siteContainerClass} py-10 sm:py-12 lg:py-14`}
         >
           <div
-            className={`mx-auto w-full max-w-[1400px] px-2 sm:px-4 lg:px-6 ${siteFloatingWidgetCenterOffsetClass}`}
+            className={`mx-auto w-full max-w-[1400px] px-2 sm:px-4 lg:px-6`}
           >
             <TeacherCardList teachers={teachers} subjectOrder={subjectOrder} />
           </div>

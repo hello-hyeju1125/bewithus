@@ -2,7 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useTransition } from "react";
-import { useFieldArray, useForm, type SubmitHandler } from "react-hook-form";
+import {
+  useFieldArray,
+  useForm,
+  type SubmitHandler,
+  type UseFormReturn,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 
@@ -48,6 +53,8 @@ const APPLY_VARIANTS = [
   { value: "waitlist", label: "대기 신청 (네이비)" },
 ] as const;
 
+const TAG_PRESETS = ["마감", "마감임박", "신설", "특강"] as const;
+
 type Props = {
   initial?: TimetableCourse | null;
   teachers: Teacher[];
@@ -67,6 +74,9 @@ const DEFAULT_VALUES: TimetableCourseFormValues = {
   tag: "",
   tag_bg_color: DEFAULT_TAG_BG_COLOR,
   tag_text_color: DEFAULT_TAG_TEXT_COLOR,
+  status_tag: "",
+  status_tag_bg_color: DEFAULT_TAG_BG_COLOR,
+  status_tag_text_color: DEFAULT_TAG_TEXT_COLOR,
   sessions: [{ day_time: "", is_full: false }],
   start_dates: [],
   apply_buttons: [],
@@ -98,6 +108,11 @@ export default function CourseForm({
       tag: initial.tag ?? "",
       tag_bg_color: initial.tag_bg_color ?? DEFAULT_TAG_BG_COLOR,
       tag_text_color: initial.tag_text_color ?? DEFAULT_TAG_TEXT_COLOR,
+      status_tag: initial.status_tag ?? "",
+      status_tag_bg_color:
+        initial.status_tag_bg_color ?? DEFAULT_TAG_BG_COLOR,
+      status_tag_text_color:
+        initial.status_tag_text_color ?? DEFAULT_TAG_TEXT_COLOR,
       sessions:
         initial.sessions.length > 0
           ? initial.sessions.map((s) => ({
@@ -302,63 +317,11 @@ export default function CourseForm({
               </SelectContent>
             </Select>
           </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="tag">태그 (선택)</Label>
-            <Input
-              id="tag"
-              placeholder="예: 특강 / 신설 / 마감임박"
-              {...form.register("tag")}
-            />
-            <p className="text-[12px] text-neutral-500">
-              상세 시간표 강의명 옆에 표시됩니다. 색상은 아래에서 지정할 수 있습니다.
-            </p>
-          </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="tag_bg_color">태그 배경색</Label>
-            <div className="flex items-center gap-2">
-              <input
-                type="color"
-                aria-label="태그 배경색 선택"
-                className="h-10 w-12 cursor-pointer rounded-button border border-neutral-200 bg-white p-0.5"
-                value={form.watch("tag_bg_color") || DEFAULT_TAG_BG_COLOR}
-                onChange={(e) =>
-                  form.setValue("tag_bg_color", e.target.value, {
-                    shouldValidate: true,
-                  })
-                }
-              />
-              <Input
-                id="tag_bg_color"
-                placeholder="#FFF33B"
-                {...form.register("tag_bg_color")}
-              />
-            </div>
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="tag_text_color">태그 글자색</Label>
-            <div className="flex items-center gap-2">
-              <input
-                type="color"
-                aria-label="태그 글자색 선택"
-                className="h-10 w-12 cursor-pointer rounded-button border border-neutral-200 bg-white p-0.5"
-                value={form.watch("tag_text_color") || DEFAULT_TAG_TEXT_COLOR}
-                onChange={(e) =>
-                  form.setValue("tag_text_color", e.target.value, {
-                    shouldValidate: true,
-                  })
-                }
-              />
-              <Input
-                id="tag_text_color"
-                placeholder="#22295D"
-                {...form.register("tag_text_color")}
-              />
-            </div>
-          </div>
-        </div>
+        {/* 해시태그 (#대원탭스 등) + 상태 뱃지 (마감 등) — 서로 별도 */}
+        <HashtagTagFields form={form} />
+        <StatusTagFields form={form} />
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="course_title">강의명</Label>
@@ -615,11 +578,272 @@ export default function CourseForm({
           <p className="font-bold text-neutral-700">팁</p>
           <ul className="mt-1 list-disc pl-4">
             <li>요일/시간 한 줄당 마감 토글이 따로 동작합니다.</li>
+            <li>
+              해시태그(#…)와 상태 뱃지(마감 등)는 서로 다른 필드로, 둘 다 강의명
+              옆에 같이 표시됩니다.
+            </li>
             <li>신청 버튼은 0~6개까지 추가 가능합니다.</li>
             <li>강사 변경은 강사진 메뉴에서 먼저 등록 후 선택합니다.</li>
           </ul>
         </div>
       </aside>
     </form>
+  );
+}
+
+function parseHashtagList(raw: string): string[] {
+  return raw
+    .split(/[,，]/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+}
+
+function HashtagTagFields({
+  form,
+}: {
+  form: UseFormReturn<TimetableCourseFormValues>;
+}) {
+  const tag = form.watch("tag") ?? "";
+  const tagBg = form.watch("tag_bg_color") || DEFAULT_TAG_BG_COLOR;
+  const tagText = form.watch("tag_text_color") || DEFAULT_TAG_TEXT_COLOR;
+  const chips = parseHashtagList(tag);
+
+  return (
+    <div className="space-y-4 rounded-card border border-neutral-200 bg-white p-4">
+      <div>
+        <p className="text-[14px] font-bold text-neutral-900">해시태그</p>
+        <p className="mt-0.5 text-[12px] text-neutral-500">
+          예: #대원탭스,#대원TEPS — 콤마로 여러 개. 비우면 표시하지 않습니다.
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="tag">해시태그 글자</Label>
+        <Input
+          id="tag"
+          placeholder="예: #대원탭스,#대원TEPS"
+          maxLength={120}
+          {...form.register("tag")}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="tag_bg_color">박스 색</Label>
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              aria-label="해시태그 박스 색 선택"
+              className="h-10 w-12 cursor-pointer rounded-button border border-neutral-200 bg-white p-0.5"
+              value={tagBg}
+              onChange={(e) =>
+                form.setValue("tag_bg_color", e.target.value, {
+                  shouldValidate: true,
+                })
+              }
+            />
+            <Input
+              id="tag_bg_color"
+              placeholder={DEFAULT_TAG_BG_COLOR}
+              {...form.register("tag_bg_color")}
+            />
+          </div>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="tag_text_color">글자 색</Label>
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              aria-label="해시태그 글자 색 선택"
+              className="h-10 w-12 cursor-pointer rounded-button border border-neutral-200 bg-white p-0.5"
+              value={tagText}
+              onChange={(e) =>
+                form.setValue("tag_text_color", e.target.value, {
+                  shouldValidate: true,
+                })
+              }
+            />
+            <Input
+              id="tag_text_color"
+              placeholder={DEFAULT_TAG_TEXT_COLOR}
+              {...form.register("tag_text_color")}
+            />
+          </div>
+        </div>
+      </div>
+
+      {chips.length > 0 ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-[12px] text-neutral-500">미리보기</span>
+          {chips.map((chip) => (
+            <span
+              key={chip}
+              className="inline-flex items-center justify-center rounded-[3px] px-2.5 py-1 text-[13px] font-black leading-tight"
+              style={{ backgroundColor: tagBg, color: tagText }}
+            >
+              {chip}
+            </span>
+          ))}
+          <span className="text-[14px] font-black text-neutral-900">
+            강의명 예시
+          </span>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function StatusTagFields({
+  form,
+}: {
+  form: UseFormReturn<TimetableCourseFormValues>;
+}) {
+  const statusTag = form.watch("status_tag") ?? "";
+  const tagBg = form.watch("status_tag_bg_color") || DEFAULT_TAG_BG_COLOR;
+  const tagText = form.watch("status_tag_text_color") || DEFAULT_TAG_TEXT_COLOR;
+  const showTag = statusTag.trim().length > 0;
+
+  return (
+    <div className="space-y-4 rounded-card border border-neutral-200 bg-neutral-50/80 p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="text-[14px] font-bold text-neutral-900">
+            상태 뱃지
+          </p>
+          <p className="mt-0.5 text-[12px] text-neutral-500">
+            해시태그와 별도로 &apos;마감&apos;, &apos;마감임박&apos; 등을 강의명
+            옆에 표시합니다.
+          </p>
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          <Label
+            htmlFor="status_tag_enabled"
+            className="text-[13px] text-neutral-600"
+          >
+            표시
+          </Label>
+          <Switch
+            id="status_tag_enabled"
+            checked={showTag}
+            onCheckedChange={(on) => {
+              if (on) {
+                if (!form.getValues("status_tag")?.trim()) {
+                  form.setValue("status_tag", "마감", { shouldValidate: true });
+                }
+                if (!form.getValues("status_tag_bg_color")) {
+                  form.setValue("status_tag_bg_color", DEFAULT_TAG_BG_COLOR, {
+                    shouldValidate: true,
+                  });
+                }
+                if (!form.getValues("status_tag_text_color")) {
+                  form.setValue(
+                    "status_tag_text_color",
+                    DEFAULT_TAG_TEXT_COLOR,
+                    { shouldValidate: true },
+                  );
+                }
+              } else {
+                form.setValue("status_tag", "", { shouldValidate: true });
+              }
+            }}
+          />
+        </div>
+      </div>
+
+      {showTag ? (
+        <div className="space-y-4 border-t border-neutral-200 pt-4">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="status_tag">뱃지 글자</Label>
+            <Input
+              id="status_tag"
+              placeholder="예: 마감 / 마감임박"
+              maxLength={40}
+              {...form.register("status_tag")}
+            />
+            <div className="flex flex-wrap gap-1.5 pt-0.5">
+              {TAG_PRESETS.map((preset) => {
+                const active = statusTag.trim() === preset;
+                return (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() =>
+                      form.setValue("status_tag", preset, {
+                        shouldValidate: true,
+                      })
+                    }
+                    className={
+                      active
+                        ? "rounded-button bg-primary px-2.5 py-1 text-[12px] font-bold text-white"
+                        : "rounded-button border border-neutral-200 bg-white px-2.5 py-1 text-[12px] font-medium text-neutral-700 hover:border-primary/40"
+                    }
+                  >
+                    {preset}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="status_tag_bg_color">박스 색</Label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  aria-label="상태 뱃지 박스 색 선택"
+                  className="h-10 w-12 cursor-pointer rounded-button border border-neutral-200 bg-white p-0.5"
+                  value={tagBg}
+                  onChange={(e) =>
+                    form.setValue("status_tag_bg_color", e.target.value, {
+                      shouldValidate: true,
+                    })
+                  }
+                />
+                <Input
+                  id="status_tag_bg_color"
+                  placeholder={DEFAULT_TAG_BG_COLOR}
+                  {...form.register("status_tag_bg_color")}
+                />
+              </div>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="status_tag_text_color">글자 색</Label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  aria-label="상태 뱃지 글자 색 선택"
+                  className="h-10 w-12 cursor-pointer rounded-button border border-neutral-200 bg-white p-0.5"
+                  value={tagText}
+                  onChange={(e) =>
+                    form.setValue("status_tag_text_color", e.target.value, {
+                      shouldValidate: true,
+                    })
+                  }
+                />
+                <Input
+                  id="status_tag_text_color"
+                  placeholder={DEFAULT_TAG_TEXT_COLOR}
+                  {...form.register("status_tag_text_color")}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[12px] text-neutral-500">미리보기</span>
+            <span
+              className="inline-flex items-center justify-center rounded-[3px] px-2.5 py-1 text-[13px] font-black leading-tight"
+              style={{ backgroundColor: tagBg, color: tagText }}
+            >
+              {statusTag.trim() || "마감"}
+            </span>
+            <span className="text-[14px] font-black text-neutral-900">
+              강의명 예시
+            </span>
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 }

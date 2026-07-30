@@ -30,6 +30,9 @@ function normalize(values: TimetableCourseFormValues) {
     tag: values.tag ? values.tag.trim() : null,
     tag_bg_color: normalizeHexColor(values.tag_bg_color),
     tag_text_color: normalizeHexColor(values.tag_text_color),
+    status_tag: values.status_tag ? values.status_tag.trim() : null,
+    status_tag_bg_color: normalizeHexColor(values.status_tag_bg_color),
+    status_tag_text_color: normalizeHexColor(values.status_tag_text_color),
     sessions: values.sessions.map((s) => ({
       day_time: s.day_time.trim(),
       is_full: !!s.is_full,

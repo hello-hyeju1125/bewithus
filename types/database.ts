@@ -100,9 +100,14 @@ export type TimetableCourse = {
   course_title: string;
   course_subtitle: string | null;
   course_note: string | null;
+  /** 해시태그 (예: #대원탭스,#대원TEPS) — 콤마로 여러 개 */
   tag: string | null;
   tag_bg_color: string | null;
   tag_text_color: string | null;
+  /** 상태 뱃지 (예: 마감, 마감임박) — 해시태그와 별도 */
+  status_tag: string | null;
+  status_tag_bg_color: string | null;
+  status_tag_text_color: string | null;
   sessions: CourseSession[];
   start_dates: string[];
   apply_buttons: CourseApplyButton[];
@@ -124,6 +129,9 @@ export type TimetableCourseInsert = Omit<
   | "tag"
   | "tag_bg_color"
   | "tag_text_color"
+  | "status_tag"
+  | "status_tag_bg_color"
+  | "status_tag_text_color"
   | "detail_url"
   | "order_index"
   | "sessions"
@@ -136,6 +144,9 @@ export type TimetableCourseInsert = Omit<
   tag?: string | null;
   tag_bg_color?: string | null;
   tag_text_color?: string | null;
+  status_tag?: string | null;
+  status_tag_bg_color?: string | null;
+  status_tag_text_color?: string | null;
   detail_url?: string | null;
   sessions?: CourseSession[];
   start_dates?: string[];

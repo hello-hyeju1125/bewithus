@@ -81,7 +81,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
       aria-roledescription="carousel"
       tabIndex={0}
       onKeyDown={onKeyDown}
-      className="relative w-full min-h-[380px] overflow-hidden rounded-hero bg-primary outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[440px] lg:aspect-[13/15] lg:h-auto lg:min-h-0"
+      className="relative aspect-[4/5] w-full overflow-hidden rounded-hero bg-primary outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white lg:self-start"
     >
       <div ref={emblaRef} className="h-full">
         <div className="flex h-full">

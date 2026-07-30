@@ -6,8 +6,6 @@ import StaggeredPageShell from "@/components/layout/StaggeredPageShell";
 import NoticePageHero from "@/components/notice/NoticePageHero";
 import {
   siteContainerClass,
-  siteFloatingWidgetCenterOffsetClass,
-  siteFloatingWidgetSafeClass,
 } from "@/lib/layout/spacing";
 import { getPost, incrementPostViewCount } from "@/lib/supabase/queries";
 import { resolvePostHtml } from "@/lib/admin/sanitize";
@@ -66,10 +64,10 @@ export default async function NoticeDetailPage({
       }
       content={
         <article
-          className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} py-10 sm:py-12 lg:py-14`}
+          className={`${siteContainerClass} py-10 sm:py-12 lg:py-14`}
         >
           <div
-            className={`mx-auto w-full max-w-[1680px] ${siteFloatingWidgetCenterOffsetClass}`}
+            className={`mx-auto w-full max-w-[1680px]`}
           >
             <h1 className="text-balance whitespace-pre-line text-[24px] font-black leading-snug tracking-tight text-primary sm:text-[38px] lg:text-[44px]">
               {post.title}

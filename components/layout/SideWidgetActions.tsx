@@ -8,6 +8,7 @@ import { ko } from "@/content/ko";
 import {
   resolveSideWidgetActionHref,
   sideWidgetButtonAction,
+  sideWidgetButtonActionCompact,
 } from "@/lib/layout/side-widget";
 
 const ACTION_ICONS = {
@@ -16,7 +17,14 @@ const ACTION_ICONS = {
   presentation: Presentation,
 } as const;
 
-export default function SideWidgetActions() {
+type SideWidgetActionsProps = {
+  /** FAB 패널 — 패딩·아이콘만 축소, 글자 크기는 유지 */
+  compact?: boolean;
+};
+
+export default function SideWidgetActions({
+  compact = false,
+}: SideWidgetActionsProps) {
   const pathname = usePathname();
   const { actions } = ko.sideWidget;
 
@@ -30,10 +38,16 @@ export default function SideWidgetActions() {
           <WidgetActionLink
             key={action.label}
             href={href}
-            className={sideWidgetButtonAction}
+            className={
+              compact ? sideWidgetButtonActionCompact : sideWidgetButtonAction
+            }
           >
-            <Icon className="h-9 w-9" strokeWidth={1.75} aria-hidden="true" />
-            <span className="whitespace-pre-line text-[17px] font-bold leading-snug tracking-tight">
+            <Icon
+              className={compact ? "h-5 w-5" : "h-7 w-7"}
+              strokeWidth={1.75}
+              aria-hidden="true"
+            />
+            <span className="whitespace-pre-line text-[15px] font-bold leading-snug tracking-tight">
               {action.label}
             </span>
           </WidgetActionLink>

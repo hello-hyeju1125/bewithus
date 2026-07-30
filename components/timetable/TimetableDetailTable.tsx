@@ -9,6 +9,10 @@ import SubjectFilterChips, {
 } from "@/components/filters/SubjectFilterChips";
 import type { School } from "@/lib/constants";
 import {
+  DEFAULT_TAG_BG_COLOR,
+  DEFAULT_TAG_TEXT_COLOR,
+} from "@/lib/admin/hex-color";
+import {
   getTimetableSchoolTheme,
   type TimetableSchoolTheme,
 } from "@/lib/layout/timetable-school-theme";
@@ -80,22 +84,30 @@ export default function TimetableDetailTable({
               {subject}
             </h2>
 
-            {/* 모바일 — 강사 카드 */}
-            <ul className="divide-y divide-neutral-200 md:hidden">
+            {/* 모바일·태블릿 — 강사 카드 */}
+            <ul className="divide-y divide-neutral-200 lg:hidden">
               {rows.map((c) => (
                 <CourseCard key={c.id} course={c} theme={theme} />
               ))}
             </ul>
 
-            {/* md 이상 — 표 */}
-            <div className="hidden border-y border-neutral-900 bg-white md:block">
-              <table className="w-full table-fixed border-collapse text-left text-[20px]">
-                <thead className="text-[20px] font-bold text-neutral-900">
+            {/* lg 이상 — 표 (가로 스크롤 안전장치 + 유동 열 비율) */}
+            <div className="hidden overflow-x-auto border-y border-neutral-900 bg-white lg:block">
+              <table className="w-full min-w-[720px] table-fixed border-collapse text-left text-[15px] xl:text-[17px] 2xl:text-[20px]">
+                <thead className="font-bold text-neutral-900">
                   <tr className="border-b border-neutral-900 bg-tiffany/70">
-                    <th className="w-[260px] px-5 py-4 text-center">강사</th>
-                    <th className="px-5 py-4 text-center">강의</th>
-                    <th className="w-[360px] px-5 py-4 text-center">요일 / 시간</th>
-                    <th className="w-[240px] px-5 py-4 text-center">개강</th>
+                    <th className="w-[22%] px-3 py-3 text-center xl:w-[18%] xl:px-4 xl:py-3.5 2xl:w-[16%] 2xl:px-5 2xl:py-4">
+                      강사
+                    </th>
+                    <th className="w-[40%] px-3 py-3 text-center xl:px-4 xl:py-3.5 2xl:px-5 2xl:py-4">
+                      강의
+                    </th>
+                    <th className="w-[24%] px-3 py-3 text-center xl:w-[26%] xl:px-4 xl:py-3.5 2xl:w-[28%] 2xl:px-5 2xl:py-4">
+                      요일 / 시간
+                    </th>
+                    <th className="w-[14%] px-3 py-3 text-center xl:w-[16%] xl:px-4 xl:py-3.5 2xl:px-5 2xl:py-4">
+                      개강
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -112,62 +124,69 @@ export default function TimetableDetailTable({
   );
 }
 
-function courseTagStyle(course: TimetableCourseWithTeacher): CSSProperties | undefined {
-  if (course.tag_bg_color && course.tag_text_color) {
-    return {
-      backgroundColor: course.tag_bg_color,
-      color: course.tag_text_color,
-    };
-  }
-  return undefined;
+/** Admin에서 지정한 색 우선, 없으면 accent/primary 기본값 */
+function chipStyle(
+  bg: string | null | undefined,
+  text: string | null | undefined,
+): CSSProperties {
+  return {
+    backgroundColor: bg || DEFAULT_TAG_BG_COLOR,
+    color: text || DEFAULT_TAG_TEXT_COLOR,
+  };
 }
 
-function CourseTag({
-  tag,
+function parseHashtagList(raw: string | null | undefined): string[] {
+  if (!raw?.trim()) return [];
+  return raw
+    .split(/[,，]/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+}
+
+const hashtagChipClass =
+  "inline-flex w-fit max-w-full shrink-0 items-center justify-center rounded-[3px] px-2 py-0.5 text-[11px] font-black leading-tight tracking-tight xl:px-2.5 xl:py-1 xl:text-[13px] 2xl:text-[14px] 2xl:tracking-wider";
+
+const statusChipClass =
+  "inline-flex w-fit max-w-full shrink-0 items-center justify-center rounded-[3px] px-2 py-0.5 text-[11px] font-black leading-tight tracking-tight xl:px-2.5 xl:py-1 xl:text-[13px] 2xl:text-[14px] 2xl:tracking-wider";
+
+const hashtagChipMobileClass =
+  "inline-flex w-fit max-w-full shrink-0 items-center justify-center rounded-button px-2.5 py-1 text-[14px] font-black leading-none tracking-wide";
+
+const statusChipMobileClass =
+  "inline-flex w-fit max-w-full shrink-0 items-center justify-center rounded-button px-2.5 py-1 text-[14px] font-black leading-none tracking-wide";
+
+function CourseTitleTags({
   course,
-  theme,
+  mobile = false,
 }: {
-  tag: string;
   course: TimetableCourseWithTeacher;
-  theme: TimetableSchoolTheme;
+  mobile?: boolean;
 }) {
-  const customStyle = courseTagStyle(course);
-  return (
-    <span
-      style={customStyle}
-      className={
-        customStyle
-          ? "inline-flex w-fit max-w-full items-center justify-center rounded-[3px] px-2 py-0.5 text-[12px] font-black leading-tight tracking-tight md:px-2.5 md:py-1 md:text-[14px] md:tracking-wider"
-          : `inline-flex w-fit max-w-full items-center justify-center rounded-[3px] bg-accent-500 px-2 py-0.5 text-[12px] font-black leading-tight tracking-tight md:px-2.5 md:py-1 md:text-[14px] md:tracking-wider ${theme.body.tagText}`
-      }
-    >
-      {tag}
-    </span>
+  const hashtags = parseHashtagList(course.tag);
+  const status = course.status_tag?.trim() || "";
+  if (hashtags.length === 0 && !status) return null;
+
+  const hashClass = mobile ? hashtagChipMobileClass : hashtagChipClass;
+  const statusClass = mobile ? statusChipMobileClass : statusChipClass;
+  const hashStyle = chipStyle(course.tag_bg_color, course.tag_text_color);
+  const statusStyle = chipStyle(
+    course.status_tag_bg_color,
+    course.status_tag_text_color,
   );
-}
 
-/** 모바일 카드 전용 — 신설·마감임박 등 강조 태그 */
-function CourseTagMobile({
-  tag,
-  course,
-  theme,
-}: {
-  tag: string;
-  course: TimetableCourseWithTeacher;
-  theme: TimetableSchoolTheme;
-}) {
-  const customStyle = courseTagStyle(course);
   return (
-    <span
-      style={customStyle}
-      className={
-        customStyle
-          ? "inline-flex w-fit max-w-full shrink-0 items-center justify-center rounded-button border-2 border-transparent px-2.5 py-1 text-[14px] font-black leading-none tracking-wide"
-          : `inline-flex w-fit max-w-full shrink-0 items-center justify-center rounded-button border-2 bg-accent-500 px-2.5 py-1 text-[14px] font-black leading-none tracking-wide ${theme.body.tagBorder} ${theme.body.tagText}`
-      }
-    >
-      {tag}
-    </span>
+    <>
+      {hashtags.map((chip) => (
+        <span key={chip} style={hashStyle} className={hashClass}>
+          {chip}
+        </span>
+      ))}
+      {status ? (
+        <span style={statusStyle} className={statusClass}>
+          {status}
+        </span>
+      ) : null}
+    </>
   );
 }
 
@@ -187,7 +206,7 @@ function SessionList({
           className={
             emphasized
               ? "flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[17px] font-black leading-snug text-neutral-900 sm:text-[21px]"
-              : "flex flex-wrap items-center gap-x-2 gap-y-1 text-[15px] leading-snug text-neutral-700 md:text-[21px]"
+              : "flex flex-wrap items-center gap-x-2 gap-y-1 text-[14px] leading-snug text-neutral-700 xl:text-[17px] 2xl:text-[21px]"
           }
         >
           <span className="min-w-0 break-words">{s.day_time}</span>
@@ -196,7 +215,7 @@ function SessionList({
               className={
                 emphasized
                   ? "inline-flex w-fit shrink-0 items-center justify-center rounded-button border border-red-200 bg-red-50 px-2 py-0.5 text-[13px] font-black text-red-600"
-                  : "inline-flex w-fit shrink-0 items-center justify-center rounded-[3px] bg-red-50 px-1.5 py-0.5 text-[12px] font-black leading-tight text-red-600 md:px-2 md:text-[14px] md:tracking-wider"
+                  : "inline-flex w-fit shrink-0 items-center justify-center rounded-[3px] bg-red-50 px-1.5 py-0.5 text-[11px] font-black leading-tight text-red-600 xl:px-2 xl:text-[13px] 2xl:text-[14px] 2xl:tracking-wider"
               }
             >
               마감
@@ -230,7 +249,7 @@ function StartDateList({
           className={
             emphasized
               ? "text-[17px] font-black leading-snug text-neutral-900 sm:text-[21px]"
-              : "text-[15px] text-neutral-700 md:text-[21px]"
+              : "text-[14px] text-neutral-700 xl:text-[17px] 2xl:text-[21px]"
           }
         >
           {d}
@@ -246,12 +265,12 @@ function DetailVideoLink({ url }: { url: string }) {
       href={url}
       target="_blank"
       rel="noreferrer noopener"
-      className="inline-flex w-fit max-w-full items-center justify-center rounded-button bg-accent-500 px-3.5 py-2.5 text-[14px] font-black leading-tight tracking-tight text-primary transition-colors duration-200 hover:bg-primary hover:text-accent sm:text-[15px] md:px-4 md:py-3 md:text-[16px]"
+      className="inline-flex w-fit max-w-full items-center justify-center rounded-button bg-accent-500 px-3 py-2 text-[13px] font-black leading-tight tracking-tight text-primary transition-colors duration-200 hover:bg-primary hover:text-accent sm:text-[14px] xl:px-3.5 xl:py-2.5 xl:text-[15px] 2xl:px-4 2xl:py-3 2xl:text-[16px]"
     >
       <span className="inline-flex items-center justify-center gap-1">
         <span className="text-center">설명회 영상 보기</span>
         <ArrowUpRight
-          className="h-4 w-4 shrink-0"
+          className="h-3.5 w-3.5 shrink-0 xl:h-4 xl:w-4"
           aria-hidden="true"
         />
       </span>
@@ -270,23 +289,23 @@ function TeacherCell({
     ? withCacheBust(teacher.photo_url, teacher.updated_at)
     : null;
   return (
-    <div className="flex flex-col items-center gap-2.5 text-center">
-      <div className="relative h-[150px] w-[114px] overflow-hidden bg-neutral-100 md:h-[190px] md:w-[144px]">
+    <div className="flex flex-col items-center gap-2 text-center xl:gap-2.5">
+      <div className="relative h-[120px] w-[90px] overflow-hidden bg-neutral-100 xl:h-[150px] xl:w-[114px] 2xl:h-[190px] 2xl:w-[144px]">
         {photo ? (
           <Image
             src={photo}
             alt={name}
             fill
-            sizes="144px"
+            sizes="(min-width: 1680px) 144px, (min-width: 1280px) 114px, 90px"
             className="object-cover"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-[18px] font-black text-neutral-400 md:text-[24px]">
+          <div className="flex h-full w-full items-center justify-center text-[16px] font-black text-neutral-400 xl:text-[20px] 2xl:text-[24px]">
             {name.slice(0, 1)}
           </div>
         )}
       </div>
-      <span className="text-[22px] font-black text-neutral-900 md:text-[32px]">
+      <span className="text-[18px] font-black leading-tight text-neutral-900 xl:text-[24px] 2xl:text-[32px]">
         {name}
       </span>
     </div>
@@ -295,28 +314,24 @@ function TeacherCell({
 
 function CourseTitleCell({
   course,
-  theme,
 }: {
   course: TimetableCourseWithTeacher;
-  theme: TimetableSchoolTheme;
 }) {
   return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
-        <p className="min-w-0 text-[22px] font-black leading-snug text-neutral-900 md:text-[28px]">
+    <div className="min-w-0 space-y-1.5 xl:space-y-2">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+        <p className="min-w-0 text-[17px] font-black leading-snug text-neutral-900 xl:text-[22px] 2xl:text-[28px]">
           {course.course_title}
         </p>
-        {course.tag ? (
-          <CourseTag tag={course.tag} course={course} theme={theme} />
-        ) : null}
+        <CourseTitleTags course={course} />
       </div>
       {course.course_subtitle ? (
-        <p className="text-[20px] font-bold text-neutral-900 sm:text-[22px]">
+        <p className="text-[15px] font-bold text-neutral-900 xl:text-[18px] 2xl:text-[22px]">
           {course.course_subtitle}
         </p>
       ) : null}
       {course.course_note ? (
-        <p className="whitespace-pre-line text-[18px] font-normal leading-[1.85] text-neutral-900 sm:text-[20px] sm:leading-[1.9]">
+        <p className="whitespace-pre-line text-[13px] font-normal leading-[1.7] text-neutral-900 xl:text-[16px] xl:leading-[1.8] 2xl:text-[20px] 2xl:leading-[1.9]">
           {course.course_note}
         </p>
       ) : null}
@@ -333,21 +348,21 @@ function CourseRow({
 }) {
   return (
     <tr className="border-b border-neutral-900 align-top last:border-b-0">
-      <td className="px-5 py-5">
+      <td className="px-3 py-4 xl:px-4 xl:py-5 2xl:px-5">
         <TeacherCell course={course} />
       </td>
-      <td className="px-5 py-5">
-        <CourseTitleCell course={course} theme={theme} />
+      <td className="min-w-0 px-3 py-4 xl:px-4 xl:py-5 2xl:px-5">
+        <CourseTitleCell course={course} />
       </td>
-      <td className="px-5 py-5">
-        <div className="space-y-3">
+      <td className="px-3 py-4 xl:px-4 xl:py-5 2xl:px-5">
+        <div className="space-y-2.5 xl:space-y-3">
           <SessionList sessions={course.sessions} />
           {course.detail_url ? (
             <DetailVideoLink url={course.detail_url} />
           ) : null}
         </div>
       </td>
-      <td className="w-[240px] px-5 py-5">
+      <td className="px-3 py-4 xl:px-4 xl:py-5 2xl:px-5">
         <StartDateList dates={course.start_dates} />
       </td>
     </tr>
@@ -391,13 +406,11 @@ function CourseCard({
           </p>
         </div>
         <div className="min-w-0 flex-1 pt-0.5">
-          <div className="flex flex-wrap items-start gap-x-2 gap-y-2">
-            <p className="min-w-0 flex-1 basis-full text-[20px] font-black leading-[1.25] tracking-tight text-neutral-900 sm:text-[26px]">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+            <p className="min-w-0 text-[20px] font-black leading-[1.25] tracking-tight text-neutral-900 sm:text-[26px]">
               {course.course_title}
             </p>
-            {course.tag ? (
-              <CourseTagMobile tag={course.tag} course={course} theme={theme} />
-            ) : null}
+            <CourseTitleTags course={course} mobile />
           </div>
         </div>
       </div>

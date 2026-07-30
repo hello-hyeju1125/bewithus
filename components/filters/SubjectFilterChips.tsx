@@ -46,7 +46,7 @@ export default function SubjectFilterChips({
       className={cn(
         "gap-3",
         useSixColGrid
-          ? "grid grid-cols-3 md:grid-cols-6"
+          ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
           : "flex flex-wrap items-center justify-center",
       )}
     >

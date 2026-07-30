@@ -62,7 +62,7 @@ function SlideFields({
             메인·팝업에 동일한 이미지가 사용됩니다.
           </p>
           {previewUrl ? (
-            <div className="relative aspect-[16/10] w-full max-w-md overflow-hidden rounded-card border border-neutral-200 bg-neutral-100">
+            <div className="relative aspect-[4/5] w-full max-w-md overflow-hidden rounded-card border border-neutral-200 bg-neutral-100">
               <Image
                 src={previewUrl}
                 alt={`배너 ${slot} 미리보기`}
