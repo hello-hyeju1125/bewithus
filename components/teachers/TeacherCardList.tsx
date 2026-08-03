@@ -155,7 +155,7 @@ function TeacherNameDisplay({
 
 /**
  * 강사 카드 그리드 — 과목 필터 칩, 가나다순.
- * 모바일: 1열 가로 카드(사진 + 프로필 항상 노출). md+: 그리드 + 호버 시 bio 오버레이.
+ * 모바일: 상단(사진+과목+이름) / 하단(소개). md+: 그리드 + 호버 시 bio 오버레이.
  */
 export default function TeacherCardList({
   teachers,
@@ -211,32 +211,35 @@ function TeacherCardMobile({ teacher: t }: { teacher: Teacher }) {
 
   return (
     <article
-      className="flex gap-3 rounded-card border border-neutral-200 bg-white p-3 md:hidden"
+      className="rounded-card border border-neutral-200 bg-white p-3 md:hidden"
       aria-label={teacherAriaLabel(t.subject, display)}
     >
-      <div className="w-[79px] shrink-0 overflow-hidden rounded-none bg-neutral-200 sm:w-[86px]">
-        <TeacherPhotoFrame
-          teacherName={t.name}
-          photoUrl={
-            t.photo_url ? withCacheBust(t.photo_url, t.updated_at) : null
-          }
-          sizes="(min-width: 640px) 86px, 79px"
-          placeholderIconClass="h-9 w-9"
-        />
+      <div className="flex items-center gap-3">
+        <div className="w-[72px] shrink-0 self-center overflow-hidden rounded-none bg-neutral-200 sm:w-[80px]">
+          <TeacherPhotoFrame
+            teacherName={t.name}
+            photoUrl={
+              t.photo_url ? withCacheBust(t.photo_url, t.updated_at) : null
+            }
+            sizes="(min-width: 640px) 80px, 72px"
+            placeholderIconClass="h-8 w-8"
+          />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <TeacherSubjectTag subject={t.subject} />
+          <TeacherNameDisplay
+            display={display}
+            className="mt-1.5 text-left"
+            nameClassName="text-[24px] sm:text-[26px]"
+            suffixClassName="text-[14px] font-semibold sm:text-[15px]"
+          />
+        </div>
       </div>
 
-      <div className="min-w-0 flex-1">
-        <TeacherSubjectTag subject={t.subject} className="mb-1.5" />
-        <TeacherNameDisplay
-          display={display}
-          className="text-left"
-          nameClassName="text-[26px]"
-          suffixClassName="text-[15px] font-semibold"
-        />
-        <p className="mt-1.5 whitespace-pre-line text-[15px] font-medium leading-[1.7] text-neutral-700">
-          {bio || "소개가 준비 중입니다."}
-        </p>
-      </div>
+      <p className="mt-3 whitespace-pre-line border-t border-neutral-100 pt-3 text-[14px] font-medium leading-[1.65] text-neutral-700 sm:text-[15px] sm:leading-[1.7]">
+        {bio || "소개가 준비 중입니다."}
+      </p>
     </article>
   );
 }
