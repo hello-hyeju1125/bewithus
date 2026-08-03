@@ -33,6 +33,7 @@ import type {
   TeacherSubjectOrder,
   Timetable,
   TimetableCourse,
+  TimetableSubjectOrder,
 } from "@/types/database";
 import {
   SCHOOL_GRADES,
@@ -199,6 +200,44 @@ export const listTimetableCourses = cache(
     }
   },
 );
+
+/** 상세 시간표 과목 칩·섹션 노출 순서 (활성 강의 과목 기준) */
+export const listTimetableSubjectOrder = cache(async (): Promise<string[]> => {
+  if (!hasSupabaseEnv()) return [];
+
+  try {
+    const supabase = createClient();
+    const { data: courseRows, error: courseError } = await supabase
+      .from("timetable_courses")
+      .select("subject")
+      .eq("is_active", true);
+    if (courseError) {
+      console.error("[listTimetableSubjectOrder] courses", courseError);
+      return [];
+    }
+
+    const subjectsInUse =
+      (courseRows as Array<{ subject: string }> | null)?.map((r) => r.subject) ??
+      [];
+
+    const { data: orderRows, error: orderError } = await supabase
+      .from("timetable_subject_orders")
+      .select("*")
+      .order("order_index", { ascending: true });
+    if (orderError) {
+      console.error("[listTimetableSubjectOrder] orders", orderError);
+      return [];
+    }
+
+    return mergeSubjectOrder(
+      (orderRows as TimetableSubjectOrder[] | null) ?? [],
+      subjectsInUse,
+    );
+  } catch (e) {
+    console.error("[listTimetableSubjectOrder]", e);
+    return [];
+  }
+});
 
 /**
  * 공개 시간표 페이지에 노출할 학년 탭 목록.

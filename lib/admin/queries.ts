@@ -4,6 +4,7 @@ import { cache } from "react";
 
 import { mergeSubjectOrder } from "@/lib/teachers/subject-order";
 import { syncTeacherSubjectOrders } from "@/lib/teachers/sync-subject-orders";
+import { syncTimetableSubjectOrders } from "@/lib/timetable/sync-subject-orders";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
   ConsultationFormField,
@@ -16,6 +17,7 @@ import type {
   TeacherSubjectOrder,
   Timetable,
   TimetableCourse,
+  TimetableSubjectOrder,
 } from "@/types/database";
 
 export type AdminCourseWithTeacher = TimetableCourse & {
@@ -164,6 +166,40 @@ export const adminListCourseSubjects = cache(async (): Promise<string[]> => {
     return [];
   }
 });
+
+/** 관리자 — 상세 시간표 과목 노출 순서 (등록 강의 과목 기준, 미등록 과목 자동 추가) */
+export const adminListTimetableSubjectOrder = cache(
+  async (): Promise<string[]> => {
+    try {
+      const supabase = createAdminClient();
+      const { data: courseRows, error: courseError } = await supabase
+        .from("timetable_courses")
+        .select("subject");
+      if (courseError) throw courseError;
+
+      const subjectsInUse =
+        (courseRows as Array<{ subject: string }> | null)?.map(
+          (r) => r.subject,
+        ) ?? [];
+
+      await syncTimetableSubjectOrders(supabase, subjectsInUse);
+
+      const { data: orderRows, error: orderError } = await supabase
+        .from("timetable_subject_orders")
+        .select("*")
+        .order("order_index", { ascending: true });
+      if (orderError) throw orderError;
+
+      return mergeSubjectOrder(
+        (orderRows as TimetableSubjectOrder[]) ?? [],
+        subjectsInUse,
+      );
+    } catch (e) {
+      console.error("[adminListTimetableSubjectOrder]", e);
+      return [];
+    }
+  },
+);
 
 export const adminListTeachers = cache(async (): Promise<Teacher[]> => {
   try {

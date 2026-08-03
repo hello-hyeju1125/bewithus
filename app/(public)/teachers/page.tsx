@@ -35,9 +35,7 @@ export default async function AllTeachersPage() {
           aria-label="강사 카드 그리드"
           className={`${siteContainerClass} py-10 sm:py-12 lg:py-14`}
         >
-          <div
-            className={`mx-auto w-full max-w-[1400px] px-2 sm:px-4 lg:px-6`}
-          >
+          <div className="mx-auto w-full max-w-[1080px] px-2 sm:px-4 lg:px-6">
             <TeacherCardList teachers={teachers} subjectOrder={subjectOrder} />
           </div>
         </section>

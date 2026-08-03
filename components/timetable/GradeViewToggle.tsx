@@ -28,13 +28,13 @@ function buildHref(
 }
 
 const gradeLinkBase =
-  "inline-flex min-w-[68px] items-center justify-center rounded-full border-[3px] px-3 py-2 text-[14px] font-black transition-colors duration-150 sm:min-w-[120px] sm:px-9 sm:py-4 sm:text-[19px]";
+  "inline-flex min-w-[68px] items-center justify-center rounded-full border-[3px] px-3 py-2 text-[16px] font-black transition-colors duration-150 sm:min-w-[120px] sm:px-9 sm:py-4 sm:text-[22px]";
 
 const viewLinkBase =
-  "relative z-10 flex min-w-0 flex-1 items-center justify-center rounded-full border-[3px] px-2 py-2.5 text-center text-[14px] font-black transition-colors duration-150 sm:px-3 sm:py-3 sm:text-[16px]";
+  "relative z-10 flex min-w-0 flex-1 items-center justify-center rounded-full border-[3px] px-2 py-2.5 text-center text-[16px] font-black transition-colors duration-150 sm:px-3 sm:py-3 sm:text-[19px]";
 
 const viewLinkStandaloneBase =
-  "relative z-10 inline-flex min-w-[124px] items-center justify-center rounded-full border-[3px] px-5 py-2.5 text-[16px] font-black transition-colors duration-150 sm:min-w-[132px] sm:text-[17px]";
+  "relative z-10 inline-flex min-w-[124px] items-center justify-center rounded-full border-[3px] px-5 py-2.5 text-[18px] font-black transition-colors duration-150 sm:min-w-[132px] sm:text-[20px]";
 
 /**
  * 시간표 페이지의 학년 + 뷰 토글 (서버 컴포넌트).

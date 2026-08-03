@@ -7,10 +7,13 @@ import { revalidateAdminRoutes } from "@/lib/admin/revalidate";
 import { normalizeHexColor } from "@/lib/admin/hex-color";
 import {
   timetableCourseFormSchema,
+  timetableSubjectOrderUpdateSchema,
   type TimetableCourseFormValues,
 } from "@/lib/admin/schemas";
 import { adminGetTimetableCourse } from "@/lib/admin/queries";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { SCHOOLS } from "@/lib/constants";
+import { syncTimetableSubjectOrders } from "@/lib/timetable/sync-subject-orders";
 
 export type ActionResult<T = void> =
   | ({ ok: true } & (T extends void ? object : { data: T }))
@@ -93,6 +96,7 @@ export async function createTimetableCourseAction(
   if (error) return { ok: false, error: error.message };
 
   const newId = (data as unknown as { id: string } | null)?.id ?? "";
+  await syncTimetableSubjectOrders(admin, [payload.subject]);
   revalidatePath(`/timetable/${payload.school}`);
   revalidateAdminRoutes(
     "/admin/timetable/courses",
@@ -125,6 +129,7 @@ export async function updateTimetableCourseAction(
     .eq("id", id);
   if (error) return { ok: false, error: error.message };
 
+  await syncTimetableSubjectOrders(admin, [payload.subject]);
   revalidatePath(`/timetable/${payload.school}`);
   revalidateAdminRoutes("/admin/timetable/courses", `/admin/timetable/courses/${id}`);
   return { ok: true };
@@ -171,5 +176,37 @@ export async function toggleCourseActiveAction(
     revalidatePath(`/timetable/${row.school}`);
   }
   revalidateAdminRoutes("/admin/timetable/courses", `/admin/timetable/courses/${id}`);
+  return { ok: true };
+}
+
+export async function updateTimetableSubjectOrderAction(
+  updates: { subject: string; order_index: number }[],
+): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+
+  const parsed = timetableSubjectOrderUpdateSchema.safeParse({ updates });
+  if (!parsed.success) {
+    return { ok: false, error: "과목 순서 데이터가 올바르지 않습니다." };
+  }
+
+  const admin = createAdminClient();
+  for (const u of parsed.data.updates) {
+    const { error } = await admin
+      .from("timetable_subject_orders")
+      .upsert(
+        { subject: u.subject, order_index: u.order_index } as never,
+        { onConflict: "subject" },
+      );
+    if (error) return { ok: false, error: error.message };
+  }
+
+  revalidateAdminRoutes("/admin/timetable/courses");
+  for (const school of SCHOOLS) {
+    revalidatePath(`/timetable/${school}`);
+  }
   return { ok: true };
 }

@@ -1,8 +1,10 @@
 import type { TeacherSubjectOrder } from "@/types/database";
 
-/** DB 순서 + 미등록 과목(강사 데이터 기준) 병합 */
+type SubjectOrderRow = Pick<TeacherSubjectOrder, "subject" | "order_index">;
+
+/** DB 순서 + 미등록 과목(강사/강의 데이터 기준) 병합 */
 export function mergeSubjectOrder(
-  orderRows: TeacherSubjectOrder[],
+  orderRows: SubjectOrderRow[],
   subjectsInUse: string[],
 ): string[] {
   const inUse = new Set(subjectsInUse.map((s) => s.trim()).filter(Boolean));

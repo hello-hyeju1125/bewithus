@@ -14,6 +14,7 @@ import {
 import {
   adminListCourseSubjects,
   adminListTimetableCourses,
+  adminListTimetableSubjectOrder,
 } from "@/lib/admin/queries";
 import {
   GRADE_LABELS,
@@ -24,6 +25,7 @@ import {
 import SectionTabs from "../_components/SectionTabs";
 import CourseFilters from "./_components/CourseFilters";
 import CourseRowActions from "./_components/CourseRowActions";
+import CourseSubjectSortableList from "./_components/CourseSubjectSortableList";
 
 type AdminCoursesPageProps = {
   searchParams: { school?: string; grade?: string; subject?: string };
@@ -32,20 +34,21 @@ type AdminCoursesPageProps = {
 export default async function AdminCoursesPage({
   searchParams,
 }: AdminCoursesPageProps) {
-  const [rows, subjects] = await Promise.all([
+  const [rows, subjects, subjectOrder] = await Promise.all([
     adminListTimetableCourses({
       school: searchParams.school,
       grade: searchParams.grade,
       subject: searchParams.subject,
     }),
     adminListCourseSubjects(),
+    adminListTimetableSubjectOrder(),
   ]);
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <div className="mx-auto max-w-6xl space-y-8">
       <AdminPageHeader
         title="시간표 관리"
-        description="요약 시간표는 이미지로, 상세 시간표는 강의 행으로 관리합니다."
+        description="요약 시간표는 이미지로, 상세 시간표는 강의 행으로 관리합니다. 과목 노출 순서는 드래그로 변경할 수 있습니다."
         actions={
           <Button asChild>
             <Link href="/admin/timetable/courses/new">
@@ -58,9 +61,25 @@ export default async function AdminCoursesPage({
 
       <SectionTabs active="courses" />
 
+      <section
+        className="space-y-3"
+        aria-labelledby="course-subject-order-heading"
+      >
+        <h2
+          id="course-subject-order-heading"
+          className="text-[16px] font-bold text-primary"
+        >
+          과목 노출 순서
+          <span className="ml-2 text-[12px] font-semibold text-neutral-500">
+            상세 시간표 과목 칩·섹션
+          </span>
+        </h2>
+        <CourseSubjectSortableList subjects={subjectOrder} />
+      </section>
+
       <CourseFilters initial={searchParams} subjects={subjects} />
 
-      <div className="mt-5 overflow-hidden rounded-card border border-neutral-200 bg-white">
+      <div className="overflow-hidden rounded-card border border-neutral-200 bg-white">
         <Table>
           <TableHeader>
             <TableRow>
@@ -77,7 +96,10 @@ export default async function AdminCoursesPage({
           <TableBody>
             {rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="py-12 text-center text-neutral-500">
+                <TableCell
+                  colSpan={8}
+                  className="py-12 text-center text-neutral-500"
+                >
                   등록된 강의가 없습니다.
                 </TableCell>
               </TableRow>

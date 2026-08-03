@@ -22,6 +22,7 @@ import {
 import {
   getTimetable,
   listTimetableCourses,
+  listTimetableSubjectOrder,
   listVisibleTimetableGrades,
 } from "@/lib/supabase/queries";
 
@@ -63,9 +64,10 @@ export default async function TimetablePage({
       redirect(`/timetable/${school}?${canonical.toString()}`);
     }
 
-    const [timetable, courses] = await Promise.all([
+    const [timetable, courses, subjectOrder] = await Promise.all([
       getTimetable(school, grade, view),
       view === "detail" ? listTimetableCourses(school, grade) : Promise.resolve([]),
+      view === "detail" ? listTimetableSubjectOrder() : Promise.resolve([]),
     ]);
 
     const pageKey = `${school}-${grade}-${view}`;
@@ -97,7 +99,11 @@ export default async function TimetablePage({
               <div
                 className={`mx-auto w-full max-w-[1680px]`}
               >
-                <TimetableDetailTable school={school} courses={courses} />
+                <TimetableDetailTable
+                  school={school}
+                  courses={courses}
+                  subjectOrder={subjectOrder}
+                />
               </div>
             </section>
           ) : (
@@ -105,9 +111,7 @@ export default async function TimetablePage({
               aria-label="요약 시간표 이미지"
               className={`${siteContainerClass} pb-10 pt-8 sm:pb-12 sm:pt-10 lg:pb-14 lg:pt-12`}
             >
-              <div
-                className={`mx-auto w-full max-w-[1680px]`}
-              >
+              <div className="mx-auto w-full max-w-[960px]">
                 <TimetableImage
                   data={timetable}
                   alt={`${SCHOOL_LABELS[school]} ${GRADE_LABELS[grade] ?? grade} ${TIMETABLE_VIEW_TYPE_LABELS[view]}`}
@@ -123,9 +127,10 @@ export default async function TimetablePage({
   const visibleGrades = [...SCHOOL_GRADES[school]];
   const grade = resolveGradeForSchool(school, searchParams.grade);
 
-  const [timetable, courses] = await Promise.all([
+  const [timetable, courses, subjectOrder] = await Promise.all([
     getTimetable(school, grade, view),
     view === "detail" ? listTimetableCourses(school, grade) : Promise.resolve([]),
+    view === "detail" ? listTimetableSubjectOrder() : Promise.resolve([]),
   ]);
 
   const pageKey = `${school}-${grade}-${view}`;
@@ -157,7 +162,11 @@ export default async function TimetablePage({
             <div
               className={`mx-auto w-full max-w-[1680px]`}
             >
-              <TimetableDetailTable school={school} courses={courses} />
+              <TimetableDetailTable
+                school={school}
+                courses={courses}
+                subjectOrder={subjectOrder}
+              />
             </div>
           </section>
         ) : (
@@ -165,9 +174,7 @@ export default async function TimetablePage({
             aria-label="요약 시간표 이미지"
             className={`${siteContainerClass} pb-10 pt-8 sm:pb-12 sm:pt-10 lg:pb-14 lg:pt-12`}
           >
-            <div
-              className={`mx-auto w-full max-w-[1680px]`}
-            >
+            <div className="mx-auto w-full max-w-[960px]">
               <TimetableImage
                 data={timetable}
                 alt={`${SCHOOL_LABELS[school]} ${GRADE_LABELS[grade] ?? grade} ${TIMETABLE_VIEW_TYPE_LABELS[view]}`}

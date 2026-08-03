@@ -19,41 +19,44 @@ import {
 import type { CourseSession } from "@/types/database";
 import { withCacheBust } from "@/lib/media/cache-bust";
 import type { TimetableCourseWithTeacher } from "@/lib/supabase/queries";
+import { subjectsForTeacherList } from "@/lib/teachers/subject-order";
 
 type TimetableDetailTableProps = {
   school: School;
   courses: TimetableCourseWithTeacher[];
+  /** 관리자에서 지정한 과목 노출 순서 */
+  subjectOrder: string[];
 };
 
 export default function TimetableDetailTable({
   school,
   courses,
+  subjectOrder,
 }: TimetableDetailTableProps) {
   const theme = getTimetableSchoolTheme(school);
-  const subjects = useMemo(() => {
-    const seen = new Set<string>();
-    const order: string[] = [];
-    for (const c of courses) {
-      if (!seen.has(c.subject)) {
-        seen.add(c.subject);
-        order.push(c.subject);
-      }
-    }
-    return order;
-  }, [courses]);
+  const subjects = useMemo(
+    () => subjectsForTeacherList(subjectOrder, courses),
+    [subjectOrder, courses],
+  );
 
   const [active, setActive] = useState<string>(ALL_SUBJECT);
 
   const grouped = useMemo(() => {
     const groups = new Map<string, TimetableCourseWithTeacher[]>();
+    for (const subject of subjects) {
+      groups.set(subject, []);
+    }
     for (const c of courses) {
       if (active !== ALL_SUBJECT && c.subject !== active) continue;
       const list = groups.get(c.subject) ?? [];
       list.push(c);
       groups.set(c.subject, list);
     }
+    for (const [subject, list] of groups) {
+      if (list.length === 0) groups.delete(subject);
+    }
     return groups;
-  }, [courses, active]);
+  }, [courses, active, subjects]);
 
   if (courses.length === 0) {
     return (
@@ -135,58 +138,33 @@ function chipStyle(
   };
 }
 
-function parseHashtagList(raw: string | null | undefined): string[] {
-  if (!raw?.trim()) return [];
-  return raw
-    .split(/[,，]/)
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
-}
-
-const hashtagChipClass =
-  "inline-flex w-fit max-w-full shrink-0 items-center justify-center rounded-[3px] px-2 py-0.5 text-[11px] font-black leading-tight tracking-tight xl:px-2.5 xl:py-1 xl:text-[13px] 2xl:text-[14px] 2xl:tracking-wider";
-
 const statusChipClass =
   "inline-flex w-fit max-w-full shrink-0 items-center justify-center rounded-[3px] px-2 py-0.5 text-[11px] font-black leading-tight tracking-tight xl:px-2.5 xl:py-1 xl:text-[13px] 2xl:text-[14px] 2xl:tracking-wider";
-
-const hashtagChipMobileClass =
-  "inline-flex w-fit max-w-full shrink-0 items-center justify-center rounded-button px-2.5 py-1 text-[14px] font-black leading-none tracking-wide";
 
 const statusChipMobileClass =
   "inline-flex w-fit max-w-full shrink-0 items-center justify-center rounded-button px-2.5 py-1 text-[14px] font-black leading-none tracking-wide";
 
-function CourseTitleTags({
+/** 과목명 옆 — 상태 배지만 노출 (해시태그는 숨김) */
+function CourseStatusTag({
   course,
   mobile = false,
 }: {
   course: TimetableCourseWithTeacher;
   mobile?: boolean;
 }) {
-  const hashtags = parseHashtagList(course.tag);
   const status = course.status_tag?.trim() || "";
-  if (hashtags.length === 0 && !status) return null;
-
-  const hashClass = mobile ? hashtagChipMobileClass : hashtagChipClass;
-  const statusClass = mobile ? statusChipMobileClass : statusChipClass;
-  const hashStyle = chipStyle(course.tag_bg_color, course.tag_text_color);
-  const statusStyle = chipStyle(
-    course.status_tag_bg_color,
-    course.status_tag_text_color,
-  );
+  if (!status) return null;
 
   return (
-    <>
-      {hashtags.map((chip) => (
-        <span key={chip} style={hashStyle} className={hashClass}>
-          {chip}
-        </span>
-      ))}
-      {status ? (
-        <span style={statusStyle} className={statusClass}>
-          {status}
-        </span>
-      ) : null}
-    </>
+    <span
+      style={chipStyle(
+        course.status_tag_bg_color,
+        course.status_tag_text_color,
+      )}
+      className={mobile ? statusChipMobileClass : statusChipClass}
+    >
+      {status}
+    </span>
   );
 }
 
@@ -323,15 +301,18 @@ function CourseTitleCell({
         <p className="min-w-0 text-[17px] font-black leading-snug text-neutral-900 xl:text-[22px] 2xl:text-[28px]">
           {course.course_title}
         </p>
-        <CourseTitleTags course={course} />
+        <CourseStatusTag course={course} />
+        {course.detail_url ? (
+          <DetailVideoLink url={course.detail_url} />
+        ) : null}
       </div>
       {course.course_subtitle ? (
-        <p className="text-[15px] font-bold text-neutral-900 xl:text-[18px] 2xl:text-[22px]">
+        <p className="text-[13px] font-bold text-neutral-900 xl:text-[16px] 2xl:text-[20px]">
           {course.course_subtitle}
         </p>
       ) : null}
       {course.course_note ? (
-        <p className="whitespace-pre-line text-[13px] font-normal leading-[1.7] text-neutral-900 xl:text-[16px] xl:leading-[1.8] 2xl:text-[20px] 2xl:leading-[1.9]">
+        <p className="whitespace-pre-line text-[11px] font-normal leading-[1.5] text-neutral-900 xl:text-[14px] xl:leading-[1.55] 2xl:text-[18px] 2xl:leading-[1.6]">
           {course.course_note}
         </p>
       ) : null}
@@ -355,9 +336,6 @@ function CourseRow({
       <td className="px-3 py-4 xl:px-4 xl:py-5 2xl:px-5">
         <div className="space-y-2.5 xl:space-y-3">
           <SessionList sessions={course.sessions} />
-          {course.detail_url ? (
-            <DetailVideoLink url={course.detail_url} />
-          ) : null}
         </div>
       </td>
       <td className="px-3 py-4 xl:px-4 xl:py-5 2xl:px-5">
@@ -408,7 +386,10 @@ function CourseCard({
             <p className="min-w-0 text-[20px] font-black leading-[1.25] tracking-tight text-neutral-900 sm:text-[26px]">
               {course.course_title}
             </p>
-            <CourseTitleTags course={course} mobile />
+            <CourseStatusTag course={course} mobile />
+            {course.detail_url ? (
+              <DetailVideoLink url={course.detail_url} />
+            ) : null}
           </div>
         </div>
       </div>
@@ -429,9 +410,6 @@ function CourseCard({
             ) : (
               <span className="text-[17px] font-bold text-neutral-400 sm:text-[21px]">—</span>
             )}
-            {course.detail_url ? (
-              <DetailVideoLink url={course.detail_url} />
-            ) : null}
           </div>
         </div>
         <div className={`border-t-2 pt-3.5 ${theme.body.cardDivider}`}>
@@ -462,14 +440,14 @@ function CourseCard({
           </button>
 
           {expanded ? (
-            <div className="mt-3 space-y-2.5 border-t border-neutral-100 pt-3">
+            <div className="mt-3 space-y-2 border-t border-neutral-100 pt-3">
               {course.course_subtitle ? (
-                <p className="text-[20px] font-bold leading-snug text-neutral-900">
+                <p className="text-[18px] font-bold leading-snug text-neutral-900">
                   {course.course_subtitle}
                 </p>
               ) : null}
               {course.course_note ? (
-                <p className="whitespace-pre-line text-[18px] font-normal leading-[1.85] text-neutral-800">
+                <p className="whitespace-pre-line text-[16px] font-normal leading-[1.6] text-neutral-800">
                   {course.course_note}
                 </p>
               ) : null}

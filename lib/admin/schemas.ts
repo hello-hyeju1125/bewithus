@@ -84,6 +84,15 @@ export const teacherSubjectOrderUpdateSchema = z.object({
   ),
 });
 
+export const timetableSubjectOrderUpdateSchema = z.object({
+  updates: z.array(
+    z.object({
+      subject: z.string().min(1),
+      order_index: z.number().int().min(0),
+    }),
+  ),
+});
+
 const courseSessionSchema = z.object({
   day_time: z.string().min(1, "시간을 입력하세요.").max(120),
   is_full: z.boolean().optional(),

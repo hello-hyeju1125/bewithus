@@ -213,6 +213,24 @@ export type TeacherSubjectOrderInsert = Omit<
 
 export type TeacherSubjectOrderUpdate = Partial<TeacherSubjectOrderInsert>;
 
+/** 상세 시간표 과목 노출 순서 (강사 과목 순서와 동일 스키마) */
+export type TimetableSubjectOrder = {
+  subject: string;
+  order_index: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type TimetableSubjectOrderInsert = Omit<
+  TimetableSubjectOrder,
+  "created_at" | "updated_at"
+> & {
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type TimetableSubjectOrderUpdate = Partial<TimetableSubjectOrderInsert>;
+
 export type InfoSession = {
   id: string;
   school: StaffSchool;
@@ -465,6 +483,11 @@ export type Database = {
         Row: TeacherSubjectOrder;
         Insert: TeacherSubjectOrderInsert;
         Update: TeacherSubjectOrderUpdate;
+      };
+      timetable_subject_orders: {
+        Row: TimetableSubjectOrder;
+        Insert: TimetableSubjectOrderInsert;
+        Update: TimetableSubjectOrderUpdate;
       };
       info_sessions: {
         Row: InfoSession;
