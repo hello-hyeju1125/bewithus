@@ -256,6 +256,23 @@ function DetailVideoLink({ url }: { url: string }) {
   );
 }
 
+function ViewDetailLink({ url }: { url: string }) {
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noreferrer noopener"
+      className="inline-flex shrink-0 items-center justify-center gap-1 rounded-button border border-primary bg-white px-2.5 py-1.5 text-[12px] font-black leading-none tracking-tight text-primary transition-colors duration-200 hover:bg-primary hover:text-accent xl:px-3 xl:py-2 xl:text-[13px] 2xl:text-[14px]"
+    >
+      상세 보기
+      <ArrowUpRight
+        className="h-3.5 w-3.5 shrink-0 xl:h-4 xl:w-4"
+        aria-hidden="true"
+      />
+    </a>
+  );
+}
+
 function TeacherCell({
   course,
 }: {
@@ -295,27 +312,32 @@ function CourseTitleCell({
 }: {
   course: TimetableCourseWithTeacher;
 }) {
+  const viewDetailUrl = course.view_detail_url?.trim() || "";
+
   return (
-    <div className="min-w-0 space-y-1.5 xl:space-y-2">
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-        <p className="min-w-0 text-[17px] font-black leading-snug text-neutral-900 xl:text-[22px] 2xl:text-[28px]">
-          {course.course_title}
-        </p>
-        <CourseStatusTag course={course} />
-        {course.detail_url ? (
-          <DetailVideoLink url={course.detail_url} />
+    <div className="flex min-w-0 items-start gap-3">
+      <div className="min-w-0 flex-1 space-y-1.5 xl:space-y-2">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <p className="min-w-0 text-[17px] font-black leading-snug text-neutral-900 xl:text-[22px] 2xl:text-[28px]">
+            {course.course_title}
+          </p>
+          <CourseStatusTag course={course} />
+          {course.detail_url ? (
+            <DetailVideoLink url={course.detail_url} />
+          ) : null}
+        </div>
+        {course.course_subtitle ? (
+          <p className="text-[13px] font-bold text-neutral-900 xl:text-[16px] 2xl:text-[20px]">
+            {course.course_subtitle}
+          </p>
+        ) : null}
+        {course.course_note ? (
+          <p className="whitespace-pre-line text-[11px] font-normal leading-[1.5] text-neutral-900 xl:text-[14px] xl:leading-[1.55] 2xl:text-[18px] 2xl:leading-[1.6]">
+            {course.course_note}
+          </p>
         ) : null}
       </div>
-      {course.course_subtitle ? (
-        <p className="text-[13px] font-bold text-neutral-900 xl:text-[16px] 2xl:text-[20px]">
-          {course.course_subtitle}
-        </p>
-      ) : null}
-      {course.course_note ? (
-        <p className="whitespace-pre-line text-[11px] font-normal leading-[1.5] text-neutral-900 xl:text-[14px] xl:leading-[1.55] 2xl:text-[18px] 2xl:leading-[1.6]">
-          {course.course_note}
-        </p>
-      ) : null}
+      {viewDetailUrl ? <ViewDetailLink url={viewDetailUrl} /> : null}
     </div>
   );
 }
@@ -354,6 +376,7 @@ function CourseCard({
 }) {
   const [expanded, setExpanded] = useState(false);
   const hasDetails = Boolean(course.course_subtitle || course.course_note);
+  const viewDetailUrl = course.view_detail_url?.trim() || "";
 
   return (
     <li className="bg-white py-4 first:pt-0">
@@ -381,16 +404,19 @@ function CourseCard({
             {course.teacher?.name ?? ""}
           </p>
         </div>
-        <div className="min-w-0 flex-1 pt-0.5">
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
-            <p className="min-w-0 text-[20px] font-black leading-[1.25] tracking-tight text-neutral-900 sm:text-[26px]">
-              {course.course_title}
-            </p>
-            <CourseStatusTag course={course} mobile />
-            {course.detail_url ? (
-              <DetailVideoLink url={course.detail_url} />
-            ) : null}
+        <div className="flex min-w-0 flex-1 items-start gap-2 pt-0.5">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+              <p className="min-w-0 text-[20px] font-black leading-[1.25] tracking-tight text-neutral-900 sm:text-[26px]">
+                {course.course_title}
+              </p>
+              <CourseStatusTag course={course} mobile />
+              {course.detail_url ? (
+                <DetailVideoLink url={course.detail_url} />
+              ) : null}
+            </div>
           </div>
+          {viewDetailUrl ? <ViewDetailLink url={viewDetailUrl} /> : null}
         </div>
       </div>
 

@@ -6,17 +6,12 @@ import Link from "next/link";
 import { X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
-import {
-  dismissHomeBannerPopup,
-  shouldShowHomeBannerPopup,
-} from "@/lib/home/banner-popup-storage";
 import type { PublicPopupBanner } from "@/lib/home/hero-slides";
 import { withCacheBust } from "@/lib/media/cache-bust";
 import { cn } from "@/lib/utils";
 
 type HomeBannerPopupProps = {
   slides: PublicPopupBanner[];
-  settingsUpdatedAt: string;
 };
 
 function PopupBannerCard({
@@ -57,36 +52,22 @@ function popupGridClass(count: number): string {
   return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
 }
 
-export default function HomeBannerPopup({
-  slides,
-  settingsUpdatedAt,
-}: HomeBannerPopupProps) {
+export default function HomeBannerPopup({ slides }: HomeBannerPopupProps) {
   const [open, setOpen] = useState(false);
   const count = slides.length;
 
   useEffect(() => {
     if (count === 0) return;
-    if (shouldShowHomeBannerPopup(settingsUpdatedAt)) {
-      setOpen(true);
-    }
-  }, [count, settingsUpdatedAt]);
+    setOpen(true);
+  }, [count]);
 
-  const dismiss = useCallback(() => {
-    dismissHomeBannerPopup(settingsUpdatedAt);
-  }, [settingsUpdatedAt]);
-
-  const handleOpenChange = useCallback(
-    (next: boolean) => {
-      setOpen(next);
-      if (!next) dismiss();
-    },
-    [dismiss],
-  );
+  const handleOpenChange = useCallback((next: boolean) => {
+    setOpen(next);
+  }, []);
 
   const handleNavigate = useCallback(() => {
-    dismiss();
     setOpen(false);
-  }, [dismiss]);
+  }, []);
 
   const closePopup = useCallback(() => {
     handleOpenChange(false);

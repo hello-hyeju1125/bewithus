@@ -112,6 +112,8 @@ export type TimetableCourse = {
   start_dates: string[];
   apply_buttons: CourseApplyButton[];
   detail_url: string | null;
+  /** 상세 보기 버튼 URL — 있으면 공개 페이지에 표시 */
+  view_detail_url: string | null;
   order_index: number;
   is_active: boolean;
   created_at: string;
@@ -133,6 +135,7 @@ export type TimetableCourseInsert = Omit<
   | "status_tag_bg_color"
   | "status_tag_text_color"
   | "detail_url"
+  | "view_detail_url"
   | "order_index"
   | "sessions"
   | "start_dates"
@@ -148,6 +151,7 @@ export type TimetableCourseInsert = Omit<
   status_tag_bg_color?: string | null;
   status_tag_text_color?: string | null;
   detail_url?: string | null;
+  view_detail_url?: string | null;
   sessions?: CourseSession[];
   start_dates?: string[];
   apply_buttons?: CourseApplyButton[];

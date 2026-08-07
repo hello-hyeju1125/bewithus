@@ -127,6 +127,7 @@ export const timetableCourseFormSchema = z
     start_dates: z.array(z.string().min(1).max(40)).max(20),
     apply_buttons: z.array(applyButtonSchema).max(6),
     detail_url: z.string().url().optional().or(z.literal("")),
+    view_detail_url: z.string().url().optional().or(z.literal("")),
     order_index: z.number().int().min(0),
     is_active: z.boolean(),
   })

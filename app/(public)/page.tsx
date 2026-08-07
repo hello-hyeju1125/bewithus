@@ -15,10 +15,7 @@ export default async function Home() {
 
   return (
     <main className={`min-h-[90vh] ${siteMainBelowHeaderClass}`}>
-      <HomeBannerPopup
-        slides={heroContent.popupSlides}
-        settingsUpdatedAt={heroContent.settingsUpdatedAt}
-      />
+      <HomeBannerPopup slides={heroContent.popupSlides} />
       <section className="mx-auto w-full px-5 sm:px-8 lg:px-8">
         <div
           className={`grid grid-cols-1 gap-8 lg:items-start lg:gap-10 ${siteMainGridColsClass}`}

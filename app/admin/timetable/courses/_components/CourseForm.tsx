@@ -81,6 +81,7 @@ const DEFAULT_VALUES: TimetableCourseFormValues = {
   start_dates: [],
   apply_buttons: [],
   detail_url: "",
+  view_detail_url: "",
   order_index: 0,
   is_active: true,
 };
@@ -127,6 +128,7 @@ export default function CourseForm({
         variant: b.variant ?? "primary",
       })),
       detail_url: initial.detail_url ?? "",
+      view_detail_url: initial.view_detail_url ?? "",
       order_index: initial.order_index,
       is_active: initial.is_active,
     };
@@ -510,6 +512,19 @@ export default function CourseForm({
             </ul>
           )}
         </section>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="view_detail_url">상세 보기 URL (선택)</Label>
+          <Input
+            id="view_detail_url"
+            placeholder="https://..."
+            {...form.register("view_detail_url")}
+          />
+          <p className="text-[11px] text-neutral-500">
+            URL을 입력하면 공개 페이지 강의 설명 영역 우측 상단에 &ldquo;상세
+            보기&rdquo; 버튼이 표시됩니다. 비우면 버튼이 숨겨집니다.
+          </p>
+        </div>
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="detail_url">설명회 영상 보기 URL (선택)</Label>

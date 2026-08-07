@@ -49,6 +49,9 @@ function normalize(values: TimetableCourseFormValues) {
       variant: b.variant ?? "primary",
     })),
     detail_url: values.detail_url ? values.detail_url.trim() : null,
+    view_detail_url: values.view_detail_url
+      ? values.view_detail_url.trim()
+      : null,
     order_index: values.order_index,
     is_active: values.is_active,
   };
