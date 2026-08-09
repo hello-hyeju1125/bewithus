@@ -65,7 +65,7 @@ export const ko = {
   sideWidget: {
     a11y: {
       label: "빠른 신청 및 연락처",
-      fabLabel: "상담",
+      fabLabel: "상담문의",
       openFab: "상담 · 신청 메뉴 열기",
       closeFab: "상담 · 신청 메뉴 닫기",
     },

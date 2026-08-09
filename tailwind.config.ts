@@ -188,15 +188,6 @@ const config: Config = {
         /** 로고 노란 면 — 상단 하이라이트·하단 딤 (accent-300 / accent-600) */
         "logo-plate": "inset 0 1px 0 0 #FFF45F, inset 0 -1px 0 0 #E6DA2F",
       },
-      keyframes: {
-        "float-cta": {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-6px)" },
-        },
-      },
-      animation: {
-        "float-cta": "float-cta 2.8s ease-in-out infinite",
-      },
       screens: {
         sm: "640px",
         md: "768px",

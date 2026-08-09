@@ -262,7 +262,7 @@ function ViewDetailLink({ url }: { url: string }) {
       href={url}
       target="_blank"
       rel="noreferrer noopener"
-      className="inline-flex shrink-0 items-center justify-center gap-1 rounded-button border border-primary bg-white px-2.5 py-1.5 text-[12px] font-black leading-none tracking-tight text-primary transition-colors duration-200 hover:bg-primary hover:text-accent xl:px-3 xl:py-2 xl:text-[13px] 2xl:text-[14px]"
+      className="inline-flex shrink-0 items-center justify-center gap-1 rounded-button border border-tiffany bg-tiffany px-2.5 py-1.5 text-[12px] font-black leading-none tracking-tight text-primary transition-colors duration-200 hover:border-primary hover:bg-primary hover:text-accent xl:px-3 xl:py-2 xl:text-[13px] 2xl:text-[14px]"
     >
       상세 보기
       <ArrowUpRight
@@ -458,7 +458,7 @@ function CourseCard({
             aria-expanded={expanded}
             className={`mt-3 flex w-full items-center justify-center gap-1 rounded-button border border-neutral-300 bg-white py-2.5 text-[17px] font-black ${theme.body.expandBtn}`}
           >
-            {expanded ? "접기" : "상세보기"}
+            {expanded ? "접기" : "펼쳐보기"}
             <ChevronDown
               className={`h-4 w-4 shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`}
               aria-hidden="true"

@@ -23,7 +23,7 @@ export const siteGapBeforeFooterClass = "mt-12";
 
 /**
  * 우측 고정 SideWidget 공통 너비.
- * 메인 페이지 grid 3번째 컬럼·세부 FAB 패널과 동일.
+ * 메인 페이지 grid 3번째 컬럼·세부 페이지 fixed 위젯과 동일.
  */
 export const siteFloatingWidgetWidthClass = "lg:w-[172px]";
 
@@ -35,7 +35,8 @@ export const siteMainGridColsClass =
   "lg:grid-cols-[45fr_55fr_172px]";
 
 /**
- * 우측 SideWidget — 화면 하단 inset (메인 grid 열용).
+ * 우측 SideWidget — 화면 하단 inset (메인·세부 fixed 공통).
+ * 세부 페이지 `FloatingSideWidget` 은 fixed + bottom 기준.
  */
 export const siteSideWidgetBottomClass = "bottom-2 lg:bottom-4";
 
@@ -50,13 +51,15 @@ export const siteSideWidgetAbsoluteClass =
   "absolute inset-0 flex flex-col justify-end overflow-y-auto overflow-x-hidden pb-1";
 
 /**
- * @deprecated 세부 페이지는 FAB 원형 CTA 로 전환되어 본문 우측 예약 여백이 필요 없음.
- * 하위 호환을 위해 빈 문자열로 유지.
+ * 우측 고정 SideWidget 과 본문이 겹치지 않도록 컨테이너 우측에 두는 안전 패딩.
+ * 메인 grid 의 3번째 컬럼처럼 위젯이 컨테이너 안 우측 끝에 있으므로,
+ * 화면 폭과 무관하게 동일한 안전 영역(=widget 172px + gap 48px + lg:px-6 기본 right 24px → 244px)을 비운다.
+ * lg:pr-[244px] 은 lg:px-6 기본 right 를 덮어쓴다.
  */
-export const siteFloatingWidgetSafeClass = "";
+export const siteFloatingWidgetSafeClass = "lg:pr-[244px]";
 
-/** @deprecated FAB 전환 이후 미사용 — 빈 문자열 유지 */
-export const siteFloatingWidgetCenteredSafeClass = "";
-
-/** @deprecated FAB 전환 이후 미사용 — 빈 문자열 유지 */
-export const siteFloatingWidgetCenterOffsetClass = "";
+/**
+ * `siteFloatingWidgetSafeClass` 만 쓸 때 mx-auto 블록이 왼쪽으로 치우침.
+ * 비대칭 pr 의 절반(122px)만큼 오른쪽으로 보정해 화면 중앙에 맞춘다.
+ */
+export const siteFloatingWidgetCenterOffsetClass = "lg:translate-x-[122px]";

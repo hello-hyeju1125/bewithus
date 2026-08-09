@@ -6,6 +6,8 @@ import NoticePageHero from "@/components/notice/NoticePageHero";
 import Pagination from "@/components/notice/Pagination";
 import {
   siteContainerClass,
+  siteFloatingWidgetCenterOffsetClass,
+  siteFloatingWidgetSafeClass,
 } from "@/lib/layout/spacing";
 import { listPosts } from "@/lib/supabase/queries";
 
@@ -52,11 +54,11 @@ export default async function NoticeListPage({
       content={
         <section
           aria-label="공지사항 목록"
-          className={`${siteContainerClass} py-10 sm:py-12 lg:py-14`}
+          className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} py-10 sm:py-12 lg:py-14`}
         >
           {posts.length === 0 ? (
             <div
-              className={`mx-auto w-full max-w-[1680px]`}
+              className={`mx-auto w-full max-w-[1680px] ${siteFloatingWidgetCenterOffsetClass}`}
             >
               <p className="rounded-card border border-neutral-200 bg-neutral-50 px-6 py-12 text-center text-[20px] text-neutral-500">
                 등록된 공지가 없습니다.
@@ -64,7 +66,7 @@ export default async function NoticeListPage({
             </div>
           ) : (
             <div
-              className={`mx-auto w-full max-w-[1680px]`}
+              className={`mx-auto w-full max-w-[1680px] ${siteFloatingWidgetCenterOffsetClass}`}
             >
               {/* PC: 테이블 */}
               <table className="hidden w-full table-fixed border-t-2 border-primary text-[20px] sm:table">

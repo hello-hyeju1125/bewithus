@@ -18,6 +18,8 @@ import {
 import { heroDescriptionToPlainText } from "@/lib/layout/hero-description";
 import {
   siteContainerClass,
+  siteFloatingWidgetCenterOffsetClass,
+  siteFloatingWidgetSafeClass,
 } from "@/lib/layout/spacing";
 import {
   getTimetable,
@@ -94,10 +96,10 @@ export default async function TimetablePage({
           view === "detail" ? (
             <section
               aria-label="상세 시간표"
-              className={`${siteContainerClass} pb-10 pt-8 sm:pb-12 sm:pt-10 lg:pb-14 lg:pt-12`}
+              className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} pb-10 pt-8 sm:pb-12 sm:pt-10 lg:pb-14 lg:pt-12`}
             >
               <div
-                className={`mx-auto w-full max-w-[1680px]`}
+                className={`mx-auto w-full max-w-[1680px] ${siteFloatingWidgetCenterOffsetClass}`}
               >
                 <TimetableDetailTable
                   school={school}
@@ -109,9 +111,11 @@ export default async function TimetablePage({
           ) : (
             <section
               aria-label="요약 시간표 이미지"
-              className={`${siteContainerClass} pb-10 pt-8 sm:pb-12 sm:pt-10 lg:pb-14 lg:pt-12`}
+              className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} pb-10 pt-8 sm:pb-12 sm:pt-10 lg:pb-14 lg:pt-12`}
             >
-              <div className="mx-auto w-full max-w-[960px]">
+              <div
+                className={`mx-auto w-full max-w-[960px] ${siteFloatingWidgetCenterOffsetClass}`}
+              >
                 <TimetableImage
                   data={timetable}
                   alt={`${SCHOOL_LABELS[school]} ${GRADE_LABELS[grade] ?? grade} ${TIMETABLE_VIEW_TYPE_LABELS[view]}`}
@@ -157,10 +161,10 @@ export default async function TimetablePage({
         view === "detail" ? (
           <section
             aria-label="상세 시간표"
-            className={`${siteContainerClass} pb-10 pt-8 sm:pb-12 sm:pt-10 lg:pb-14 lg:pt-12`}
+            className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} pb-10 pt-8 sm:pb-12 sm:pt-10 lg:pb-14 lg:pt-12`}
           >
             <div
-              className={`mx-auto w-full max-w-[1680px]`}
+              className={`mx-auto w-full max-w-[1680px] ${siteFloatingWidgetCenterOffsetClass}`}
             >
               <TimetableDetailTable
                 school={school}
@@ -172,9 +176,11 @@ export default async function TimetablePage({
         ) : (
           <section
             aria-label="요약 시간표 이미지"
-            className={`${siteContainerClass} pb-10 pt-8 sm:pb-12 sm:pt-10 lg:pb-14 lg:pt-12`}
+            className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} pb-10 pt-8 sm:pb-12 sm:pt-10 lg:pb-14 lg:pt-12`}
           >
-            <div className="mx-auto w-full max-w-[960px]">
+            <div
+              className={`mx-auto w-full max-w-[960px] ${siteFloatingWidgetCenterOffsetClass}`}
+            >
               <TimetableImage
                 data={timetable}
                 alt={`${SCHOOL_LABELS[school]} ${GRADE_LABELS[grade] ?? grade} ${TIMETABLE_VIEW_TYPE_LABELS[view]}`}

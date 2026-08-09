@@ -14,6 +14,8 @@ import {
 } from "@/lib/info-session/format";
 import {
   siteContainerClass,
+  siteFloatingWidgetCenterOffsetClass,
+  siteFloatingWidgetSafeClass,
 } from "@/lib/layout/spacing";
 import { sectionBodyClass } from "@/lib/layout/section-theme";
 import { cn } from "@/lib/utils";
@@ -82,10 +84,10 @@ export default async function InfoSessionDetailPage({
       }
       content={
         <article
-          className={`${siteContainerClass} py-10 sm:py-12 lg:py-14`}
+          className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} py-10 sm:py-12 lg:py-14`}
         >
           <div
-            className={`mx-auto w-full max-w-[1680px]`}
+            className={`mx-auto w-full max-w-[1680px] ${siteFloatingWidgetCenterOffsetClass}`}
           >
             <h1 className="text-balance whitespace-pre-line text-[24px] font-black leading-snug tracking-tight text-primary sm:text-[38px] lg:text-[44px]">
               {session.title}

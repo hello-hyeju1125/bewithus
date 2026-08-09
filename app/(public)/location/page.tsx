@@ -3,6 +3,7 @@ import LocationCampusMap from "@/components/location/LocationCampusMap";
 import LocationPageHero from "@/components/location/LocationPageHero";
 import {
   siteContainerClass,
+  siteFloatingWidgetSafeClass,
 } from "@/lib/layout/spacing";
 
 export const metadata = {
@@ -18,7 +19,7 @@ export default function LocationPage() {
       content={
         <section
           aria-label="관별 위치 및 지도"
-          className={`${siteContainerClass} py-10 sm:py-12 lg:py-14`}
+          className={`${siteContainerClass} ${siteFloatingWidgetSafeClass} py-10 sm:py-12 lg:py-14`}
         >
           <LocationCampusMap />
         </section>
