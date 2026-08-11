@@ -5,6 +5,7 @@ import {
   normalizeConsultationResponses,
   parseConsultationFormData,
 } from "@/lib/consultation/fields";
+import { getClientIp, rateLimit } from "@/lib/security/rate-limit";
 import { getConsultationFormFields } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import type { ConsultationRequestInsert } from "@/types/database";
@@ -13,9 +14,30 @@ export type SubmitConsultationResult =
   | { ok: true }
   | { ok: false; error: string };
 
+/** 사람에게는 보이지 않는 허니팟 필드 이름. 값이 채워지면 봇으로 간주. */
+export const CONSULTATION_HONEYPOT_FIELD = "contact_time";
+
 export async function submitConsultationAction(
   formData: FormData,
 ): Promise<SubmitConsultationResult> {
+  // 봇 트랩: 숨김 필드가 채워졌으면 조용히 성공 처리(봇에게 실패를 알리지 않음).
+  const honeypot = formData.get(CONSULTATION_HONEYPOT_FIELD);
+  if (typeof honeypot === "string" && honeypot.trim() !== "") {
+    return { ok: true };
+  }
+
+  // 스팸 방지: IP 당 10분에 5회까지만 접수 허용.
+  const limit = rateLimit(`consultation:${getClientIp()}`, {
+    limit: 5,
+    windowSec: 10 * 60,
+  });
+  if (!limit.allowed) {
+    return {
+      ok: false,
+      error: `신청이 너무 잦습니다. ${limit.retryAfterSec}초 후 다시 시도해 주세요.`,
+    };
+  }
+
   const fields = await getConsultationFormFields();
   const activeFields =
     fields.length > 0 ? fields : fallbackConsultationFormFields();

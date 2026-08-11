@@ -46,11 +46,23 @@ async function hmacSign(payloadB64: string, secret: string): Promise<string> {
   return bytesToBase64Url(sig);
 }
 
+/**
+ * 세션 서명키가 안전한지 검사 (Edge 전용, `session.ts` 와 동일 규칙).
+ * 공개(anon) 키와 같거나 32자 미만이면 위조 위험이 있으므로 거부합니다.
+ */
+export function isSessionSecretSafe(): boolean {
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  if (!secret || secret.length < 32) return false;
+  if (secret === process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return false;
+  return true;
+}
+
 export async function verifyAdminSessionToken(
   token: string | undefined,
 ): Promise<boolean> {
   const secret = process.env.ADMIN_SESSION_SECRET;
   if (!token || !secret) return false;
+  if (!isSessionSecretSafe()) return false;
 
   const dot = token.indexOf(".");
   if (dot <= 0) return false;
@@ -73,6 +85,7 @@ export async function verifyAdminSessionToken(
 export function isAdminPasswordConfigured(): boolean {
   return Boolean(
     process.env.ADMIN_PASSWORD?.length &&
-      process.env.ADMIN_SESSION_SECRET?.length,
+      process.env.ADMIN_SESSION_SECRET?.length &&
+      isSessionSecretSafe(),
   );
 }

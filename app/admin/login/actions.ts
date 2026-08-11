@@ -9,6 +9,7 @@ import {
   isAdminPasswordConfigured,
   verifyAdminPassword,
 } from "@/lib/admin/session";
+import { getClientIp, rateLimit } from "@/lib/security/rate-limit";
 
 export type AdminLoginResult =
   | { ok: true }
@@ -22,6 +23,18 @@ export async function loginAdminAction(
       ok: false,
       error:
         "관리자 비밀번호가 서버에 설정되지 않았습니다. .env.local 의 ADMIN_PASSWORD 를 확인하세요.",
+    };
+  }
+
+  // 무차별 대입 방어: IP 당 5분에 10회까지만 시도 허용.
+  const limit = rateLimit(`admin-login:${getClientIp()}`, {
+    limit: 10,
+    windowSec: 5 * 60,
+  });
+  if (!limit.allowed) {
+    return {
+      ok: false,
+      error: `로그인 시도가 너무 많습니다. ${limit.retryAfterSec}초 후 다시 시도해 주세요.`,
     };
   }
 

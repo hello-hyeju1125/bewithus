@@ -4,12 +4,12 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10MB
 
+// SVG 는 <script>/onload 등을 품을 수 있어(저장형 XSS) 업로드에서 제외합니다.
 export const ALLOWED_IMAGE_MIME = new Set([
   "image/png",
   "image/jpeg",
   "image/webp",
   "image/gif",
-  "image/svg+xml",
 ]);
 
 export const ALLOWED_IMAGE_EXT: Record<string, string> = {
@@ -17,7 +17,6 @@ export const ALLOWED_IMAGE_EXT: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/webp": "webp",
   "image/gif": "gif",
-  "image/svg+xml": "svg",
 };
 
 export class UploadValidationError extends Error {
@@ -54,7 +53,7 @@ export function assertImageFile(file: File): void {
   }
   if (!ALLOWED_IMAGE_MIME.has(file.type)) {
     throw new UploadValidationError(
-      "허용되지 않은 이미지 형식입니다. PNG/JPG/WebP/GIF/SVG 만 업로드할 수 있습니다.",
+      "허용되지 않은 이미지 형식입니다. PNG/JPG/WebP/GIF 만 업로드할 수 있습니다.",
     );
   }
 }

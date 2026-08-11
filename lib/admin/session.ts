@@ -8,10 +8,23 @@ export const ADMIN_SESSION_COOKIE = "bewithus_admin";
 /** 세션 유효 기간 (7일) */
 export const ADMIN_SESSION_MAX_AGE_SEC = 60 * 60 * 24 * 7;
 
+/**
+ * 세션 서명키가 안전한지 검사.
+ * ⚠️ 공개(anon) 키는 클라이언트 번들에 노출되므로 세션 HMAC 서명키로
+ *    사용하면 누구나 관리자 세션 쿠키를 위조할 수 있습니다. 같으면 거부합니다.
+ */
+export function isSessionSecretSafe(): boolean {
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  if (!secret || secret.length < 32) return false;
+  if (secret === process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return false;
+  return true;
+}
+
 export function isAdminPasswordConfigured(): boolean {
   return Boolean(
     process.env.ADMIN_PASSWORD?.length &&
-      process.env.ADMIN_SESSION_SECRET?.length,
+      process.env.ADMIN_SESSION_SECRET?.length &&
+      isSessionSecretSafe(),
   );
 }
 
@@ -19,6 +32,11 @@ function getSessionSecret(): string {
   const secret = process.env.ADMIN_SESSION_SECRET;
   if (!secret) {
     throw new Error("ADMIN_SESSION_SECRET 이 설정되지 않았습니다.");
+  }
+  if (!isSessionSecretSafe()) {
+    throw new Error(
+      "ADMIN_SESSION_SECRET 이 안전하지 않습니다. anon 키와 다른 32자 이상의 임의 문자열을 사용하세요.",
+    );
   }
   return secret;
 }
@@ -68,6 +86,7 @@ export async function verifyAdminSessionToken(
   token: string | undefined,
 ): Promise<boolean> {
   if (!token || !process.env.ADMIN_SESSION_SECRET) return false;
+  if (!isSessionSecretSafe()) return false;
 
   const dot = token.indexOf(".");
   if (dot <= 0) return false;
