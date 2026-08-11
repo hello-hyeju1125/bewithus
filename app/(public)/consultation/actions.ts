@@ -1,6 +1,7 @@
 "use server";
 
 import {
+  CONSULTATION_HONEYPOT_FIELD,
   fallbackConsultationFormFields,
   normalizeConsultationResponses,
   parseConsultationFormData,
@@ -13,9 +14,6 @@ import type { ConsultationRequestInsert } from "@/types/database";
 export type SubmitConsultationResult =
   | { ok: true }
   | { ok: false; error: string };
-
-/** 사람에게는 보이지 않는 허니팟 필드 이름. 값이 채워지면 봇으로 간주. */
-export const CONSULTATION_HONEYPOT_FIELD = "contact_time";
 
 export async function submitConsultationAction(
   formData: FormData,

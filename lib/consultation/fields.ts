@@ -3,6 +3,9 @@ import { z } from "zod";
 import { ko } from "@/content/ko";
 import type { ConsultationFormField } from "@/types/database";
 
+/** 사람에게는 보이지 않는 허니팟 필드 이름. 값이 채워지면 봇으로 간주. */
+export const CONSULTATION_HONEYPOT_FIELD = "contact_time";
+
 export type ConsultationFieldType = "text" | "tel" | "textarea";
 
 export type PublicConsultationFormField = {

@@ -3,10 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 
-import {
-  CONSULTATION_HONEYPOT_FIELD,
-  submitConsultationAction,
-} from "@/app/(public)/consultation/actions";
+import { submitConsultationAction } from "@/app/(public)/consultation/actions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,7 +16,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ko } from "@/content/ko";
-import type { PublicConsultationFormField } from "@/lib/consultation/fields";
+import {
+  CONSULTATION_HONEYPOT_FIELD,
+  type PublicConsultationFormField,
+} from "@/lib/consultation/fields";
 
 type ConsultationModalProps = {
   open: boolean;
