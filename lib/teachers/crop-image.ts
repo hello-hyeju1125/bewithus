@@ -54,16 +54,30 @@ export async function getCroppedImageBlob(
     ctx.clearRect(0, 0, outputWidth, outputHeight);
   }
 
+  // 1.0× 미만으로 축소하면 크롭 영역이 원본 밖으로 나갈 수 있으므로
+  // 실제 겹치는 부분만 잘라 같은 비율의 위치에 그립니다(나머지는 투명/배경색).
+  const sourceX = Math.max(0, crop.x);
+  const sourceY = Math.max(0, crop.y);
+  const sourceWidth = Math.min(image.naturalWidth, crop.x + crop.width) - sourceX;
+  const sourceHeight = Math.min(image.naturalHeight, crop.y + crop.height) - sourceY;
+
+  if (sourceWidth <= 0 || sourceHeight <= 0) {
+    throw new Error("사진이 자를 영역 밖에 있습니다. 위치를 조정해 주세요.");
+  }
+
+  const scaleX = outputWidth / crop.width;
+  const scaleY = outputHeight / crop.height;
+
   ctx.drawImage(
     image,
-    crop.x,
-    crop.y,
-    crop.width,
-    crop.height,
-    0,
-    0,
-    outputWidth,
-    outputHeight,
+    sourceX,
+    sourceY,
+    sourceWidth,
+    sourceHeight,
+    (sourceX - crop.x) * scaleX,
+    (sourceY - crop.y) * scaleY,
+    sourceWidth * scaleX,
+    sourceHeight * scaleY,
   );
 
   return new Promise((resolve, reject) => {

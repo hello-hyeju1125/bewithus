@@ -20,6 +20,10 @@ import { getCroppedImageBlob } from "@/lib/teachers/crop-image";
 /** 공개 강사진 카드와 동일한 세로 비율 */
 export const TEACHER_PHOTO_CROP_ASPECT = 4 / 5;
 
+/** 1 미만이면 사진이 프레임보다 작아집니다(여백은 투명으로 저장) */
+const MIN_ZOOM = 0.2;
+const MAX_ZOOM = 3;
+
 type TeacherPhotoCropDialogProps = {
   open: boolean;
   imageSrc: string | null;
@@ -52,6 +56,18 @@ export default function TeacherPhotoCropDialog({
     setCroppedAreaPixels(pixels);
   }, []);
 
+  /** 슬라이더 확대/축소는 프레임 중앙을 기준으로 동작하도록 위치도 같은 비율로 줄입니다 */
+  function handleZoomInput(next: number) {
+    const ratio = zoom > 0 ? next / zoom : 1;
+    setCrop((prev) => ({ x: prev.x * ratio, y: prev.y * ratio }));
+    setZoom(next);
+  }
+
+  function handleReset() {
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+  }
+
   async function handleApply() {
     if (!imageSrc || !croppedAreaPixels) return;
     setBusy(true);
@@ -83,7 +99,7 @@ export default function TeacherPhotoCropDialog({
           <DialogTitle>프로필 사진 조정</DialogTitle>
           <DialogDescription>
             공개 강사진 카드와 같은 4:5 비율로 자릅니다. 드래그로 위치를, 슬라이더로
-            확대를 조절하세요.
+            확대·축소를 조절하세요. 1.0× 아래로 내리면 사진 전체가 프레임 안에 들어갑니다.
           </DialogDescription>
         </DialogHeader>
 
@@ -94,6 +110,10 @@ export default function TeacherPhotoCropDialog({
               crop={crop}
               zoom={zoom}
               aspect={TEACHER_PHOTO_CROP_ASPECT}
+              minZoom={MIN_ZOOM}
+              maxZoom={MAX_ZOOM}
+              // 1.0× 미만에서는 사진이 프레임보다 작아지므로 위치 제한을 풀어야 중앙에 놓입니다
+              restrictPosition={zoom >= 1}
               onCropChange={setCrop}
               onZoomChange={setZoom}
               onCropComplete={onCropComplete}
@@ -112,22 +132,32 @@ export default function TeacherPhotoCropDialog({
             <Label htmlFor="teacher-photo-zoom" className="shrink-0 text-[13px]">
               확대 / 축소
             </Label>
-            <span className="text-[12px] tabular-nums text-neutral-500">
-              {zoom.toFixed(1)}×
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[12px] tabular-nums text-neutral-500">
+                {zoom.toFixed(2)}×
+              </span>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="rounded-button px-2 py-1 text-[12px] text-neutral-600 underline-offset-2 hover:underline"
+              >
+                초기화
+              </button>
+            </div>
           </div>
           <input
             id="teacher-photo-zoom"
             type="range"
-            min={1}
-            max={3}
-            step={0.05}
+            min={MIN_ZOOM}
+            max={MAX_ZOOM}
+            step={0.01}
             value={zoom}
-            onChange={(e) => setZoom(Number(e.target.value))}
+            onChange={(e) => handleZoomInput(Number(e.target.value))}
             className="h-2 w-full cursor-pointer accent-primary"
           />
           <p className="text-[12px] text-neutral-500">
-            잘린 영역이 저장됩니다. 카드에서는 이 비율로 표시됩니다.
+            잘린 영역이 저장됩니다. 1.0× 미만으로 축소하면 프레임의 남는 부분은 투명하게
+            저장되어 카드 배경색이 비칩니다.
           </p>
         </div>
 
